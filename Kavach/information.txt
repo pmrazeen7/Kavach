@@ -1,0 +1,203 @@
+================================================================================
+          NETRIKA-TRACE — AUTONOMOUS AGENTIC SHADOW-AI GATEWAY
+================================================================================
+
+1. EXECUTIVE OVERVIEW & SYSTEM MISSION
+--------------------------------------
+Netrika-Trace is an advanced, corporate-grade Data Loss Prevention (DLP) system 
+specifically engineered to intercept, analyze, and govern corporate data bound 
+for external Generative AI and Large Language Model (LLM) platforms (e.g., ChatGPT, 
+Gemini, Claude, Copilot, etc.). 
+
+It operates as a transparent network security gateway and browser extension that 
+monitors AI-bound traffic. Utilizing a multi-agent orchestration framework 
+(LangGraph), the system parses intercepted payloads in real time, applies PII 
+detectors, performs Named Entity Recognition (NER), runs semantic intent 
+threat-matching, checks for hardcoded secrets/source code, and determines risk 
+levels (ALLOW, WARN, or BLOCK). 
+
+Crucially, it incorporates a local LLM breach simulator (Phi-3:mini via Ollama) 
+that generates context-rich, educational breach scenarios using only sanitized 
+metadata (never sending actual corporate secrets or sensitive data outward) to 
+train employees at the point of intervention. The system is also designed to be 
+fully compliant with India's Digital Personal Data Protection (DPDP) Act 2023.
+
+
+2. THE PROBLEMS IT SOLVES (IN COMPLETE DETAIL)
+----------------------------------------------
+The adoption of Generative AI in the workplace has introduced unprecedented security, 
+confidentiality, and regulatory challenges for enterprises. Netrika-Trace addresses 
+three core vectors:
+
+A. The "Shadow-AI" Data Leakage Epidemic
+   Employees routinely use public AI services to boost productivity—copying and 
+   pasting confidential source code to debug, sharing internal financial spreadsheets 
+   for analysis, or drafting emails containing sensitive customer data. Once this 
+   data is sent to public AI platforms, it is digested by external servers, stored 
+   in third-party logs, and potentially used to retrain public models, leading to 
+   severe IP exposure. Traditional firewalls can only block access to these domains 
+   entirely (which stifles employee productivity), while legacy DLPs lack the 
+   semantic capability to parse complex chat inputs or multi-file uploads.
+
+B. Compliance with the DPDP Act 2023 (and GDPR/HIPAA)
+   India's Digital Personal Data Protection (DPDP) Act 2023 imposes heavy penalties 
+   (up to ₹250 Crores) for failing to protect personal data. 
+   Netrika-Trace directly assists companies in fulfilling their statutory duties:
+   - Section 8 (Obligations of Data Fiduciary): Prevents the unauthorized transfer 
+     and processing of customer PII by intercepting and filtering it before it 
+     leaves the secure corporate perimeter.
+   - Section 9 (Significant Data Fiduciary): Provides granular, tamper-proof 
+     audit trails and reporting frameworks needed for external security audits.
+   - Section 15 (Breach Notification): Logs all close-calls and intercepted 
+     leakages, creating a comprehensive registry to document compliance efforts.
+
+C. Ineffective Employee Security Training
+   Standard corporate cybersecurity training consists of annual slideshows that 
+   employees quickly click through. When an employee actually leaks data, they are 
+   unaware of the immediate threat. Netrika-Trace bridges this gap by intercepting 
+   violations in real-time, showing the employee a custom-generated breach scenario 
+   illustrating exactly how a malicious actor could exploit their specific type of 
+   data leak (e.g., how an exposed API key could lead to database ransoming, or how 
+   Aadhaar cards could facilitate social engineering). This is done entirely 
+   offline using local LLMs, preserving absolute privacy while maximizing the 
+   pedagogical impact.
+
+
+3. THE DUAL INTERCEPTION ARCHITECTURE
+-------------------------------------
+Netrika-Trace employs two robust interception mechanisms to capture all AI-bound 
+requests regardless of user evasion tactics:
+
+A. Network-Level Interception (mitmproxy Transparent Gateway)
+   - Sits as a transparent corporate proxy (port 8080) handling HTTP/HTTPS traffic.
+   - Using custom interceptor scripts (proxy/addon.py), it checks request headers. 
+     If the target matches the registry of monitored AI domains, it halts the 
+     request mid-air.
+   - It extracts the prompt payload from nested formats (like OpenAI's 
+     messages[].content or JSON form keys) and passes it to the analytical pipeline.
+   - If blocked, it redirects the connection to a red-screen blocked landing page. 
+     If warned, it injects an interactive warning banner directly into the 
+     returned web page body.
+
+B. Client-Side Browser Extension (Manifest V3 Extension)
+   - Patches the browser's global fetch() and XMLHttpRequest (XHR) APIs.
+   - Intercepts file inputs (HTMLInputElement change events) and drag-and-drop 
+     operations (drop events) to capture multi-format document uploads.
+   - Sends payloads to the local Netrika analyzer server (port 8888) over an 
+     independent fetch channel to bypass the host web app's Content Security 
+     Policy (CSP).
+   - Prevents files or inputs containing sensitive items from ever leaving the 
+     local machine, maintaining a "Fail-Secure" posture.
+
+
+4. THE LANGGRAPH MULTI-AGENT ANALYTICAL PIPELINE
+------------------------------------------------
+At the core of Netrika-Trace is a 3-agent orchestration state machine built 
+using LangGraph, guaranteeing structured, sequential reasoning before a traffic 
+decision is reached:
+
+   [ Sniffer Node ] ──> [ Forensic Node ] ──> [ Decision Node ]
+                                                    │
+                                           ┌────────┴────────┐
+                                    (WARN / BLOCK)        (ALLOW)
+                                           │                 │
+                                           ▼                 ▼
+                                 [ Intervention Node ]  [ Logger Node ]
+                                           │                 │
+                                           ▼                 ▼
+                                     [ Logger Node ]        END
+                                           │
+                                           ▼
+                                          END
+
+A. Sniffer Agent (sniffer_node.py)
+   Extracts, normalizes, and sanitizes the raw network packet or HTTP request 
+   body. It detects the source IP, destination domain, request method, and 
+   prepares the text payload for analysis.
+
+B. Forensic Agent (forensic_node.py)
+   Runs deep multi-vector threat assessments in parallel:
+   1. PII Detection (Presidio + Regex): Uses Microsoft Presidio to detect credit 
+      cards, emails, phones, SSNs, IBANs, and custom-tuned patterns for Indian 
+      identities (Aadhaar, PAN, UPI IDs, IFSC codes, Indian phone numbers).
+   2. Named Entity Recognition (NER) (SpaCy): Extracts organizations, persons, 
+      and geographical locations to block corporate secrets or competitor details.
+   3. Source Code Detection (Custom Regex): Identifies syntax matching programming 
+      languages (Python, Java, C/C++, SQL, Shell, Docker) to protect proprietary IP.
+   4. Secrets Scanner: Scans for credentials, AWS Access Keys, private keys, 
+      JWT tokens, and database connection strings (.env configuration leaks).
+   5. Semantic Similarity Scorer (Sentence-Transformers): Uses 'all-MiniLM-L6-v2' 
+      to project prompt vectors and calculate similarity against a curated library 
+      of dangerous vs safe prompt templates to intercept logical leaks or complex 
+      bypasses.
+   6. Risk Calculator: Evaluates all results using a configurable weighted formula 
+      (PII weight: 0.5, NER weight: 0.2, Semantic weight: 0.3) + dynamic score boosts 
+      (e.g., +40 risk boost if raw source code or database connection strings are 
+      detected), outputting a final threat index (0-100).
+
+C. Decision Agent (decision_node.py)
+   Compares the threat index against corporate policy thresholds (loaded from config.json):
+   - score < 30 (Warn Threshold) ───────────────────> ALLOW (Passed through)
+   - 30 <= score < 67 (Block Threshold) ─────────────> WARN (Warns user with banner)
+   - score >= 67 ───────────────────────────────────> BLOCK (Blocks upload completely)
+
+D. Intervention Agent (intervention_node.py)
+   If a WARN or BLOCK is triggered, this node:
+   1. Sanitizes the payload into generic type descriptors (e.g., "A user attempted 
+      to share 1x Aadhaar card, 1x PAN card, and proprietary source code").
+   2. Dispatches this sanitized summary to a local, offline LLM (Phi-3:mini) 
+      via Ollama with a strict instructional prompt.
+   3. The LLM generates a realistic, 3-paragraph educational story showing how 
+      a malicious hacker could exploit that exact combination of leaked data.
+   4. Compiles this breach story into a beautiful glassmorphic warning banner 
+      or red blocked intervention screen, which is served to the employee.
+
+E. Logger Agent (logger_node.py)
+   Generates a unique UUID for the incident. Encrypts the logs, redacts raw PII 
+   (replacing them with generic placeholders, storing only the first 200 characters 
+   of the prompt for context), and writes the incident metadata to the SQLite 
+   audit database (`data/netrika.db`).
+
+
+5. KEY TECHNOLOGY STACK
+-----------------------
+- Backend Engine: Python 3.11+, aiohttp (low-latency asynchronous web server on port 8888).
+- Multi-Agent Orchestration: LangGraph (LangChain ecosystem state machine).
+- PII Detection: Microsoft Presidio, Custom Regular Expressions (tuned for Indian context).
+- Natural Language Processing: SpaCy (Named Entity Recognition).
+- Vector Embeddings: Sentence-Transformers (all-MiniLM-L6-v2) for semantic prompt scoring.
+- Local LLM Integration: Ollama (running Phi-3:mini for offline breach simulation).
+- Client Interception: mitmproxy (network transparent proxy) & Manifest V3 JavaScript Extension.
+- Modern Security Dashboard (SOC): React + Vite + TypeScript (premium glassmorphic theme 
+  with framer-motion animations, tailwind styling, and lucide icons).
+- Administrative Control Panel: Streamlit (`dashboard/app.py` for immediate policy tweaks).
+- Database & ORM: SQLAlchemy, SQLite (`data/netrika.db`).
+- Compliance Reporting: ReportLab PDF builder (generates weekly DPDP Act compliance reports).
+
+
+6. THE "PRIVACY BY DESIGN" GUARANTEE
+------------------------------------
+Unlike corporate monitoring tools that spy on employees and create new security 
+hazards by storing raw secrets in clear text, Netrika-Trace enforces absolute 
+privacy by design:
+- Never Stores Raw PII/Secrets: Raw Aadhaar numbers, PAN cards, credit cards, or 
+  database passwords are redacted at the Forensic node. Only entity types, counts, 
+  and metadata are retained for compliance logs.
+- Strict 200-Character Previews: Only the first 200 characters of an allowed/blocked 
+  prompt are logged to prevent the persistent storage of large proprietary documents.
+- Sanitized LLM Inference: The actual payload is never processed by the breach 
+  simulator LLM. The local Phi-3 model only receives generic type definitions, 
+  ensuring no raw secrets are ever digested by the model context.
+- Fully Offline Operation: All scans, semantic checks, regex lookups, and breach 
+  simulations run entirely on-premise. No data is sent to external clouds or third-party APIs.
+
+
+7. CONCLUSION
+-------------
+Netrika-Trace acts as a silent, intelligent, and highly optimized sentinel 
+protecting corporate networks from accidental AI data leaks. By placing AI traffic 
+under an automated multi-agent security audit, it ensures organizations can fully 
+leverage the productivity gains of Generative AI while maintaining absolute 
+regulatory compliance under the DPDP Act 2023, keeping proprietary intellectual 
+property securely within corporate bounds.
+================================================================================
