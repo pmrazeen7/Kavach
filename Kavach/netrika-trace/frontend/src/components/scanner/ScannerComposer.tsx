@@ -173,15 +173,21 @@ export default function ScannerComposer({ value, onChange, history, settings, bu
     if (status === 'blocked') {
       setAnnounce(`Send blocked. ${findings.length} risk${findings.length === 1 ? '' : 's'} found.`)
       setStamp(true)
-      const t = setTimeout(() => setStamp(false), 1300)
-      return () => clearTimeout(t)
+      return
     }
+    setStamp(false)
     if (status === 'risk') setAnnounce(`${findings.length} risk${findings.length === 1 ? '' : 's'} found.`)
     else if (status === 'safe') setAnnounce('Safe to send.')
     else if (status === 'scanning') setAnnounce('Scanning.')
     else setAnnounce('')
     setRevealed(false)
   }, [status, findings.length])
+
+  useEffect(() => {
+    if (!stamp) return
+    const t = setTimeout(() => setStamp(false), 1300)
+    return () => clearTimeout(t)
+  }, [stamp])
 
   const applyRewrite = useCallback(
     (only?: Finding[]) => {
@@ -217,7 +223,6 @@ export default function ScannerComposer({ value, onChange, history, settings, bu
         if (r.action === 'BLOCK') {
           setShake((n) => n + 1)
           setStamp(true)
-          setTimeout(() => setStamp(false), 1300)
           setDrawer(true)
           return
         }
@@ -325,9 +330,9 @@ export default function ScannerComposer({ value, onChange, history, settings, bu
               {revealed ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />} {revealed ? 'Hide' : 'Reveal'}
             </button>
           )}
-          <div className="relative -my-2 flex items-center">
+          <div className="-my-2 flex items-center gap-1">
+            <Vault pose={swallow ? 'swallow' : 'idle'} size={40} />
             <Sentinel pose={pasting ? 'scan' : POSE[status]} size={52} />
-            <div className="absolute -left-10 top-1"><Vault pose={swallow ? 'swallow' : 'idle'} size={40} /></div>
           </div>
         </div>
       </div>

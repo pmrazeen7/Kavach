@@ -1,0 +1,127 @@
+{
+  "manifest_version": 3,
+  "name": "Netrika-Trace DLP",
+  "version": "3.0",
+  "description": "Autonomous Agentic Shadow-AI Gateway - Browser Edition",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://localhost:8888/*",
+    "http://127.0.0.1:8888/*",
+    "http://192.168.0.101:8888/*",
+    "https://chatgpt.com/*",
+    "https://chat.openai.com/*",
+    "https://*.openai.com/*",
+    "https://gemini.google.com/*",
+    "https://claude.ai/*",
+    "https://*.anthropic.com/*",
+    "https://*.oaiusercontent.com/*",
+    "https://copilot.microsoft.com/*",
+    "https://*.perplexity.ai/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*",
+        "https://*.openai.com/*",
+        "https://claude.ai/*",
+        "https://*.anthropic.com/*",
+        "https://gemini.google.com/*",
+        "https://copilot.microsoft.com/*",
+        "https://www.perplexity.ai/*",
+        "https://perplexity.ai/*",
+        "http://localhost/*",
+        "http://127.0.0.1/*"
+      ],
+      "js": [
+        "injected_script.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true,
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*",
+        "https://*.openai.com/*",
+        "https://claude.ai/*",
+        "https://*.anthropic.com/*",
+        "https://gemini.google.com/*",
+        "https://copilot.microsoft.com/*",
+        "https://www.perplexity.ai/*",
+        "https://perplexity.ai/*",
+        "http://localhost/*",
+        "http://127.0.0.1/*"
+      ],
+      "js": [
+        "pdf_extract.js",
+        "content.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*",
+        "https://*.openai.com/*",
+        "https://claude.ai/*",
+        "https://*.anthropic.com/*",
+        "https://gemini.google.com/*",
+        "https://copilot.microsoft.com/*",
+        "https://www.perplexity.ai/*",
+        "https://perplexity.ai/*",
+        "http://localhost/*",
+        "http://127.0.0.1/*"
+      ],
+      "js": [
+        "kavach-scanner.js",
+        "paste_guard.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "lib/pdf.min.mjs",
+        "lib/pdf.worker.min.mjs"
+      ],
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*",
+        "https://*.openai.com/*",
+        "https://claude.ai/*",
+        "https://*.anthropic.com/*",
+        "https://gemini.google.com/*",
+        "https://copilot.microsoft.com/*",
+        "https://www.perplexity.ai/*",
+        "https://perplexity.ai/*",
+        "http://localhost/*",
+        "http://127.0.0.1/*"
+      ]
+    }
+  ]
+}

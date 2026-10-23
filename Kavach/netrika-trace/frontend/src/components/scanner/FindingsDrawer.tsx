@@ -63,7 +63,7 @@ export default function FindingsDrawer({ open, onClose, findings, authoritative,
   )
 
   return (
-    <Drawer open={open} onClose={onClose} width={500} title="Scan findings" subtitle={findings.length ? `${findings.length} item${findings.length === 1 ? '' : 's'} need a decision` : 'Nothing to review'} footer={footer}>
+    <Drawer open={open} onClose={onClose} width={500} title="Scan findings" subtitle={findings.length ? `${findings.length} item${findings.length === 1 ? ' needs' : 's need'} a decision` : 'Nothing to review'} footer={footer}>
       {!findings.length ? (
         <div className="flex flex-col items-center py-10 text-center">
           <Sentinel pose="safe" size={120} />
