@@ -39,7 +39,7 @@ export default function BreachSimulationViewer({ text, entities }: BreachSimulat
   if (!text) return null
 
   return (
-    <div className="bg-white/60 backdrop-blur-xl border border-white/60 border-l-4 border-l-red rounded-2xl p-6 shadow-sm relative overflow-hidden" id="breach-simulation">
+    <div className="bg-subtle backdrop-blur-xl border border-line border-l-4 border-l-red rounded-2xl p-6 shadow-sm relative overflow-hidden" id="breach-simulation">
       <div className="flex items-center gap-2 mb-4 relative z-10">
         <span className="text-red text-sm">⚠</span>
         <span className="label-uppercase text-red font-bold tracking-widest text-[10px]">

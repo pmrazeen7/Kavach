@@ -71,7 +71,7 @@ export default function WarRoom() {
       >
         <div className="xl:col-span-8 min-h-[220px]">
           {statsError ? (
-            <div role="alert" className="glass-card p-5 text-sm text-rose-300">Analytics are unavailable. Retry the page to load traffic.</div>
+            <div role="alert" className="glass-card p-5 text-sm text-danger-fg">Analytics are unavailable. Retry the page to load traffic.</div>
           ) : statsLoading ? (
             <ChartFallback className="min-h-[220px]" />
           ) : (
@@ -83,7 +83,7 @@ export default function WarRoom() {
 
         <div className="xl:col-span-4 min-h-[200px]">
           {statsError ? (
-            <div role="alert" className="glass-card p-5 text-sm text-rose-300">Detection breakdown unavailable.</div>
+            <div role="alert" className="glass-card p-5 text-sm text-danger-fg">Detection breakdown unavailable.</div>
           ) : statsLoading ? (
             <ChartFallback className="min-h-[200px]" />
           ) : (
@@ -115,7 +115,7 @@ export default function WarRoom() {
 
         <div className="lg:col-span-7 min-h-[200px]">
           {statsError ? (
-            <div role="alert" className="glass-card p-5 text-sm text-rose-300">Request totals are unavailable.</div>
+            <div role="alert" className="glass-card p-5 text-sm text-danger-fg">Request totals are unavailable.</div>
           ) : statsLoading ? (
             <div className="glass-card p-5 min-h-[200px] animate-pulse" aria-label="Loading request totals" />
           ) : (
@@ -134,12 +134,12 @@ export default function WarRoom() {
 
       <motion.div variants={fadeUp} className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-2 shrink-0">
         {endpointsError ? (
-          <div role="alert" className="glass-card p-5 text-sm text-rose-300">Endpoint traffic is unavailable.</div>
+          <div role="alert" className="glass-card p-5 text-sm text-danger-fg">Endpoint traffic is unavailable.</div>
         ) : (
           <EndpointHealthGrid data={endpointStats} />
         )}
         {incidentsError ? (
-          <div role="alert" className="glass-card p-5 text-sm text-rose-300">Recent request activity is unavailable.</div>
+          <div role="alert" className="glass-card p-5 text-sm text-danger-fg">Recent request activity is unavailable.</div>
         ) : incidentsLoading ? (
           <div className="glass-card p-5 min-h-[150px] animate-pulse" aria-label="Loading recent activity" />
         ) : (

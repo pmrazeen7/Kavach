@@ -12,15 +12,15 @@ const DECISIONS: Array<{ label: string; value: '' | Decision }> = [
 ]
 
 const decisionStyles: Record<Decision, string> = {
-  BLOCK: 'bg-rose-500/15 text-rose-300 border-rose-500/25',
-  WARN: 'bg-amber-500/15 text-amber-300 border-amber-500/25',
-  ALLOW: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/25',
+  BLOCK: 'bg-danger-soft text-danger-fg border-danger/30',
+  WARN: 'bg-warn-soft text-warn-fg border-warn/30',
+  ALLOW: 'bg-success-soft text-success-fg border-success/30',
 }
 
 function DecisionIcon({ decision }: { decision: Decision }) {
-  if (decision === 'BLOCK') return <ShieldAlert className="h-5 w-5 text-rose-400" />
-  if (decision === 'WARN') return <AlertTriangle className="h-5 w-5 text-amber-400" />
-  return <CheckCircle className="h-5 w-5 text-emerald-400" />
+  if (decision === 'BLOCK') return <ShieldAlert className="h-5 w-5 text-danger-fg" />
+  if (decision === 'WARN') return <AlertTriangle className="h-5 w-5 text-warn-fg" />
+  return <CheckCircle className="h-5 w-5 text-success-fg" />
 }
 
 export default function Incidents() {
@@ -42,7 +42,7 @@ export default function Incidents() {
             aria-label="Filter incidents by decision"
             value={decision}
             onChange={(event) => setDecision(event.target.value as '' | Decision)}
-            className="rounded-xl border border-white/[0.1] bg-grapho-surface px-3 py-2 text-text focus:outline-none focus:border-grapho-orange"
+            className="rounded-xl border border-line bg-grapho-surface px-3 py-2 text-text focus:outline-none focus:border-grapho-orange"
           >
             {DECISIONS.map((option) => (
               <option key={option.value || 'all'} value={option.value}>
@@ -54,7 +54,7 @@ export default function Incidents() {
       </header>
 
       {isError && (
-        <div role="alert" className="rounded-xl border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-200">
+        <div role="alert" className="rounded-xl border border-danger/30 bg-danger-soft p-4 text-sm text-danger-fg">
           <p>{error instanceof Error ? error.message : 'Unable to load incidents.'}</p>
           <button type="button" onClick={() => void refetch()} className="mt-2 underline">
             Retry
@@ -62,8 +62,8 @@ export default function Incidents() {
         </div>
       )}
 
-      <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-grapho-surface/50">
-        <div className="grid grid-cols-[minmax(0,1fr)_120px_150px_100px] gap-4 border-b border-white/[0.08] px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-text-dim max-md:hidden">
+      <div className="overflow-hidden rounded-2xl border border-line bg-grapho-surface/50">
+        <div className="grid grid-cols-[minmax(0,1fr)_120px_150px_100px] gap-4 border-b border-line px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-text-dim max-md:hidden">
           <span>Incident</span>
           <span>Decision</span>
           <span>Destination</span>
@@ -80,12 +80,12 @@ export default function Incidents() {
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-white/[0.06]">
+          <div className="divide-y divide-line">
             {incidents.map((incident) => (
               <Link
                 key={incident.id}
                 to={`/incidents/${incident.id}`}
-                className="grid grid-cols-[minmax(0,1fr)_120px_150px_100px] items-center gap-4 px-5 py-4 transition-colors hover:bg-white/[0.04] max-md:grid-cols-1"
+                className="grid grid-cols-[minmax(0,1fr)_120px_150px_100px] items-center gap-4 px-5 py-4 transition-colors hover:bg-subtle max-md:grid-cols-1"
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <DecisionIcon decision={incident.decision} />
@@ -99,7 +99,7 @@ export default function Incidents() {
                         : 'Unknown time'}
                       <span className="mx-2">·</span>
                       {incident.id.slice(0, 8)}
-                      {incident.reviewed && <span className="ml-2 text-emerald-300">Reviewed</span>}
+                      {incident.reviewed && <span className="ml-2 text-success-fg">Reviewed</span>}
                     </div>
                   </div>
                 </div>

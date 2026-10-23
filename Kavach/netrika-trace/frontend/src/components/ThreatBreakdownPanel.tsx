@@ -41,7 +41,7 @@ export default function ThreatBreakdownPanel({ data }: ThreatBreakdownPanelProps
             <span className="text-[10px] text-text-dim font-semibold uppercase tracking-wider w-[90px] truncate text-right">
               {label.replace(/_/g, ' ')}
             </span>
-            <div className="flex-1 h-[6px] bg-white/[0.06] rounded-full overflow-hidden">
+            <div className="flex-1 h-[6px] bg-subtle rounded-full overflow-hidden">
               <div
                 className={`h-full ${barColors[label] || 'bg-violet-400'} rounded-full transition-all duration-700 ease-out`}
                 style={{ width: `${(count / maxVal) * 100}%` }}

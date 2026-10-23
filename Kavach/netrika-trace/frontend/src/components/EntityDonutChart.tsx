@@ -59,7 +59,7 @@ export default function EntityDonutChart({ data }: EntityDonutChartProps) {
       <div className="flex-1 flex items-center gap-4 min-h-[160px]">
         <div className="w-[130px] h-[130px] shrink-0">
           {chartData.length === 0 ? (
-            <div className="w-full h-full rounded-full border border-white/[0.08] flex items-center justify-center text-xs text-text-dim">
+            <div className="w-full h-full rounded-full border border-line flex items-center justify-center text-xs text-text-dim">
               No data
             </div>
           ) : (

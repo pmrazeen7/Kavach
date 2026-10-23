@@ -58,22 +58,22 @@ export default function Evaluation() {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4" aria-label="Loading evaluations">
           {[1, 2, 3].map((item) => (
-            <div key={item} className="h-36 rounded-2xl bg-white/[0.05] animate-pulse" />
+            <div key={item} className="h-36 rounded-2xl bg-subtle animate-pulse" />
           ))}
         </div>
       ) : error ? (
-        <div role="alert" className="rounded-2xl border border-rose-400/20 bg-rose-400/10 p-6 text-sm text-rose-200">
+        <div role="alert" className="rounded-2xl border border-danger/30 bg-danger-soft p-6 text-sm text-danger-fg">
           <p>{error}</p>
           <button
             type="button"
             onClick={() => setRetry((value) => value + 1)}
-            className="mt-3 rounded-lg border border-rose-300/30 px-3 py-2 font-semibold hover:bg-rose-300/10"
+            className="mt-3 rounded-lg border border-danger/30 px-3 py-2 font-semibold hover:bg-rose-300/10"
           >
             Retry
           </button>
         </div>
       ) : !current || !cm ? (
-        <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-8 text-center">
+        <div className="rounded-2xl border border-line bg-subtle p-8 text-center">
           <h2 className="text-lg font-semibold text-text">No evaluation results yet</h2>
           <p className="mt-2 text-sm text-text-dim">
             Run an evaluation against a labeled dataset to see model metrics here.
@@ -89,7 +89,7 @@ export default function Evaluation() {
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
             {[
               { label: 'Accuracy', value: accuracy, icon: BarChart2, color: 'text-sky-400' },
-              { label: 'Precision', value: current.precision, icon: Target, color: 'text-emerald-400' },
+              { label: 'Precision', value: current.precision, icon: Target, color: 'text-success-fg' },
               { label: 'Recall', value: current.recall, icon: Activity, color: 'text-violet-400' },
               { label: 'F1 score', value: current.f1_score, icon: Zap, color: 'text-grapho-orange' },
             ].map((metric, index) => (
@@ -98,7 +98,7 @@ export default function Evaluation() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="p-6 rounded-2xl bg-grapho-surface/80 border border-white/[0.08] shadow-xl space-y-3"
+                className="p-6 rounded-2xl bg-grapho-surface/80 border border-line shadow-xl space-y-3"
               >
                 <div className={`flex items-center justify-between ${metric.color}`}>
                   <span className="text-xs font-semibold uppercase tracking-wider">{metric.label}</span>
@@ -111,7 +111,7 @@ export default function Evaluation() {
             ))}
           </div>
 
-          <div className="p-6 rounded-2xl bg-grapho-surface/80 border border-white/[0.08] shadow-xl space-y-4">
+          <div className="p-6 rounded-2xl bg-grapho-surface/80 border border-line shadow-xl space-y-4">
             <h2 className="text-lg font-bold text-text flex items-center gap-2">
               <BarChart2 className="w-5 h-5 text-grapho-orange" />
               Confusion matrix
@@ -123,7 +123,7 @@ export default function Evaluation() {
                 { label: 'False negatives', key: 'FN' as const },
                 { label: 'True negatives', key: 'TN' as const },
               ].map((item) => (
-                <div key={item.key} className="p-4 rounded-xl bg-white/[0.04] border border-white/[0.08] text-center">
+                <div key={item.key} className="p-4 rounded-xl bg-subtle border border-line text-center">
                   <div className="text-xs font-bold text-text-dim">{item.label}</div>
                   <div className="text-2xl font-extrabold text-text mt-1">{cm[item.key]}</div>
                 </div>

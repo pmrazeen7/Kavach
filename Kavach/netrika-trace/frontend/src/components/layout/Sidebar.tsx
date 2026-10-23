@@ -47,7 +47,7 @@ export default function Sidebar() {
 
   return (
     <div
-      className="w-[238px] flex flex-col py-8 px-4 border-r border-white/[0.06] shrink-0 bg-grapho-surface-2/50"
+      className="w-[238px] flex flex-col py-8 px-4 border-r border-line shrink-0 bg-grapho-surface-2/50"
       id="sidebar"
     >
       <div className="flex items-center gap-3 mb-10 px-2">
@@ -83,7 +83,7 @@ export default function Sidebar() {
                 {isActive && (
                   <motion.div
                     layoutId="sidebar-active-pill"
-                    className="absolute inset-0 rounded-2xl bg-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
+                    className="absolute inset-0 rounded-2xl bg-subtle shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
                     transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                   />
                 )}

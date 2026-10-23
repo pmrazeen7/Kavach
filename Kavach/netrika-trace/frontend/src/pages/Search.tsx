@@ -64,14 +64,14 @@ export default function Search() {
             placeholder="Search by incident, host, IP, or intent..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 rounded-2xl bg-grapho-surface/80 border border-white/[0.1] text-text text-sm focus:outline-none focus:border-grapho-orange transition-all"
+            className="w-full pl-12 pr-4 py-3 rounded-2xl bg-grapho-surface/80 border border-line text-text text-sm focus:outline-none focus:border-grapho-orange transition-all"
           />
         </div>
 
         <select
           value={decision}
           onChange={(e) => setDecision(e.target.value)}
-          className="px-4 py-3 rounded-2xl bg-grapho-surface/80 border border-white/[0.1] text-text text-sm focus:outline-none focus:border-grapho-orange transition-all"
+          className="px-4 py-3 rounded-2xl bg-grapho-surface/80 border border-line text-text text-sm focus:outline-none focus:border-grapho-orange transition-all"
         >
           <option value="">All Decisions</option>
           <option value="BLOCK">BLOCK</option>
@@ -88,7 +88,7 @@ export default function Search() {
       </form>
 
       {error && (
-        <div role="alert" className="rounded-xl border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-200">
+        <div role="alert" className="rounded-xl border border-danger/30 bg-danger-soft p-4 text-sm text-danger-fg">
           <span>{error}</span>
           <button type="button" onClick={() => void loadResults(query, decision)} className="ml-3 underline">
             Retry
@@ -101,7 +101,7 @@ export default function Search() {
           <motion.div
             key={inc.id}
             onClick={() => navigate(`/incidents/${inc.id}`)}
-            className="p-4 rounded-xl bg-grapho-surface/60 border border-white/[0.06] hover:border-grapho-orange/40 transition-all cursor-pointer flex items-center justify-between gap-4"
+            className="p-4 rounded-xl bg-grapho-surface/60 border border-line hover:border-grapho-orange/40 transition-all cursor-pointer flex items-center justify-between gap-4"
           >
             <div className="flex items-center gap-3 min-w-0">
               {inc.decision === 'BLOCK' ? (
@@ -123,8 +123,8 @@ export default function Search() {
             <div className="flex items-center gap-4 shrink-0">
               <span className="text-sm font-bold text-grapho-orange">{inc.risk_score}/100</span>
               <span className={`text-xs px-2.5 py-1 rounded-full font-bold ${
-                inc.decision === 'BLOCK' ? 'bg-rose-500/20 text-rose-400' :
-                inc.decision === 'WARN' ? 'bg-amber-500/20 text-amber-400' : 'bg-emerald-500/20 text-emerald-400'
+                inc.decision === 'BLOCK' ? 'bg-danger-soft text-danger-fg' :
+                inc.decision === 'WARN' ? 'bg-warn-soft text-warn-fg' : 'bg-success-soft text-success-fg'
               }`}>
                 {inc.decision}
               </span>
@@ -132,7 +132,7 @@ export default function Search() {
           </motion.div>
         ))}
         {!searching && !error && results.length === 0 && (
-          <p className="rounded-xl border border-white/[0.06] p-6 text-center text-sm text-text-dim">
+          <p className="rounded-xl border border-line p-6 text-center text-sm text-text-dim">
             No matching incidents. Submit a search or change the decision filter.
           </p>
         )}

@@ -2,169 +2,136 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Global Styles ─────────────────────────────────────────────── */
+/* ── Design tokens (space-separated RGB so Tailwind alpha works) ─ */
+:root {
+  --bg: 246 247 251;
+  --surface: 255 255 255;
+  --subtle: 243 244 248;
+  --line: 229 231 235;
+  --fg: 17 24 39;
+  --muted: 107 114 128;
+  --faint: 156 163 175;
+  --accent: 79 70 229;
+  --accent-soft: 224 231 255;
+  --accent-fg: 67 56 202;
+  --success: 16 185 129;
+  --success-soft: 209 250 229;
+  --success-fg: 6 95 70;
+  --warn: 249 115 22;
+  --warn-soft: 255 237 213;
+  --warn-fg: 124 45 18;
+  --danger: 239 68 68;
+  --danger-soft: 254 226 226;
+  --danger-fg: 185 28 28;
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  --bg: 11 13 20;
+  --surface: 18 20 28;
+  --subtle: 27 30 40;
+  --line: 38 42 54;
+  --fg: 243 244 246;
+  --muted: 156 163 175;
+  --faint: 107 114 128;
+  --accent: 129 140 248;
+  --accent-soft: 49 46 129;
+  --accent-fg: 199 210 254;
+  --success: 52 211 153;
+  --success-soft: 6 78 59;
+  --success-fg: 167 243 208;
+  --warn: 251 146 60;
+  --warn-soft: 124 45 18;
+  --warn-fg: 254 215 170;
+  --danger: 248 113 113;
+  --danger-soft: 127 29 29;
+  --danger-fg: 254 202 202;
+  color-scheme: dark;
+}
 
 body {
   margin: 0;
-  padding: 0;
-  background: #0a0b0e;
-  background-attachment: fixed;
-  color: #f0f2f7;
-  font-family: 'DM Sans', 'Inter', sans-serif;
+  background: rgb(var(--bg));
+  color: rgb(var(--fg));
+  font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#root {
-  position: relative;
-  z-index: 1;
+::selection { background: rgb(var(--accent) / 0.25); }
+
+*:focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 2px;
+  border-radius: 8px;
 }
 
-/* ── Selection ─────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgb(var(--line)); border-radius: 100px; }
+::-webkit-scrollbar-thumb:hover { background: rgb(var(--faint)); }
 
-::selection {
-  background: rgba(249, 115, 22, 0.25);
-  color: #f0f2f7;
-}
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* ── Custom Scrollbar ──────────────────────────────────────────── */
-
-::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 100px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(249, 115, 22, 0.35);
-}
-
-/* ── Label styles ──────────────────────────────────────────────── */
-
+/* ── Shared utilities (kept for legacy markup) ───────────────── */
 .label-uppercase {
   text-transform: uppercase;
-  letter-spacing: 1.5px;
-  font-size: 10px;
-  color: #8b90a0;
+  letter-spacing: 0.08em;
+  font-size: 11px;
+  color: rgb(var(--muted));
   font-weight: 600;
 }
 
-/* ── Panel title with line ─────────────────────────────────────── */
-
 .panel-title {
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  font-size: 11px;
-  color: #8b90a0;
-  font-weight: 700;
-  position: relative;
+  font-size: 14px;
+  color: rgb(var(--fg));
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 12px;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
-.panel-title::after {
+.glass-card {
+  background: rgb(var(--surface));
+  border: 1px solid rgb(var(--line));
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgb(16 24 40 / 0.04);
+}
+
+/* ── Animations ──────────────────────────────────────────────── */
+@keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0.3; } }
+.dot-blink { animation: blink 1.5s infinite; }
+
+@keyframes ticker-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+.ticker-animate { animation: ticker-scroll 60s linear infinite; will-change: transform; }
+
+@keyframes flash-new { 0% { background: rgb(var(--danger) / 0.1); } 100% { background: transparent; } }
+.flash-new { animation: flash-new 600ms ease-out; }
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: rgb(var(--subtle));
+  border-radius: 10px;
+}
+.skeleton::after {
   content: '';
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(90deg, rgba(249, 115, 22, 0.2) 0%, transparent 100%);
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgb(var(--surface) / 0.7), transparent);
+  animation: shimmer-x 1.4s infinite;
 }
-
-/* ── Blinking dot animation ────────────────────────────────────── */
-
-@keyframes blink {
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0.3; }
-}
-
-.dot-blink {
-  animation: blink 1.5s infinite;
-}
-
-/* ── Pulse animation ───────────────────────────────────────────── */
-
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.3); }
-  50% { box-shadow: 0 0 0 8px rgba(244, 63, 94, 0); }
-}
-
-.pulse-red {
-  animation: pulse-glow 2s infinite;
-}
-
-/* ── Ticker scroll ─────────────────────────────────────────────── */
-
-@keyframes ticker-scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-.ticker-animate {
-  animation: ticker-scroll 60s linear infinite;
-  will-change: transform;
-}
+@keyframes shimmer-x { 100% { transform: translateX(100%); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .ticker-animate,
-  .dot-blink,
-  .pulse-red {
-    animation: none !important;
-  }
-
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-}
-
-/* ── Flash animation ───────────────────────────────────────────── */
-
-@keyframes flash-new {
-  0% { background: rgba(244, 63, 94, 0.08); }
-  100% { background: transparent; }
-}
-
-.flash-new {
-  animation: flash-new 300ms ease-out;
-}
-
-/* ── Glass card utility ────────────────────────────────────────── */
-
-.glass-card {
-  background: linear-gradient(145deg, rgba(34, 36, 44, 0.97) 0%, rgba(22, 24, 30, 0.99) 100%);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 20px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.04);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .glass-card {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-}
-
-/* ── Hide scrollbar utility ────────────────────────────────────── */
-
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.hide-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
 }

@@ -20,7 +20,7 @@ export default function EndpointHealthGrid({ data }: EndpointHealthGridProps) {
           return (
             <div
               key={ep.hostname}
-              className="bg-white/[0.03] border border-white/[0.06] rounded-xl px-3 py-3 transition-all duration-300 hover:bg-white/[0.05] hover:border-white/[0.1]"
+              className="bg-subtle border border-line rounded-xl px-3 py-3 transition-all duration-300 hover:bg-subtle hover:border-line"
             >
               <div className="text-[11px] font-mono font-medium text-text truncate mb-1">
                 {ep.hostname}
@@ -28,7 +28,7 @@ export default function EndpointHealthGrid({ data }: EndpointHealthGridProps) {
               <div className={`text-[10px] font-medium ${color} mb-2`}>
                 {ep.total} hits · {ep.blocked} blocked
               </div>
-              <div className="h-1 bg-white/[0.06] rounded-full overflow-hidden">
+              <div className="h-1 bg-subtle rounded-full overflow-hidden">
                 <div
                   className={`h-full ${barColor} rounded-full transition-all duration-500 ease-out`}
                   style={{ width: `${(ep.total / maxTotal) * 100}%` }}

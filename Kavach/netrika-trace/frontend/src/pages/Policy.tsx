@@ -51,13 +51,13 @@ export default function Policy() {
 
   return (
     <div className="space-y-8" id="policy-page">
-      <h1 className="font-display font-bold text-2xl text-text tracking-wider">
+      <h1 className="font-sans font-bold text-2xl text-text tracking-wider">
         POLICY CONFIGURATION
       </h1>
 
-      {error && <p role="alert" className="rounded-xl border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-200">{error}</p>}
+      {error && <p role="alert" className="rounded-xl border border-danger/30 bg-danger-soft p-4 text-sm text-danger-fg">{error}</p>}
       {loading || !config ? (
-        !error && <div className="h-48 rounded-2xl bg-white/[0.05] animate-pulse" aria-label="Loading policy" />
+        !error && <div className="h-48 rounded-2xl bg-subtle animate-pulse" aria-label="Loading policy" />
       ) : (
       <div className="grid grid-cols-2 gap-8">
         {/* Thresholds */}
@@ -67,7 +67,7 @@ export default function Policy() {
           <div className="mb-6">
             <div className="flex justify-between mb-2">
               <span className="label-uppercase">BLOCK THRESHOLD</span>
-              <span className="font-display font-bold text-lg text-red">{config.block_threshold}</span>
+              <span className="font-sans font-bold text-lg text-red">{config.block_threshold}</span>
             </div>
             <input
               type="range"
@@ -82,7 +82,7 @@ export default function Policy() {
           <div>
             <div className="flex justify-between mb-2">
               <span className="label-uppercase">WARN THRESHOLD</span>
-              <span className="font-display font-bold text-lg text-amber">{config.warn_threshold}</span>
+              <span className="font-sans font-bold text-lg text-amber">{config.warn_threshold}</span>
             </div>
             <input
               type="range"

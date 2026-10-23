@@ -43,7 +43,7 @@ export default function HourlyBarChart({ data, window, onWindowChange }: HourlyB
           aria-label="Traffic time range"
           value={window}
           onChange={(event) => onWindowChange(event.target.value as HourlyBarChartProps['window'])}
-          className="text-[10px] font-semibold text-text bg-white/[0.05] border border-white/[0.1] rounded-lg px-2 py-1"
+          className="text-[10px] font-semibold text-text bg-subtle border border-line rounded-lg px-2 py-1"
         >
           <option value="1h">Last hour</option>
           <option value="24h">24 hours</option>

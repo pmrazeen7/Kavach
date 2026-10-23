@@ -15,7 +15,7 @@ export default function IncidentTable({ incidents }: IncidentTableProps) {
   const navigate = useNavigate()
 
   return (
-    <div className="bg-white/60 backdrop-blur-xl border border-white/60 shadow-glass rounded-2xl p-6" id="incident-table">
+    <div className="bg-subtle backdrop-blur-xl border border-line shadow-card rounded-2xl p-6" id="incident-table">
       <div className="panel-title mb-4">INCIDENT LOG</div>
       <div className="overflow-x-auto">
         <table className="w-full text-xs">
@@ -42,7 +42,7 @@ export default function IncidentTable({ incidents }: IncidentTableProps) {
                 <tr
                   key={inc.id}
                   onClick={() => navigate(`/incidents/${inc.id}`)}
-                  className="border-b border-border/50 cursor-pointer transition-colors hover:bg-white/40"
+                  className="border-b border-border/50 cursor-pointer transition-colors hover:bg-subtle"
                 >
                   <td className="py-2.5 px-3 font-mono text-text-dim">
                     {inc.id.slice(0, 8)}
@@ -62,7 +62,7 @@ export default function IncidentTable({ incidents }: IncidentTableProps) {
                       {entityTags.slice(0, 3).map((tag) => (
                         <span
                           key={tag}
-                          className="px-1.5 py-0.5 bg-white/50 border border-white/60 rounded text-[8px] text-text-dim shadow-sm font-semibold"
+                          className="px-1.5 py-0.5 bg-subtle border border-line rounded text-[8px] text-text-dim shadow-sm font-semibold"
                         >
                           {tag}
                         </span>
@@ -74,7 +74,7 @@ export default function IncidentTable({ incidents }: IncidentTableProps) {
                   </td>
                   <td className="py-2.5 px-3">
                     <span
-                      className={`font-display font-bold text-base ${
+                      className={`font-sans font-bold text-base ${
                         inc.risk_score >= 70
                           ? 'text-red'
                           : inc.risk_score >= 30

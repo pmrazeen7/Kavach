@@ -39,11 +39,11 @@ export default function WhatWouldHappenTimeline() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.2, duration: 0.4 }}
-            className="flex-1 bg-white/60 backdrop-blur-md border border-white/60 p-6 text-center rounded-2xl shadow-sm relative overflow-hidden"
+            className="flex-1 bg-subtle backdrop-blur-md border border-line p-6 text-center rounded-2xl shadow-sm relative overflow-hidden"
           >
             <div className={`absolute top-0 left-0 right-0 h-1 ${step.bgColor}`}></div>
             <div
-              className={`w-10 h-10 rounded-full ${step.bgColor} ${step.textColor} inline-flex items-center justify-center font-display font-bold text-base mb-4 ${step.pulse ? 'pulse-red shadow-sm' : 'shadow-sm'}`}
+              className={`w-10 h-10 rounded-full ${step.bgColor} ${step.textColor} inline-flex items-center justify-center font-sans font-bold text-base mb-4 ${step.pulse ? 'pulse-red shadow-sm' : 'shadow-sm'}`}
             >
               {step.number}
             </div>

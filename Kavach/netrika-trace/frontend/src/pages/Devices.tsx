@@ -45,7 +45,7 @@ export default function Devices() {
         </div>
         <button
           onClick={fetchDevices}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-text text-sm font-medium transition-all"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-subtle hover:bg-subtle text-text text-sm font-medium transition-all"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           Refresh
@@ -53,7 +53,7 @@ export default function Devices() {
       </div>
 
       {error && (
-        <div role="alert" className="rounded-xl border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-200">
+        <div role="alert" className="rounded-xl border border-danger/30 bg-danger-soft p-4 text-sm text-danger-fg">
           <span>{error}</span>
           <button type="button" onClick={() => void fetchDevices()} className="ml-3 underline">Retry</button>
         </div>
@@ -65,7 +65,7 @@ export default function Devices() {
             key={dev.id}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="p-5 rounded-2xl bg-grapho-surface/80 border border-white/[0.08] backdrop-blur-xl flex items-start gap-4 shadow-xl"
+            className="p-5 rounded-2xl bg-grapho-surface/80 border border-line backdrop-blur-xl flex items-start gap-4 shadow-xl"
           >
             <div className="w-12 h-12 rounded-xl bg-grapho-orange/10 border border-grapho-orange/20 flex items-center justify-center text-grapho-orange shrink-0">
               <Laptop className="w-6 h-6" />
@@ -73,19 +73,19 @@ export default function Devices() {
             <div className="flex-1 min-w-0 space-y-1">
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-text text-sm truncate">{dev.device_uuid}</span>
-                <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-medium">
+                <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-success-soft text-success-fg font-medium">
                   <ShieldCheck className="w-3 h-3" /> Active
                 </span>
               </div>
               <p className="text-xs text-text-dim">User ID: {dev.user_id}</p>
               <div className="pt-2 flex flex-wrap gap-2 text-[11px] text-text-dim">
-                <span className="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.06]">
+                <span className="px-2 py-0.5 rounded-md bg-subtle border border-line">
                   OS: {dev.os}
                 </span>
-                <span className="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.06]">
+                <span className="px-2 py-0.5 rounded-md bg-subtle border border-line">
                   Browser: {dev.browser}
                 </span>
-                <span className="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.06]">
+                <span className="px-2 py-0.5 rounded-md bg-subtle border border-line">
                   Extension: {dev.ext_version}
                 </span>
               </div>
@@ -93,7 +93,7 @@ export default function Devices() {
           </motion.div>
         ))}
         {!loading && !error && devices.length === 0 && (
-          <p className="col-span-full rounded-xl border border-white/[0.06] p-6 text-center text-sm text-text-dim">
+          <p className="col-span-full rounded-xl border border-line p-6 text-center text-sm text-text-dim">
             No registered devices found.
           </p>
         )}

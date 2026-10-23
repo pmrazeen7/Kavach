@@ -45,7 +45,7 @@ export default function RiskGauge({ score, size = 90 }: RiskGaugeProps) {
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-display font-bold text-2xl" style={{ color, lineHeight: 1 }}>
+        <span className="font-sans font-bold text-2xl" style={{ color, lineHeight: 1 }}>
           {score}
         </span>
         <span className="label-uppercase text-[7px] mt-0.5">RISK</span>

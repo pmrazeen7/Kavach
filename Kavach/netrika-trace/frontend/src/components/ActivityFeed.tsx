@@ -35,9 +35,9 @@ function ActivityFeed({ incidents }: ActivityFeedProps) {
           return (
             <div
               key={inc.id}
-              className={`${cfg.border} border-l-2 ${cfg.bg} rounded-2xl px-3 py-3 flex items-center gap-3 border border-white/[0.05] shadow-sm cursor-default transition-shadow duration-300 hover:shadow-lift`}
+              className={`${cfg.border} border-l-2 ${cfg.bg} rounded-2xl px-3 py-3 flex items-center gap-3 border border-line shadow-sm cursor-default transition-shadow duration-300 hover:shadow-lift`}
             >
-              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/[0.08] shrink-0 overflow-hidden">
+              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-line shrink-0 overflow-hidden">
                 <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-text-dim font-mono">
                   {inc.decision[0]}
                 </div>

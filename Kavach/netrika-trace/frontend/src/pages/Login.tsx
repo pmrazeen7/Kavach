@@ -47,7 +47,7 @@ export default function Login() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md p-8 rounded-3xl bg-grapho-surface-2/80 border border-white/[0.08] backdrop-blur-2xl shadow-2xl relative z-10"
+        className="w-full max-w-md p-8 rounded-3xl bg-grapho-surface-2/80 border border-line backdrop-blur-2xl shadow-2xl relative z-10"
       >
         <div className="flex flex-col items-center mb-8">
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-grapho-orange to-orange-700 flex items-center justify-center shadow-lg shadow-orange-900/40 mb-4">
@@ -60,7 +60,7 @@ export default function Login() {
         </div>
 
         {error && (
-          <div className="mb-6 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm text-center font-medium">
+          <div className="mb-6 p-3 rounded-xl bg-danger-soft border border-danger/30 text-danger-fg text-sm text-center font-medium">
             {error}
           </div>
         )}
@@ -76,7 +76,7 @@ export default function Login() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-text text-sm focus:outline-none focus:border-grapho-orange transition-all"
+                className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-subtle border border-line text-text text-sm focus:outline-none focus:border-grapho-orange transition-all"
                 required
               />
             </div>
@@ -92,7 +92,7 @@ export default function Login() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-text text-sm focus:outline-none focus:border-grapho-orange transition-all"
+                className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-subtle border border-line text-text text-sm focus:outline-none focus:border-grapho-orange transition-all"
                 required
               />
             </div>

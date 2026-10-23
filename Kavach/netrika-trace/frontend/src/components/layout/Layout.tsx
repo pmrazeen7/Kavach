@@ -28,7 +28,7 @@ export default function Layout() {
         initial={{ opacity: 0, y: 16, scale: 0.985 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-        className="w-[96vw] max-w-[1440px] h-[92vh] min-h-[640px] bg-grapho-surface/90 border border-white/[0.07] rounded-[28px] shadow-glass flex overflow-hidden relative z-10"
+        className="w-[96vw] max-w-[1440px] h-[92vh] min-h-[640px] bg-grapho-surface/90 border border-line rounded-[28px] shadow-card flex overflow-hidden relative z-10"
       >
         <Sidebar />
 

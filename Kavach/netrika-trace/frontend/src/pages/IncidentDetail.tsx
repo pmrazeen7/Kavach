@@ -84,7 +84,7 @@ export default function IncidentDetail() {
 
       {/* Decision Banner */}
       <div className={`${banner.bg} rounded py-3 px-6 text-center`}>
-        <span className="font-display font-bold text-lg text-black tracking-wider">
+        <span className="font-sans font-bold text-lg text-black tracking-wider">
           {banner.text}
         </span>
       </div>
@@ -161,7 +161,7 @@ export default function IncidentDetail() {
           ← Back to War Room
         </button>
       </div>
-      {actionError && <p role="alert" className="text-sm text-rose-300">{actionError}</p>}
+      {actionError && <p role="alert" className="text-sm text-danger-fg">{actionError}</p>}
     </div>
   )
 }

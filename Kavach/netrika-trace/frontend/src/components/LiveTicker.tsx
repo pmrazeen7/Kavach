@@ -25,7 +25,7 @@ export default function LiveTicker({ incidents }: LiveTickerProps) {
   return (
     <div className="glass-card p-5" id="live-ticker">
       <div className="panel-title mb-3">RECENT TRAFFIC</div>
-      <div className="h-9 overflow-hidden relative rounded-xl bg-white/[0.04] border border-white/[0.06]">
+      <div className="h-9 overflow-hidden relative rounded-xl bg-subtle border border-line">
         <div className="flex items-center h-full whitespace-nowrap gap-6 px-3 overflow-x-auto">
           {items.map((inc) => (
             <div key={inc.id} className="flex items-center gap-1.5 shrink-0">
