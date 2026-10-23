@@ -1,8 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
-import { Brain, Link2, Paperclip, Plus, ScanSearch, FileText, Send, Radar } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { Brain, Link2, Plus, ScanSearch, FileText, Radar } from 'lucide-react'
 import { useChat, type ChatWaitMode } from '../hooks/useChat'
 import MessageBubble from '../components/chat/MessageBubble'
 import MemoryTestDrawer from '../components/chat/MemoryTestDrawer'
+import ScannerComposer from '../components/scanner/ScannerComposer'
+import { fetchSettings } from '../scanner/client'
 import Button from '../components/ui/Button'
 import Card from '../components/ui/Card'
 import Character from '../components/ui/Character'
@@ -17,8 +20,8 @@ const WAIT_LABEL: Record<ChatWaitMode, string> = {
 }
 
 const FEATURES = [
-  { icon: ScanSearch, title: 'PII detection', desc: 'Aadhaar, PAN, UPI and emails are caught automatically.' },
-  { icon: FileText, title: 'Document upload', desc: 'Drop a PDF, DOCX or TXT to scan and analyse.' },
+  { icon: ScanSearch, title: 'Scans as you type', desc: 'Secrets, IDs and unlabeled random tokens are caught before anything is sent.' },
+  { icon: FileText, title: 'Document upload', desc: 'Drop a PDF, DOCX, ZIP or TXT to scan and analyse.' },
   { icon: Brain, title: "Digital Alzheimer's", desc: 'Prove the AI forgets between sessions.' },
   { icon: Radar, title: 'Live dashboard', desc: 'Incidents show up on the dashboard instantly.' },
 ]
@@ -28,26 +31,29 @@ export default function Chat() {
   const [input, setInput] = useState('')
   const [dragOver, setDragOver] = useState(false)
   const [memoryOpen, setMemoryOpen] = useState(false)
+  const [uploadName, setUploadName] = useState<string | undefined>()
   const endRef = useRef<HTMLDivElement>(null)
-  const fileRef = useRef<HTMLInputElement>(null)
+
+  const { data: settings } = useQuery({ queryKey: ['scanner-settings'], queryFn: fetchSettings, staleTime: 60_000, retry: false })
+  // Earlier messages of this conversation, so a secret split across turns is still caught.
+  const history = useMemo(() => messages.filter((m) => m.role === 'user' && !m.filename).map((m) => m.content), [messages])
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, loading])
 
-  const send = () => {
-    if (!input.trim() || loading) return
-    void sendMessage(input.trim())
-    setInput('')
-  }
-
   const hasFlagged = messages.some((m) => m.dlp && (m.dlp.decision === 'BLOCK' || m.dlp.decision === 'WARN'))
+
+  const upload = (file: File) => {
+    setUploadName(file.name)
+    void uploadDocument(file).finally(() => setUploadName(undefined))
+  }
 
   return (
     <div className="flex h-[calc(100dvh-104px)] min-h-[420px] flex-col" id="chat-llm-page">
       <PageHeader
         title="AI Chat sandbox"
-        subtitle="Powered by Gemini. Every message passes the DLP pipeline first."
+        subtitle="Powered by Gemini. Everything you type is scanned on this device first, then checked by the server."
         action={
           <div className="flex flex-wrap items-center gap-2">
             {sessionId && (
@@ -82,14 +88,14 @@ export default function Chat() {
           e.preventDefault()
           setDragOver(false)
           const file = e.dataTransfer.files[0]
-          if (file) void uploadDocument(file)
+          if (file) upload(file)
         }}
       >
         <div className="min-h-0 flex-1 overflow-y-auto p-5">
           {messages.length === 0 ? (
             <div className="flex min-h-full flex-col items-center justify-center py-4 text-center">
               <Character who="kavi" pose="wave" size={120} interactive />
-              <h2 className="mt-2 text-xl font-semibold tracking-tight text-fg">Ask anything. Kavi is watching.</h2>
+              <h2 className="mt-2 text-xl font-semibold tracking-tight text-fg">Ask anything. Sentinel is watching.</h2>
               <p className="mt-1 max-w-md text-sm text-muted">Sensitive data gets flagged in real time and appears on the dashboard.</p>
               <div className="mt-6 grid max-w-xl grid-cols-1 gap-3 text-left sm:grid-cols-2">
                 {FEATURES.map((f) => (
@@ -105,7 +111,7 @@ export default function Chat() {
             messages.map((m) => <MessageBubble key={m.id} message={m} />)
           )}
 
-          {loading && (
+          {loading && !uploadName && (
             <div className="flex items-center gap-3 px-1 py-2" role="status">
               <Character who="sage" pose="think" size={48} follow={false} />
               <span className="flex gap-1" aria-hidden="true">
@@ -125,40 +131,16 @@ export default function Chat() {
           </div>
         )}
 
-        <div className="flex items-end gap-2 border-t border-line p-3">
-          <button type="button" onClick={() => fileRef.current?.click()} disabled={loading} aria-label="Upload document (PDF, DOCX, TXT)" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-line bg-surface text-muted transition-colors hover:bg-subtle hover:text-fg disabled:opacity-50">
-            <Paperclip className="h-[18px] w-[18px]" />
-          </button>
-          <input
-            ref={fileRef}
-            type="file"
-            accept=".pdf,.docx,.txt,.csv"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0]
-              if (file) void uploadDocument(file)
-              e.target.value = ''
-            }}
-          />
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault()
-                send()
-              }
-            }}
-            placeholder="Type a message (Shift+Enter for a new line)"
-            aria-label="Message"
-            disabled={loading}
-            rows={1}
-            className="max-h-32 min-h-[44px] flex-1 resize-none rounded-xl border border-line bg-surface px-3 py-2.5 text-sm text-fg placeholder:text-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 disabled:opacity-60"
-          />
-          <Button variant="primary" onClick={send} disabled={!input.trim() || loading} aria-label="Send message" className="h-11 w-11 shrink-0 px-0">
-            <Send className="h-[18px] w-[18px]" />
-          </Button>
-        </div>
+        <ScannerComposer
+          value={input}
+          onChange={setInput}
+          history={history}
+          settings={settings}
+          busy={loading}
+          uploadName={uploadName}
+          onSend={(p) => void sendMessage(p.text, { confirmedSafe: p.confirmedSafe, restore: p.restore })}
+          onFiles={(files) => files[0] && upload(files[0])}
+        />
       </Card>
 
       <MemoryTestDrawer open={memoryOpen} onClose={() => setMemoryOpen(false)} loading={memoryTestLoading} result={memoryTest} />

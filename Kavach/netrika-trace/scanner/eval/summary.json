@@ -1,11 +1,11 @@
 {
- "n": 3940,
+ "n": 3982,
  "n_pos": 2053,
- "n_neg": 1887,
+ "n_neg": 1929,
  "overall_recall": 0.9863614223088164,
- "overall_precision": 0.9931338891613536,
- "false_alarm_rate": 0.007419183889772125,
- "warn_rate_on_negatives": 0.002649708532061473,
+ "overall_precision": 0.9911894273127754,
+ "false_alarm_rate": 0.00933125972006221,
+ "warn_rate_on_negatives": 0.003110419906687403,
  "groups": {
   "formats": {
    "n": 438,
@@ -581,8 +581,8 @@
   },
   "neg:real-code": {
    "kind": "neg",
-   "n": 487,
-   "false_alarm_rate": 0.024640657084188913
+   "n": 529,
+   "false_alarm_rate": 0.030245746691871456
   },
   "neg:reference": {
    "kind": "neg",
@@ -729,14 +729,14 @@
   }
  },
  "false_alarms_by_layer": {
-  "2": 12,
+  "2": 16,
   "1": 1,
   "3": 1
  },
  "false_alarms_by_category": {
   "neg:abbrev-identifier": 1,
   "neg:uuid": 1,
-  "neg:real-code": 12
+  "neg:real-code": 16
  },
  "misses": [
   {
@@ -1106,14 +1106,42 @@
    "text": "          <Character who=\"kavi\" pose=\"wave\" size={104} interactive />\n          "
   },
   {
-   "id": "r0404",
+   "id": "r0414",
+   "category": "neg:real-code",
+   "action": "BLOCK",
+   "type": "suspicious_token",
+   "text": "/**\n * Layer 0: make text comparable before any detector sees it.\n * Mirror of s"
+  },
+  {
+   "id": "r0427",
+   "category": "neg:real-code",
+   "action": "BLOCK",
+   "type": "suspicious_token",
+   "text": "const IPV4 = /^\\d{1,3}(?:\\.\\d{1,3}){3}$/\nconst TEMPLATEX = /^[xXyYmMdDhHsS0]+(?:"
+  },
+  {
+   "id": "r0439",
+   "category": "neg:real-code",
+   "action": "BLOCK",
+   "type": "suspicious_token",
+   "text": "    const v = GST.indexOf(s[i]) * (i % 2 === 0 ? 1 : 2)\n    total += Math.floor("
+  },
+  {
+   "id": "r0440",
+   "category": "neg:real-code",
+   "action": "BLOCK",
+   "type": "suspicious_token",
+   "text": "  try {\n    const h = b64urlJson(parts[0]) as Record<string, unknown>\n    const "
+  },
+  {
+   "id": "r0446",
    "category": "neg:real-code",
    "action": "BLOCK",
    "type": "suspicious_token",
    "text": "\"\"\"Custom Indian PII recognizer \u2014 with enhanced regex fallback for Python 3.14.\n"
   },
   {
-   "id": "r0408",
+   "id": "r0450",
    "category": "neg:real-code",
    "action": "BLOCK",
    "type": "suspicious_token",
@@ -1121,9 +1149,9 @@
   }
  ],
  "latency_ms": {
-  "p50": 0.6929500013939105,
-  "p95": 24.178600004233886,
-  "p99": 34.761900002195034,
-  "max": 52.55279999983031
+  "p50": 0.7379499984381255,
+  "p95": 23.96040000166977,
+  "p99": 34.483700001146644,
+  "max": 59.68349999602651
  }
 }

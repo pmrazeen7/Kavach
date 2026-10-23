@@ -1,5 +1,12 @@
 import { useState, useCallback } from 'react'
 import { apiUrl } from '../lib/api'
+import { restore as restorePlaceholders, type PlaceholderMap } from '../scanner/rewrite'
+
+/** Chat endpoints require a signed-in user. */
+function authHeaders(extra: Record<string, string> = {}): Record<string, string> {
+  const token = localStorage.getItem('netrika_token')
+  return token ? { ...extra, Authorization: `Bearer ${token}` } : extra
+}
 
 export interface ChatMessage {
   id: string
@@ -14,7 +21,11 @@ export interface ChatMessage {
     entities_found: Array<{ type: string; count: number }>
     code_detected: boolean
     secrets_detected: boolean
+    /** Items the server masked in the model's reply. */
+    output_flagged?: number
   }
+  /** Placeholders restored locally in this reply. */
+  restored?: number
   filename?: string
   extractedPreview?: string
 }
@@ -58,7 +69,7 @@ export function useChat() {
   const [memoryTest, setMemoryTest] = useState<MemoryTestResult | null>(null)
   const [memoryTestLoading, setMemoryTestLoading] = useState(false)
 
-  const sendMessage = useCallback(async (text: string) => {
+  const sendMessage = useCallback(async (text: string, opts: { confirmedSafe?: string[]; restore?: PlaceholderMap } = {}) => {
     const userMsg: ChatMessage = {
       id: Date.now().toString(),
       role: 'user',
@@ -72,9 +83,18 @@ export function useChat() {
     try {
       const res = await fetch(apiUrl('/api/chat'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text, session_id: sessionId }),
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ message: text, session_id: sessionId, confirmed_safe: opts.confirmedSafe ?? [] }),
       })
+      if (res.status === 422) {
+        // Stopped by the server-side scanner: the message never reached the model.
+        const blocked = (await res.json().catch(() => null)) as { message?: string; incident_id?: string; scan?: { score?: number } } | null
+        setMessages(prev => [
+          ...prev.map(m => (m.id === userMsg.id ? { ...m, dlp: { incident_id: blocked?.incident_id ?? '', decision: 'BLOCK', risk_score: blocked?.scan?.score ?? 100, intent_label: 'SECRET_LEAK', entities_found: [], code_detected: false, secrets_detected: true } } : m)),
+          { id: (Date.now() + 1).toString(), role: 'system' as const, content: blocked?.message ?? 'Blocked by policy.', timestamp: new Date().toISOString() },
+        ])
+        return
+      }
       const data = await readApiResponse<{
         session_id: string
         response: string
@@ -93,11 +113,15 @@ export function useChat() {
       )
 
       // Add assistant response
+      const map = opts.restore ?? {}
+      const restoredText = Object.keys(map).length ? restorePlaceholders(data.response, map) : data.response
       const assistantMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: data.response,
+        content: restoredText,
         timestamp: new Date().toISOString(),
+        restored: restoredText === data.response ? 0 : Object.keys(map).filter(ph => data.response.includes(ph)).length,
+        dlp: data.dlp?.output_flagged ? data.dlp : undefined,
       }
       setMessages(prev => [...prev, assistantMsg])
     } catch (err: unknown) {
@@ -119,7 +143,7 @@ export function useChat() {
     const userMsg: ChatMessage = {
       id: Date.now().toString(),
       role: 'user',
-      content: `📄 Uploaded document: ${file.name}`,
+      content: `Uploaded document: ${file.name}`,
       timestamp: new Date().toISOString(),
       filename: file.name,
     }
@@ -134,6 +158,7 @@ export function useChat() {
 
       const scanRes = await fetch(apiUrl('/api/chat/upload/scan'), {
         method: 'POST',
+        headers: authHeaders(),
         body: formData,
       })
       const scanData = await readApiResponse<{
@@ -163,7 +188,7 @@ export function useChat() {
         const assistantMsg: ChatMessage = {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: `⚠️ The document '${file.name}' was BLOCKED by the DLP system. Sensitive data was detected. The document content was not sent to the AI model.`,
+          content: `The document '${file.name}' was BLOCKED by the DLP system. Sensitive data was detected. The document content was not sent to the AI model.`,
           timestamp: new Date().toISOString(),
         }
         setMessages(prev => [...prev, assistantMsg])
@@ -177,7 +202,7 @@ export function useChat() {
 
       const respondRes = await fetch(apiUrl('/api/chat/upload/respond'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ session_id: scanData.session_id }),
       })
       const respondData = await readApiResponse<{ response: string }>(respondRes)
@@ -212,7 +237,7 @@ export function useChat() {
     try {
       const res = await fetch(apiUrl('/api/chat/memory-test'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ previous_session_id: sessionId }),
       })
       const data = await res.json()
