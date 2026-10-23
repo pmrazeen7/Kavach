@@ -38,7 +38,7 @@ export default function EntityDonutChart({ data }: EntityDonutChartProps) {
   }, [data])
 
   return (
-    <div className="glass-card p-5 h-full flex flex-col" id="entity-donut">
+    <div className="rounded-2xl border border-line bg-surface shadow-card p-5 h-full flex flex-col" id="entity-donut">
       <div className="flex items-start justify-between mb-2">
         <div>
           <div className="panel-title mb-1">Detection mix</div>

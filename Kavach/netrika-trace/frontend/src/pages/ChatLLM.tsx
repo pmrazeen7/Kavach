@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
+import { Bot, MessageSquare, Settings, User } from 'lucide-react'
+import Mascot from '../components/ui/Mascot'
 import { useChat } from '../hooks/useChat'
 import type { ChatMessage, MemoryTestResult, ChatWaitMode } from '../hooks/useChat'
 
@@ -12,16 +14,16 @@ function DlpBadge({ dlp }: { dlp: ChatMessage['dlp'] }) {
   const isSafe = dlp.decision === 'ALLOW'
 
   const bgColor = isBlock
-    ? 'rgba(255,45,85,0.15)'
+    ? 'rgb(var(--danger) / 0.15)'
     : isWarn
-    ? 'rgba(255,180,50,0.15)'
-    : 'rgba(80,220,120,0.1)'
+    ? 'rgb(var(--warn) / 0.15)'
+    : 'rgb(var(--success) / 0.1)'
 
   const borderColor = isBlock
-    ? '#ff2d55'
+    ? 'rgb(var(--danger))'
     : isWarn
-    ? '#ffb432'
-    : '#50dc78'
+    ? 'rgb(var(--warn))'
+    : 'rgb(var(--success))'
 
   const label = isBlock ? '🛑 BLOCKED' : isWarn ? '⚠️ WARNING' : '✅ SAFE'
 
@@ -36,22 +38,22 @@ function DlpBadge({ dlp }: { dlp: ChatMessage['dlp'] }) {
         padding: '8px 12px',
         marginTop: 6,
         fontSize: 11,
-        fontFamily: "'JetBrains Mono', monospace",
+        fontFamily: 'inherit',
       }}
     >
       <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
         <span style={{ fontWeight: 700 }}>{label}</span>
-        <span style={{ color: '#8a9bb0' }}>
+        <span style={{ color: 'rgb(var(--muted))' }}>
           Risk: <b style={{ color: borderColor }}>{dlp.risk_score}</b>
         </span>
-        <span style={{ color: '#8a9bb0' }}>
+        <span style={{ color: 'rgb(var(--muted))' }}>
           Intent: <b>{dlp.intent_label}</b>
         </span>
         {dlp.code_detected && (
-          <span style={{ color: '#ff6b9d', fontWeight: 600 }}>💻 CODE</span>
+          <span style={{ color: 'rgb(var(--danger))', fontWeight: 600 }}>💻 CODE</span>
         )}
         {dlp.secrets_detected && (
-          <span style={{ color: '#ff2d55', fontWeight: 600 }}>🔑 SECRETS</span>
+          <span style={{ color: 'rgb(var(--danger))', fontWeight: 600 }}>🔑 SECRETS</span>
         )}
       </div>
       {entities.length > 0 && (
@@ -60,12 +62,12 @@ function DlpBadge({ dlp }: { dlp: ChatMessage['dlp'] }) {
             <span
               key={i}
               style={{
-                background: 'rgba(255,255,255,0.06)',
-                border: '1px solid rgba(255,255,255,0.1)',
+                background: 'rgb(var(--subtle))',
+                border: '1px solid rgb(var(--line))',
                 borderRadius: 4,
                 padding: '2px 8px',
                 fontSize: 10,
-                color: '#c8d8e8',
+                color: 'rgb(var(--fg))',
               }}
             >
               {e.type} ×{e.count}
@@ -74,7 +76,7 @@ function DlpBadge({ dlp }: { dlp: ChatMessage['dlp'] }) {
         </div>
       )}
       {(isSafe || !dlp.incident_id) ? null : (
-        <div style={{ marginTop: 4, fontSize: 9, color: '#5a6a7a' }}>
+        <div style={{ marginTop: 4, fontSize: 9, color: 'rgb(var(--faint))' }}>
           Incident: {dlp.incident_id}
         </div>
       )}
@@ -109,13 +111,13 @@ function MessageBubble({ message }: { message: ChatMessage }) {
             justifyContent: isUser ? 'flex-end' : 'flex-start',
           }}
         >
-          <span style={{ fontSize: 16 }}>
-            {isUser ? '👤' : isSystem ? '⚙️' : '🤖'}
+          <span style={{ display: 'inline-flex', color: 'rgb(var(--muted))' }}>
+            {isUser ? <User size={16} /> : isSystem ? <Settings size={16} /> : <Bot size={16} />}
           </span>
-          <span style={{ fontSize: 11, color: '#5a7a9a', fontWeight: 600 }}>
+          <span style={{ fontSize: 11, color: 'rgb(var(--faint))', fontWeight: 600 }}>
             {isUser ? 'You' : isSystem ? 'System' : 'Gemini AI'}
           </span>
-          <span style={{ fontSize: 9, color: '#3a4a5a' }}>
+          <span style={{ fontSize: 9, color: 'rgb(var(--faint))' }}>
             {new Date(message.timestamp).toLocaleTimeString()}
           </span>
         </div>
@@ -124,20 +126,20 @@ function MessageBubble({ message }: { message: ChatMessage }) {
         <div
           style={{
             background: isUser
-              ? 'linear-gradient(135deg, #1a3a5a 0%, #0d2540 100%)'
+              ? 'rgb(var(--accent))'
               : isSystem
-              ? 'rgba(255,45,85,0.1)'
-              : 'rgba(255,255,255,0.04)',
+              ? 'rgb(var(--danger) / 0.1)'
+              : 'rgb(var(--subtle))',
             border: isUser
-              ? '1px solid #2a4a6a'
+              ? '1px solid rgb(var(--accent))'
               : isSystem
-              ? '1px solid rgba(255,45,85,0.3)'
-              : '1px solid rgba(255,255,255,0.08)',
+              ? '1px solid rgb(var(--danger) / 0.3)'
+              : '1px solid rgb(var(--line))',
             borderRadius: 12,
             padding: '12px 16px',
             fontSize: 13,
             lineHeight: 1.6,
-            color: '#d0e0f0',
+            color: isUser ? '#fff' : 'rgb(var(--fg))',
             whiteSpace: 'pre-wrap',
             wordBreak: 'break-word',
           }}
@@ -150,17 +152,17 @@ function MessageBubble({ message }: { message: ChatMessage }) {
           <div
             style={{
               marginTop: 6,
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.06)',
+              background: 'rgb(var(--subtle))',
+              border: '1px solid rgb(var(--subtle))',
               borderRadius: 8,
               padding: '8px 12px',
               fontSize: 10,
-              color: '#7a8a9a',
+              color: 'rgb(var(--muted))',
               maxHeight: 100,
               overflow: 'auto',
             }}
           >
-            <div style={{ fontWeight: 600, marginBottom: 4, color: '#5a7a9a' }}>
+            <div style={{ fontWeight: 600, marginBottom: 4, color: 'rgb(var(--faint))' }}>
               📋 Extracted text preview:
             </div>
             {message.extractedPreview}
@@ -205,13 +207,13 @@ function TypingIndicator({ mode }: { mode: ChatWaitMode }) {
               width: 6,
               height: 6,
               borderRadius: '50%',
-              background: '#4a8af4',
+              background: 'rgb(var(--accent))',
               animation: `typingDot 1.4s infinite ${i * 0.2}s`,
             }}
           />
         ))}
       </div>
-      <span style={{ fontSize: 11, color: '#5a7a9a' }}>{label}</span>
+      <span style={{ fontSize: 11, color: 'rgb(var(--faint))' }}>{label}</span>
     </div>
   )
 }
@@ -237,7 +239,7 @@ function MemoryTestPanel({
         left: 0,
         right: 0,
         bottom: 0,
-        background: 'rgba(0,0,0,0.8)',
+        background: 'rgb(17 24 39 / 0.5)',
         backdropFilter: 'blur(8px)',
         zIndex: 100,
         display: 'flex',
@@ -249,8 +251,8 @@ function MemoryTestPanel({
     >
       <div
         style={{
-          background: '#0a1520',
-          border: '1px solid #1a2a3a',
+          background: 'rgb(var(--surface))',
+          border: '1px solid rgb(var(--line))',
           borderRadius: 16,
           maxWidth: 900,
           width: '100%',
@@ -272,7 +274,7 @@ function MemoryTestPanel({
             style={{
               margin: 0,
               fontSize: 20,
-              color: '#e0f0ff',
+              color: 'rgb(var(--fg))',
               display: 'flex',
               alignItems: 'center',
               gap: 10,
@@ -283,9 +285,9 @@ function MemoryTestPanel({
           <button
             onClick={onClose}
             style={{
-              background: 'rgba(255,255,255,0.1)',
+              background: 'rgb(var(--line))',
               border: 'none',
-              color: '#8a9bb0',
+              color: 'rgb(var(--muted))',
               fontSize: 18,
               cursor: 'pointer',
               borderRadius: 8,
@@ -297,10 +299,10 @@ function MemoryTestPanel({
         </div>
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: 40, color: '#5a7a9a' }}>
+          <div style={{ textAlign: 'center', padding: 40, color: 'rgb(var(--faint))' }}>
             <div style={{ fontSize: 40, marginBottom: 16 }}>🔬</div>
             <div>Running memory test in a fresh session...</div>
-            <div style={{ fontSize: 11, marginTop: 8, color: '#3a4a5a' }}>
+            <div style={{ fontSize: 11, marginTop: 8, color: 'rgb(var(--faint))' }}>
               Asking the LLM about PII from your previous session
             </div>
           </div>
@@ -311,10 +313,10 @@ function MemoryTestPanel({
               style={{
                 background:
                   result.verdict === 'NO_MEMORY'
-                    ? 'rgba(80,220,120,0.1)'
-                    : 'rgba(255,45,85,0.1)',
+                    ? 'rgb(var(--success) / 0.1)'
+                    : 'rgb(var(--danger) / 0.1)',
                 border: `1px solid ${
-                  result.verdict === 'NO_MEMORY' ? '#50dc78' : '#ff2d55'
+                  result.verdict === 'NO_MEMORY' ? 'rgb(var(--success))' : 'rgb(var(--danger))'
                 }`,
                 borderRadius: 12,
                 padding: 16,
@@ -325,13 +327,13 @@ function MemoryTestPanel({
               <div style={{ fontSize: 32, marginBottom: 8 }}>
                 {result.verdict === 'NO_MEMORY' ? '✅' : '❌'}
               </div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: '#e0f0ff' }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: 'rgb(var(--fg))' }}>
                 {result.verdict === 'NO_MEMORY'
                   ? 'CONFIRMED: LLM Has No Memory'
                   : 'Memory Test Failed'}
               </div>
               <div
-                style={{ fontSize: 12, color: '#8a9bb0', marginTop: 8, lineHeight: 1.5 }}
+                style={{ fontSize: 12, color: 'rgb(var(--muted))', marginTop: 8, lineHeight: 1.5 }}
               >
                 {result.explanation}
               </div>
@@ -342,8 +344,8 @@ function MemoryTestPanel({
               {/* Session A — Previous */}
               <div
                 style={{
-                  background: 'rgba(255,45,85,0.05)',
-                  border: '1px solid rgba(255,45,85,0.2)',
+                  background: 'rgb(var(--danger) / 0.05)',
+                  border: '1px solid rgb(var(--danger) / 0.2)',
                   borderRadius: 12,
                   padding: 16,
                 }}
@@ -352,7 +354,7 @@ function MemoryTestPanel({
                   style={{
                     fontSize: 11,
                     fontWeight: 700,
-                    color: '#ff6b9d',
+                    color: 'rgb(var(--danger))',
                     marginBottom: 12,
                     textTransform: 'uppercase',
                     letterSpacing: 2,
@@ -365,20 +367,20 @@ function MemoryTestPanel({
                     <div
                       key={i}
                       style={{
-                        background: 'rgba(255,255,255,0.04)',
+                        background: 'rgb(var(--subtle))',
                         borderRadius: 8,
                         padding: '8px 12px',
                         marginBottom: 8,
                         fontSize: 12,
-                        color: '#c8d8e8',
-                        borderLeft: '3px solid #ff2d55',
+                        color: 'rgb(var(--fg))',
+                        borderLeft: '3px solid rgb(var(--danger))',
                       }}
                     >
                       {msg}
                     </div>
                   ))
                 ) : (
-                  <div style={{ color: '#5a6a7a', fontSize: 12 }}>
+                  <div style={{ color: 'rgb(var(--faint))', fontSize: 12 }}>
                     No messages in previous session
                   </div>
                 )}
@@ -387,8 +389,8 @@ function MemoryTestPanel({
               {/* Session B — Memory Test */}
               <div
                 style={{
-                  background: 'rgba(80,220,120,0.05)',
-                  border: '1px solid rgba(80,220,120,0.2)',
+                  background: 'rgb(var(--success) / 0.05)',
+                  border: '1px solid rgb(var(--success) / 0.2)',
                   borderRadius: 12,
                   padding: 16,
                 }}
@@ -397,7 +399,7 @@ function MemoryTestPanel({
                   style={{
                     fontSize: 11,
                     fontWeight: 700,
-                    color: '#50dc78',
+                    color: 'rgb(var(--success))',
                     marginBottom: 12,
                     textTransform: 'uppercase',
                     letterSpacing: 2,
@@ -409,26 +411,26 @@ function MemoryTestPanel({
                   <div key={i}>
                     <div
                       style={{
-                        background: 'rgba(255,255,255,0.04)',
+                        background: 'rgb(var(--subtle))',
                         borderRadius: 8,
                         padding: '8px 12px',
                         marginBottom: 4,
                         fontSize: 12,
-                        color: '#8ab4c8',
-                        borderLeft: '3px solid #4a8af4',
+                        color: 'rgb(var(--muted))',
+                        borderLeft: '3px solid rgb(var(--accent))',
                       }}
                     >
                       <strong>Q:</strong> {r.question}
                     </div>
                     <div
                       style={{
-                        background: 'rgba(80,220,120,0.06)',
+                        background: 'rgb(var(--success) / 0.06)',
                         borderRadius: 8,
                         padding: '8px 12px',
                         marginBottom: 12,
                         fontSize: 12,
-                        color: '#c8d8e8',
-                        borderLeft: '3px solid #50dc78',
+                        color: 'rgb(var(--fg))',
+                        borderLeft: '3px solid rgb(var(--success))',
                         lineHeight: 1.5,
                       }}
                     >
@@ -516,8 +518,9 @@ export default function ChatLLM() {
         style={{
           display: 'flex',
           flexDirection: 'column',
-          height: 'calc(100vh - 52px - 48px)',
-          maxHeight: 'calc(100vh - 100px)',
+          height: 'calc(100dvh - 104px)',
+          minHeight: 420,
+          position: 'relative',
         }}
       >
         {/* Header Bar */}
@@ -527,26 +530,26 @@ export default function ChatLLM() {
             justifyContent: 'space-between',
             alignItems: 'center',
             padding: '12px 0',
-            borderBottom: '1px solid #1a2535',
+            borderBottom: '1px solid rgb(var(--line))',
             marginBottom: 16,
             flexShrink: 0,
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ fontSize: 22 }}>💬</span>
+            <MessageSquare size={24} color="rgb(var(--accent))" />
             <div>
               <div
                 style={{
                   fontSize: 16,
                   fontWeight: 700,
-                  color: '#e0f0ff',
+                  color: 'rgb(var(--fg))',
                   letterSpacing: 0.5,
                 }}
               >
                 Kavach AI Chat
               </div>
-              <div style={{ fontSize: 10, color: '#4a6278', letterSpacing: 1 }}>
-                POWERED BY GEMINI • DLP PROTECTED
+              <div style={{ fontSize: 10, color: 'rgb(var(--faint))', letterSpacing: 0 }}>
+                Powered by Gemini · DLP protected
               </div>
             </div>
           </div>
@@ -556,11 +559,11 @@ export default function ChatLLM() {
               <span
                 style={{
                   fontSize: 10,
-                  color: '#3a5a7a',
-                  background: 'rgba(255,255,255,0.04)',
+                  color: 'rgb(var(--faint))',
+                  background: 'rgb(var(--subtle))',
                   padding: '4px 10px',
                   borderRadius: 6,
-                  border: '1px solid rgba(255,255,255,0.06)',
+                  border: '1px solid rgb(var(--subtle))',
                   display: 'flex',
                   alignItems: 'center',
                   gap: 4,
@@ -575,9 +578,9 @@ export default function ChatLLM() {
                 onClick={proveAlzheimers}
                 disabled={memoryTestLoading}
                 style={{
-                  background: 'linear-gradient(135deg, #4a2a6a 0%, #2a1a4a 100%)',
-                  border: '1px solid #6a4a8a',
-                  color: '#d0b0f0',
+                  background: 'rgb(var(--accent-soft))',
+                  border: '1px solid rgb(var(--accent))',
+                  color: 'rgb(var(--accent-fg))',
                   fontSize: 11,
                   fontWeight: 600,
                   padding: '6px 14px',
@@ -586,7 +589,7 @@ export default function ChatLLM() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 6,
-                  fontFamily: "'JetBrains Mono', monospace",
+                  fontFamily: 'inherit',
                   transition: 'all 0.2s',
                 }}
               >
@@ -597,19 +600,19 @@ export default function ChatLLM() {
             <button
               onClick={startNewSession}
               style={{
-                background: 'rgba(255,255,255,0.06)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                color: '#8a9bb0',
+                background: 'rgb(var(--subtle))',
+                border: '1px solid rgb(var(--line))',
+                color: 'rgb(var(--muted))',
                 fontSize: 11,
                 fontWeight: 600,
                 padding: '6px 14px',
                 borderRadius: 8,
                 cursor: 'pointer',
-                fontFamily: "'JetBrains Mono', monospace",
+                fontFamily: 'inherit',
                 transition: 'all 0.2s',
               }}
             >
-              + New Chat
+              New chat
             </button>
           </div>
         </div>
@@ -637,17 +640,17 @@ export default function ChatLLM() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 height: '100%',
-                color: '#3a5a7a',
+                color: 'rgb(var(--faint))',
                 textAlign: 'center',
               }}
             >
-              <div style={{ fontSize: 56, marginBottom: 16 }}>🛡️</div>
+              <div style={{ marginBottom: 8 }}><Mascot pose="wave" size={110} /></div>
               <div
-                style={{ fontSize: 22, fontWeight: 700, color: '#5a8ab0', marginBottom: 8 }}
+                style={{ fontSize: 22, fontWeight: 700, color: 'rgb(var(--muted))', marginBottom: 8 }}
               >
                 Kavach AI Chat
               </div>
-              <div style={{ fontSize: 13, maxWidth: 450, lineHeight: 1.6, color: '#4a6a8a' }}>
+              <div style={{ fontSize: 13, maxWidth: 450, lineHeight: 1.6, color: 'rgb(var(--faint))' }}>
                 Every message is scanned through the DLP pipeline before reaching the AI.
                 Sensitive data gets flagged in real-time on the War Room dashboard.
               </div>
@@ -685,18 +688,18 @@ export default function ChatLLM() {
                   <div
                     key={i}
                     style={{
-                      background: 'rgba(255,255,255,0.03)',
-                      border: '1px solid rgba(255,255,255,0.06)',
+                      background: 'rgb(var(--subtle))',
+                      border: '1px solid rgb(var(--subtle))',
                       borderRadius: 10,
                       padding: 16,
                       textAlign: 'left',
                     }}
                   >
                     <div style={{ fontSize: 20, marginBottom: 6 }}>{card.icon}</div>
-                    <div style={{ fontSize: 12, fontWeight: 600, color: '#8ab0d0' }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: 'rgb(var(--muted))' }}>
                       {card.title}
                     </div>
-                    <div style={{ fontSize: 10, color: '#4a6a8a', marginTop: 4 }}>
+                    <div style={{ fontSize: 10, color: 'rgb(var(--faint))', marginTop: 4 }}>
                       {card.desc}
                     </div>
                   </div>
@@ -725,15 +728,15 @@ export default function ChatLLM() {
               left: 0,
               right: 0,
               bottom: 0,
-              background: 'rgba(74,138,244,0.15)',
-              border: '2px dashed #4a8af4',
+              background: 'rgb(var(--accent) / 0.15)',
+              border: '2px dashed rgb(var(--accent))',
               borderRadius: 12,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               zIndex: 10,
               fontSize: 16,
-              color: '#4a8af4',
+              color: 'rgb(var(--accent))',
               fontWeight: 600,
             }}
           >
@@ -747,7 +750,7 @@ export default function ChatLLM() {
             display: 'flex',
             gap: 8,
             padding: '12px 0 4px',
-            borderTop: '1px solid #1a2535',
+            borderTop: '1px solid rgb(var(--line))',
             alignItems: 'flex-end',
             flexShrink: 0,
           }}
@@ -757,9 +760,9 @@ export default function ChatLLM() {
             onClick={() => fileInputRef.current?.click()}
             disabled={loading}
             style={{
-              background: 'rgba(255,255,255,0.06)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              color: '#6a8aaa',
+              background: 'rgb(var(--subtle))',
+              border: '1px solid rgb(var(--line))',
+              color: 'rgb(var(--muted))',
               fontSize: 16,
               padding: '10px 12px',
               borderRadius: 10,
@@ -789,13 +792,13 @@ export default function ChatLLM() {
             rows={1}
             style={{
               flex: 1,
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.1)',
+              background: 'rgb(var(--subtle))',
+              border: '1px solid rgb(var(--line))',
               borderRadius: 10,
               padding: '10px 14px',
               fontSize: 13,
-              color: '#d0e0f0',
-              fontFamily: "'JetBrains Mono', monospace",
+              color: 'rgb(var(--fg))',
+              fontFamily: 'inherit',
               resize: 'none',
               outline: 'none',
               minHeight: 42,
@@ -811,10 +814,10 @@ export default function ChatLLM() {
             style={{
               background:
                 input.trim() && !loading
-                  ? 'linear-gradient(135deg, #4a8af4 0%, #2a6ad4 100%)'
-                  : 'rgba(255,255,255,0.04)',
+                  ? 'rgb(var(--accent))'
+                  : 'rgb(var(--subtle))',
               border: 'none',
-              color: input.trim() && !loading ? '#fff' : '#3a4a5a',
+              color: input.trim() && !loading ? '#fff' : 'rgb(var(--faint))',
               fontSize: 16,
               padding: '10px 14px',
               borderRadius: 10,

@@ -8,7 +8,7 @@ export default function EndpointHealthGrid({ data }: EndpointHealthGridProps) {
   const maxTotal = Math.max(...data.map((d) => d.total), 1)
 
   return (
-    <div className="glass-card p-5" id="endpoint-grid">
+    <div className="rounded-2xl border border-line bg-surface shadow-card p-5" id="endpoint-grid">
       <div className="panel-title mb-4">Endpoints</div>
       <div className="flex flex-col gap-2.5">
         {data.map((ep) => {

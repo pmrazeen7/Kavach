@@ -26,7 +26,7 @@ function NavRow({ item, collapsed, badge, onNavigate }: { item: NavItem; collaps
 
   const rowClass = (active: boolean) =>
     cn(
-      'group relative flex h-10 items-center gap-3 rounded-xl px-3 text-sm font-medium outline-none transition-colors',
+      'group relative flex h-10 items-center gap-3 rounded-xl px-3 text-left text-sm font-medium outline-none transition-colors',
       active ? 'text-accent-fg' : 'text-muted hover:bg-subtle hover:text-fg',
       collapsed && 'justify-center px-0',
     )

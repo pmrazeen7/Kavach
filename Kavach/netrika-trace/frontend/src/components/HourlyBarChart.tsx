@@ -36,7 +36,7 @@ export default function HourlyBarChart({ data, window, onWindowChange }: HourlyB
   const hasTraffic = data.some((bucket) => bucket.BLOCK + bucket.WARN + bucket.ALLOW > 0)
 
   return (
-    <div className="glass-card p-5 flex flex-col min-h-[220px]" id="hourly-chart">
+    <div className="rounded-2xl border border-line bg-surface shadow-card p-5 flex flex-col h-full min-h-[260px]" id="hourly-chart">
       <div className="flex items-center justify-between mb-1">
         <div className="panel-title mb-0 flex-1">Traffic decisions</div>
         <select
@@ -57,7 +57,7 @@ export default function HourlyBarChart({ data, window, onWindowChange }: HourlyB
           No persisted requests in this period.
         </div>
       ) : (
-        <div className="flex-1 min-h-[140px]">
+        <div className="h-[190px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartRows} barGap={4} margin={{ top: 8, right: 4, left: -18, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 6" stroke="rgb(156 163 175 / 0.25)" vertical={false} />
