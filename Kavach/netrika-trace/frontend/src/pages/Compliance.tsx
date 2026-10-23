@@ -1,6 +1,12 @@
 import { useState } from 'react'
+import { FileDown, Fingerprint, IdCard, Code2, ShieldAlert } from 'lucide-react'
 import { useCompliance } from '../hooks/useIncidents'
-import StatCard from '../components/StatCard'
+import StatCard from '../components/ui/StatCard'
+import PageHeader from '../components/ui/PageHeader'
+import Card from '../components/ui/Card'
+import Button from '../components/ui/Button'
+import EmptyState from '../components/ui/EmptyState'
+import { celebrate, toast } from '../components/ui/Toast'
 import { apiDownload } from '../lib/api'
 
 const DPDP_SECTIONS = [
@@ -26,67 +32,59 @@ const DPDP_SECTIONS = [
 
 export default function Compliance() {
   const { data: stats, isLoading, isError, error } = useCompliance()
-  const [downloadError, setDownloadError] = useState('')
+  const [downloading, setDownloading] = useState(false)
+
+  const download = async () => {
+    setDownloading(true)
+    try {
+      await apiDownload('/api/v1/analytics/compliance/pdf', 'dpdp_compliance_report.pdf')
+      toast.success('Report downloaded', 'dpdp_compliance_report.pdf')
+      celebrate()
+    } catch (err) {
+      toast.error('Report download failed', err instanceof Error ? err.message : undefined)
+    } finally {
+      setDownloading(false)
+    }
+  }
 
   return (
-    <div className="space-y-8" id="compliance-page">
-      <div>
-        <h1 className="font-sans font-bold text-2xl text-text tracking-wider">
-          DPDP ACT COMPLIANCE
-        </h1>
-        <p className="label-uppercase mt-1">Digital Personal Data Protection Act, 2023 (India)</p>
-      </div>
+    <div className="space-y-6" id="compliance-page">
+      <PageHeader
+        title="DPDP Act compliance"
+        subtitle="Digital Personal Data Protection Act, 2023 (India)"
+        action={
+          <Button variant="primary" onClick={() => void download()} disabled={downloading}>
+            <FileDown className="h-4 w-4" /> {downloading ? 'Preparing…' : 'Weekly report PDF'}
+          </Button>
+        }
+      />
 
       {isError ? (
-        <p role="alert" className="text-sm text-danger-fg">
-          {error instanceof Error ? error.message : 'Unable to load compliance metrics'}
-        </p>
-      ) : isLoading ? (
-        <div className="h-24 rounded-2xl bg-subtle animate-pulse" aria-label="Loading compliance metrics" />
+        <Card>
+          <EmptyState kind="error" title="Unable to load compliance metrics" description={error instanceof Error ? error.message : undefined} />
+        </Card>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-          <StatCard label="AADHAAR DETECTIONS" value={stats?.AADHAAR ?? 0} variant="red" subtext="This week" />
-          <StatCard label="PAN DETECTIONS" value={stats?.PAN ?? 0} variant="red" subtext="This week" />
-          <StatCard label="CODE DETECTIONS" value={stats?.SOURCE_CODE ?? 0} variant="amber" subtext="This week" />
-          <StatCard label="TOTAL INCIDENTS" value={stats?.total_incidents ?? 0} variant="blue" subtext="This week" />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <StatCard label="Aadhaar detections this week" aurora="red" icon={<Fingerprint className="h-4 w-4" />} value={stats?.AADHAAR ?? 0} loading={isLoading} />
+          <StatCard label="PAN detections this week" aurora="peach" icon={<IdCard className="h-4 w-4" />} value={stats?.PAN ?? 0} loading={isLoading} />
+          <StatCard label="Code detections this week" aurora="mint" icon={<Code2 className="h-4 w-4" />} value={stats?.SOURCE_CODE ?? 0} loading={isLoading} />
+          <StatCard label="Total incidents this week" aurora="blue" icon={<ShieldAlert className="h-4 w-4" />} value={stats?.total_incidents ?? 0} loading={isLoading} />
         </div>
       )}
 
-      {/* DPDP Sections */}
       <div>
-        <div className="panel-title mb-4">APPLICABLE DPDP ACT SECTIONS</div>
-        <div className="space-y-4">
+        <h2 className="mb-3 text-base font-semibold text-fg">Applicable DPDP Act sections</h2>
+        <div className="space-y-3">
           {DPDP_SECTIONS.map((section) => (
-            <div key={section.id} className="bg-bg2 border border-border rounded p-5">
-              <div className="font-sans font-bold text-sm text-text tracking-wider mb-2">
-                {section.title}
-              </div>
-              <div className="text-xs text-text-dim leading-relaxed mb-3 border-l-2 border-border pl-3">
-                {section.text}
-              </div>
-              <div className="text-xs text-blue">
-                <span className="font-bold">Relevance:</span> {section.relevance}
-              </div>
-            </div>
+            <Card key={section.id} className="p-5">
+              <div className="mb-2 text-sm font-semibold text-fg">{section.title}</div>
+              <p className="mb-3 border-l-2 border-line pl-3 text-sm leading-relaxed text-muted">{section.text}</p>
+              <p className="text-sm text-accent-fg">
+                <span className="font-semibold">Relevance:</span> {section.relevance}
+              </p>
+            </Card>
           ))}
         </div>
-      </div>
-
-      {/* Generate Report */}
-      <div className="flex gap-4">
-        <a
-          href="#download"
-          onClick={(event) => {
-            event.preventDefault()
-            setDownloadError('')
-            void apiDownload('/api/v1/analytics/compliance/pdf', 'dpdp_compliance_report.pdf')
-              .catch((err: unknown) => setDownloadError(err instanceof Error ? err.message : 'Report download failed'))
-          }}
-          className="inline-flex items-center gap-2 px-6 py-3 bg-red text-black font-sans font-bold text-sm tracking-wider rounded hover:opacity-90 transition"
-        >
-          📄 GENERATE WEEKLY REPORT PDF
-        </a>
-        {downloadError && <p role="alert" className="text-sm text-danger-fg">{downloadError}</p>}
       </div>
     </div>
   )

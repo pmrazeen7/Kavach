@@ -14,6 +14,7 @@ const ChatLLM = lazy(() => import('./pages/ChatLLM'))
 const Devices = lazy(() => import('./pages/Devices'))
 const Evaluation = lazy(() => import('./pages/Evaluation'))
 const Search = lazy(() => import('./pages/Search'))
+const NotFound = lazy(() => import('./pages/NotFound'))
 
 function LazyPage({ children }: { children: React.ReactNode }) {
   return <Suspense fallback={<PageLoader />}>{children}</Suspense>
@@ -37,6 +38,7 @@ export default function App() {
           <Route path="/evaluation" element={<LazyPage><Evaluation /></LazyPage>} />
           <Route path="/search" element={<LazyPage><Search /></LazyPage>} />
         </Route>
+        <Route path="*" element={<LazyPage><NotFound /></LazyPage>} />
       </Routes>
     </BrowserRouter>
   )

@@ -9,7 +9,7 @@ export default function EndpointHealthGrid({ data }: EndpointHealthGridProps) {
 
   return (
     <div className="glass-card p-5" id="endpoint-grid">
-      <div className="panel-title mb-4">ENDPOINTS</div>
+      <div className="panel-title mb-4">Endpoints</div>
       <div className="flex flex-col gap-2.5">
         {data.map((ep) => {
           const color =

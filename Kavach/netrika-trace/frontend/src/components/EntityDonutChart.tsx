@@ -1,7 +1,8 @@
+import { Link } from 'react-router-dom'
 import { useEffect, useMemo, useState } from 'react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 
-const COLORS = ['#6b9b7a', '#f97316', '#e8c547', '#6366f1', '#94a3b8']
+const COLORS = ['#4F46E5', '#F59E0B', '#10B981', '#EC4899', '#94A3B8']
 
 interface EntityDonutChartProps {
   data: Record<string, number>
@@ -40,7 +41,7 @@ export default function EntityDonutChart({ data }: EntityDonutChartProps) {
     <div className="glass-card p-5 h-full flex flex-col" id="entity-donut">
       <div className="flex items-start justify-between mb-2">
         <div>
-          <div className="panel-title mb-1">DETECTION MIX</div>
+          <div className="panel-title mb-1">Detection mix</div>
           <div className="flex items-baseline gap-1.5 mt-2">
             <span className="text-2xl font-bold text-text tabular-nums">
               {total > 0 ? `${topShare}%` : '—'}
@@ -48,12 +49,9 @@ export default function EntityDonutChart({ data }: EntityDonutChartProps) {
             <span className="text-xs text-text-dim">top entity share</span>
           </div>
         </div>
-        <button
-          type="button"
-          className="text-[11px] font-semibold text-grapho-orange hover:text-orange-400 transition-colors duration-300"
-        >
+        <Link to="/compliance" className="text-xs font-medium text-accent hover:underline">
           View more
-        </button>
+        </Link>
       </div>
 
       <div className="flex-1 flex items-center gap-4 min-h-[160px]">
@@ -84,14 +82,14 @@ export default function EntityDonutChart({ data }: EntityDonutChartProps) {
                 <Tooltip
                   animationDuration={200}
                   contentStyle={{
-                    background: 'rgba(22,24,30,0.95)',
-                    border: '1px solid rgba(255,255,255,0.1)',
+                    background: 'rgb(var(--surface))',
+                    border: '1px solid rgb(var(--line))',
                     borderRadius: 12,
                     fontSize: 11,
-                    color: '#f0f2f7',
-                    boxShadow: '0 12px 40px rgba(0,0,0,0.45)',
+                    color: 'rgb(var(--fg))',
+                    boxShadow: '0 12px 32px rgb(16 24 40 / 0.12)',
                   }}
-                  labelStyle={{ color: '#8b90a0' }}
+                  labelStyle={{ color: 'rgb(var(--muted))' }}
                 />
               </PieChart>
             </ResponsiveContainer>

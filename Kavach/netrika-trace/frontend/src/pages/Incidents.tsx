@@ -1,120 +1,107 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { AlertTriangle, CheckCircle, ShieldAlert } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { Filter, Search as SearchIcon } from 'lucide-react'
 import { useIncidents } from '../hooks/useIncidents'
+import { apiFetch } from '../lib/api'
 import type { Decision } from '../types/incident'
+import IncidentTable from '../components/IncidentTable'
+import PageHeader from '../components/ui/PageHeader'
+import EmptyState from '../components/ui/EmptyState'
+import Button from '../components/ui/Button'
+import { celebrate, toast } from '../components/ui/Toast'
 
 const DECISIONS: Array<{ label: string; value: '' | Decision }> = [
   { label: 'All decisions', value: '' },
   { label: 'Blocked', value: 'BLOCK' },
-  { label: 'Warnings', value: 'WARN' },
+  { label: 'Warned', value: 'WARN' },
   { label: 'Allowed', value: 'ALLOW' },
 ]
 
-const decisionStyles: Record<Decision, string> = {
-  BLOCK: 'bg-danger-soft text-danger-fg border-danger/30',
-  WARN: 'bg-warn-soft text-warn-fg border-warn/30',
-  ALLOW: 'bg-success-soft text-success-fg border-success/30',
-}
+const RISK: Array<{ label: string; min: number }> = [
+  { label: 'Any risk', min: 0 },
+  { label: 'Risk 30+', min: 30 },
+  { label: 'Risk 70+', min: 70 },
+]
 
-function DecisionIcon({ decision }: { decision: Decision }) {
-  if (decision === 'BLOCK') return <ShieldAlert className="h-5 w-5 text-danger-fg" />
-  if (decision === 'WARN') return <AlertTriangle className="h-5 w-5 text-warn-fg" />
-  return <CheckCircle className="h-5 w-5 text-success-fg" />
-}
+const selectCls = 'h-8 rounded-lg border border-line bg-surface px-2 text-[13px] text-fg'
 
 export default function Incidents() {
   const [decision, setDecision] = useState<'' | Decision>('')
+  const [keyword, setKeyword] = useState('')
+  const [minRisk, setMinRisk] = useState(0)
+  const queryClient = useQueryClient()
   const { data: incidents = [], isLoading, isError, error, refetch } = useIncidents(100, decision)
 
+  const filtered = useMemo(() => {
+    const q = keyword.trim().toLowerCase()
+    return incidents.filter(
+      (i) =>
+        i.risk_score >= minRisk &&
+        (!q || [i.target_host, i.intent_label, i.user_ip, i.id].some((v) => (v || '').toLowerCase().includes(q))),
+    )
+  }, [incidents, keyword, minRisk])
+
+  const markReviewed = async (ids: string[]) => {
+    const byId = new Map(incidents.map((i) => [i.id, i]))
+    const results = await Promise.allSettled(
+      ids.map((id) =>
+        apiFetch(`/api/v1/incidents/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ notes: byId.get(id)?.notes || 'Marked reviewed from the incidents list' }),
+        }),
+      ),
+    )
+    const failed = results.filter((r) => r.status === 'rejected').length
+    await queryClient.invalidateQueries({ queryKey: ['incidents'] })
+    if (failed === 0) {
+      toast.success(`${ids.length} incident${ids.length === 1 ? '' : 's'} marked reviewed`)
+      celebrate()
+    } else {
+      toast.error(`${failed} of ${ids.length} could not be updated`, 'You may lack the review permission.')
+    }
+  }
+
   return (
-    <section className="flex flex-col gap-6 p-6 md:p-8" id="incidents-page">
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-text md:text-3xl">Incidents</h1>
-          <p className="mt-1 text-sm text-text-dim">
-            Review persisted traffic decisions and open an incident for its investigation details.
-          </p>
-        </div>
-        <label className="flex items-center gap-3 text-sm text-text-dim">
-          <span>Decision</span>
-          <select
-            aria-label="Filter incidents by decision"
-            value={decision}
-            onChange={(event) => setDecision(event.target.value as '' | Decision)}
-            className="rounded-xl border border-line bg-grapho-surface px-3 py-2 text-text focus:outline-none focus:border-grapho-orange"
-          >
-            {DECISIONS.map((option) => (
-              <option key={option.value || 'all'} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
-      </header>
+    <section id="incidents-page">
+      <PageHeader title="Incidents" subtitle="Review persisted traffic decisions and open an incident for its investigation details." />
 
-      {isError && (
-        <div role="alert" className="rounded-xl border border-danger/30 bg-danger-soft p-4 text-sm text-danger-fg">
-          <p>{error instanceof Error ? error.message : 'Unable to load incidents.'}</p>
-          <button type="button" onClick={() => void refetch()} className="mt-2 underline">
-            Retry
-          </button>
+      {isError ? (
+        <div className="rounded-2xl border border-line bg-surface">
+          <EmptyState
+            kind="error"
+            title="Unable to load incidents"
+            description={error instanceof Error ? error.message : undefined}
+            action={<Button variant="primary" onClick={() => void refetch()}>Retry</Button>}
+          />
         </div>
-      )}
-
-      <div className="overflow-hidden rounded-2xl border border-line bg-grapho-surface/50">
-        <div className="grid grid-cols-[minmax(0,1fr)_120px_150px_100px] gap-4 border-b border-line px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-text-dim max-md:hidden">
-          <span>Incident</span>
-          <span>Decision</span>
-          <span>Destination</span>
-          <span>Risk</span>
-        </div>
-
-        {isLoading ? (
-          <div className="p-8 text-center text-sm text-text-dim" role="status">Loading incidents…</div>
-        ) : !isError && incidents.length === 0 ? (
-          <div className="p-10 text-center">
-            <p className="font-medium text-text">No incidents found</p>
-            <p className="mt-1 text-sm text-text-dim">
-              {decision ? 'Try another decision filter.' : 'New traffic decisions will appear here.'}
-            </p>
-          </div>
-        ) : (
-          <div className="divide-y divide-line">
-            {incidents.map((incident) => (
-              <Link
-                key={incident.id}
-                to={`/incidents/${incident.id}`}
-                className="grid grid-cols-[minmax(0,1fr)_120px_150px_100px] items-center gap-4 px-5 py-4 transition-colors hover:bg-subtle max-md:grid-cols-1"
-              >
-                <div className="flex min-w-0 items-center gap-3">
-                  <DecisionIcon decision={incident.decision} />
-                  <div className="min-w-0">
-                    <div className="truncate text-sm font-semibold text-text">
-                      {incident.intent_label || 'Traffic decision'}
-                    </div>
-                    <div className="mt-1 text-xs text-text-dim">
-                      {incident.timestamp
-                        ? new Date(incident.timestamp).toLocaleString()
-                        : 'Unknown time'}
-                      <span className="mx-2">·</span>
-                      {incident.id.slice(0, 8)}
-                      {incident.reviewed && <span className="ml-2 text-success-fg">Reviewed</span>}
-                    </div>
-                  </div>
-                </div>
-                <span className={`w-fit rounded-full border px-2.5 py-1 text-[10px] font-bold ${decisionStyles[incident.decision]}`}>
-                  {incident.decision}
-                </span>
-                <span className="truncate text-sm text-text-dim">{incident.target_host || 'Unknown host'}</span>
-                <span className="text-sm font-semibold tabular-nums text-text">{incident.risk_score}/100</span>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
-      {!isLoading && !isError && incidents.length > 0 && (
-        <p className="text-xs text-text-dim">Showing the latest {incidents.length} incidents.</p>
+      ) : (
+        <IncidentTable
+          title="Incident log"
+          incidents={filtered}
+          loading={isLoading}
+          emptyTitle={decision || keyword || minRisk ? 'No matching incidents' : 'No incidents found'}
+          emptyDescription={decision || keyword || minRisk ? 'Try loosening the filters.' : 'New traffic decisions will appear here.'}
+          onMarkReviewed={markReviewed}
+          toolbar={
+            <>
+              <label className="relative">
+                <span className="sr-only">Keywords</span>
+                <SearchIcon className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-faint" />
+                <input value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="Keywords" className={`${selectCls} w-36 pl-7`} />
+              </label>
+              <label className="flex items-center gap-1.5">
+                <Filter className="h-3.5 w-3.5 text-faint" aria-hidden="true" />
+                <select aria-label="Filter by decision" value={decision} onChange={(e) => setDecision(e.target.value as '' | Decision)} className={selectCls}>
+                  {DECISIONS.map((d) => <option key={d.value || 'all'} value={d.value}>{d.label}</option>)}
+                </select>
+              </label>
+              <select aria-label="Filter by risk" value={minRisk} onChange={(e) => setMinRisk(Number(e.target.value))} className={selectCls}>
+                {RISK.map((r) => <option key={r.min} value={r.min}>{r.label}</option>)}
+              </select>
+            </>
+          }
+        />
       )}
     </section>
   )

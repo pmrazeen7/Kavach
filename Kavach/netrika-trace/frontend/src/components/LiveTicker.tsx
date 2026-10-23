@@ -16,7 +16,7 @@ export default function LiveTicker({ incidents }: LiveTickerProps) {
   if (items.length === 0) {
     return (
       <div className="glass-card p-5">
-        <div className="panel-title mb-3">RECENT TRAFFIC</div>
+        <div className="panel-title mb-3">Recent traffic</div>
         <div className="text-xs text-text-dim font-medium text-center py-4">Awaiting traffic…</div>
       </div>
     )
@@ -24,7 +24,7 @@ export default function LiveTicker({ incidents }: LiveTickerProps) {
 
   return (
     <div className="glass-card p-5" id="live-ticker">
-      <div className="panel-title mb-3">RECENT TRAFFIC</div>
+      <div className="panel-title mb-3">Recent traffic</div>
       <div className="h-9 overflow-hidden relative rounded-xl bg-subtle border border-line">
         <div className="flex items-center h-full whitespace-nowrap gap-6 px-3 overflow-x-auto">
           {items.map((inc) => (

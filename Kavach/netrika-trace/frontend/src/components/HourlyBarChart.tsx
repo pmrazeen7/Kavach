@@ -38,12 +38,12 @@ export default function HourlyBarChart({ data, window, onWindowChange }: HourlyB
   return (
     <div className="glass-card p-5 flex flex-col min-h-[220px]" id="hourly-chart">
       <div className="flex items-center justify-between mb-1">
-        <div className="panel-title mb-0 flex-1">TRAFFIC DECISIONS</div>
+        <div className="panel-title mb-0 flex-1">Traffic decisions</div>
         <select
           aria-label="Traffic time range"
           value={window}
           onChange={(event) => onWindowChange(event.target.value as HourlyBarChartProps['window'])}
-          className="text-[10px] font-semibold text-text bg-subtle border border-line rounded-lg px-2 py-1"
+          className="text-xs font-medium text-fg bg-subtle border border-line rounded-lg px-2 py-1"
         >
           <option value="1h">Last hour</option>
           <option value="24h">24 hours</option>
@@ -51,7 +51,7 @@ export default function HourlyBarChart({ data, window, onWindowChange }: HourlyB
           <option value="30d">30 days</option>
         </select>
       </div>
-      <p className="text-[11px] text-text-dim mb-3">Persisted decisions · timestamps in UTC</p>
+      <p className="text-[11px] text-text-dim mb-3">Persisted decisions, timestamps in UTC</p>
       {!hasTraffic ? (
         <div className="flex-1 min-h-[140px] flex items-center justify-center text-xs text-text-dim" role="status">
           No persisted requests in this period.
@@ -60,35 +60,35 @@ export default function HourlyBarChart({ data, window, onWindowChange }: HourlyB
         <div className="flex-1 min-h-[140px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartRows} barGap={4} margin={{ top: 8, right: 4, left: -18, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 6" stroke="rgba(255,255,255,0.04)" vertical={false} />
+            <CartesianGrid strokeDasharray="3 6" stroke="rgb(156 163 175 / 0.25)" vertical={false} />
             <XAxis
               dataKey="label"
               interval={window === '30d' ? 4 : window === '7d' ? 11 : window === '1h' ? 9 : 3}
-              tick={{ fill: '#8b90a0', fontSize: 9, fontWeight: 500 }}
-              axisLine={{ stroke: 'rgba(255,255,255,0.06)' }}
+              tick={{ fill: '#9CA3AF', fontSize: 11 }}
+              axisLine={{ stroke: 'rgb(156 163 175 / 0.3)' }}
               tickLine={false}
             />
             <YAxis hide />
             <Tooltip
-              cursor={{ fill: 'rgba(249, 115, 22, 0.06)' }}
+              cursor={{ fill: 'rgb(79 70 229 / 0.06)' }}
               animationDuration={180}
               contentStyle={{
-                background: 'rgba(22, 24, 30, 0.96)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
+                background: 'rgb(var(--surface))',
+                border: '1px solid rgb(var(--line))',
                 borderRadius: 12,
-                color: '#f0f2f7',
+                color: 'rgb(var(--fg))',
                 fontSize: 11,
-                fontFamily: 'DM Sans, Inter, sans-serif',
+                fontFamily: 'Inter, sans-serif',
                 fontWeight: 600,
-                boxShadow: '0 12px 40px rgba(0, 0, 0, 0.45)',
+                boxShadow: '0 12px 32px rgb(16 24 40 / 0.12)',
                 padding: '10px 14px',
               }}
-              labelStyle={{ color: '#8b90a0', marginBottom: 4 }}
+              labelStyle={{ color: 'rgb(var(--muted))', marginBottom: 4 }}
             />
             <Bar
               dataKey="blocked"
               name="Blocked"
-              fill="#f97316"
+              fill="#EF4444"
               radius={[6, 6, 0, 0]}
               maxBarSize={28}
               isAnimationActive={animate}
@@ -97,7 +97,7 @@ export default function HourlyBarChart({ data, window, onWindowChange }: HourlyB
             <Bar
               dataKey="warned"
               name="Warned"
-              fill="#fbbf24"
+              fill="#F59E0B"
               radius={[6, 6, 0, 0]}
               maxBarSize={28}
               isAnimationActive={animate}
@@ -106,7 +106,7 @@ export default function HourlyBarChart({ data, window, onWindowChange }: HourlyB
             <Bar
               dataKey="allowed"
               name="Allowed"
-              fill="#3d5248"
+              fill="#34D399"
               radius={[6, 6, 0, 0]}
               maxBarSize={28}
               isAnimationActive={animate}
