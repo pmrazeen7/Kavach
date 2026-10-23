@@ -23,7 +23,6 @@ export default function Landing() {
   const reduce = useReducedMotion()
   const { scrollY } = useScroll()
   const y1 = useTransform(scrollY, [0, 1500], [0, -220])
-  const y2 = useTransform(scrollY, [0, 1500], [0, 160])
 
   useEffect(() => {
     const prev = document.title
@@ -35,12 +34,9 @@ export default function Landing() {
 
   return (
     <div className="relative min-h-screen overflow-x-clip bg-bg text-fg">
-      <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-0">
+      <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 h-[100dvh]">
         <motion.div className="absolute inset-0" style={{ y: reduce ? 0 : y1 }}>
           <Aurora tone="mix" strong />
-        </motion.div>
-        <motion.div className="absolute inset-0" style={{ y: reduce ? 0 : y2 }}>
-          <Aurora tone="blue" />
         </motion.div>
       </div>
 

@@ -153,3 +153,32 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* ── Range slider (see components/ui/Slider.tsx) ───────────── */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  border-radius: 999px;
+  outline-offset: 6px;
+  cursor: pointer;
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgb(var(--surface));
+  border: 2px solid var(--slider-color);
+  box-shadow: var(--shadow-pop);
+  transition: transform 0.15s;
+}
+.slider:active::-webkit-slider-thumb { transform: scale(1.12); }
+.slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgb(var(--surface));
+  border: 2px solid var(--slider-color);
+  box-shadow: var(--shadow-pop);
+}

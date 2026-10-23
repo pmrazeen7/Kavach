@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import PolicyToggle from '../PolicyToggle'
 import Card from '../ui/Card'
+import Slider from '../ui/Slider'
 import Skeleton from '../ui/Skeleton'
 import EmptyState from '../ui/EmptyState'
 import { toast } from '../ui/Toast'
@@ -70,7 +71,7 @@ export default function RulesPanel() {
                   <label htmlFor="block-threshold" className="text-sm font-medium text-fg">Block threshold</label>
                   <span className="rounded-full bg-danger-soft px-2.5 py-0.5 text-sm font-semibold tabular-nums text-danger-fg">{config.block_threshold}</span>
                 </div>
-                <input id="block-threshold" type="range" min={50} max={100} value={config.block_threshold} onChange={(e) => savePolicy({ block_threshold: Number(e.target.value) })} className="w-full accent-[rgb(var(--danger))]" />
+                <Slider id="block-threshold" tone="danger" min={50} max={100} value={config.block_threshold} onChange={(v) => savePolicy({ block_threshold: v })} />
               </div>
 
               <div>
@@ -78,7 +79,7 @@ export default function RulesPanel() {
                   <label htmlFor="warn-threshold" className="text-sm font-medium text-fg">Warn threshold</label>
                   <span className="rounded-full bg-warn-soft px-2.5 py-0.5 text-sm font-semibold tabular-nums text-warn-fg">{config.warn_threshold}</span>
                 </div>
-                <input id="warn-threshold" type="range" min={10} max={69} value={Math.min(config.warn_threshold, 69)} onChange={(e) => savePolicy({ warn_threshold: Number(e.target.value) })} className="w-full accent-[rgb(var(--warn))]" />
+                <Slider id="warn-threshold" tone="warn" min={10} max={69} value={Math.min(config.warn_threshold, 69)} onChange={(v) => savePolicy({ warn_threshold: v })} />
               </div>
             </Card>
 

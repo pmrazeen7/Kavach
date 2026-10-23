@@ -17,6 +17,7 @@ const config: Config = {
         faint: v('faint'),
         ink: v('ink'),
         'on-ink': v('on-ink'),
+        paper: v('paper'),
         accent: { DEFAULT: v('accent'), on: v('on-accent'), deep: v('accent-deep'), soft: v('accent-soft'), fg: v('accent-fg') },
         success: { DEFAULT: v('success'), soft: v('success-soft'), fg: v('success-fg') },
         warn: { DEFAULT: v('warn'), soft: v('warn-soft'), fg: v('warn-fg') },

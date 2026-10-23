@@ -59,9 +59,9 @@ export default function BreachSimulationViewer({ text, entities }: BreachSimulat
         </div>
       )}
 
-      <div className="font-mono text-sm text-text font-medium leading-[1.8] whitespace-pre-wrap relative z-10">
+      <div className="font-mono text-sm text-fg font-medium leading-[1.8] whitespace-pre-wrap relative z-10">
         {displayedText}
-        {isTyping && <span className="inline-block w-2 h-4 bg-red animate-pulse ml-0.5 align-text-bottom" />}
+        {isTyping && <span className="inline-block w-2 h-4 bg-danger animate-pulse ml-0.5 align-text-bottom" />}
       </div>
 
       <div className="relative z-10 mt-6 text-right text-xs text-muted">
