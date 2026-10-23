@@ -9,7 +9,7 @@ export default function Landing() {
     <iframe
       title="Netrika Kavach-Trace"
       src={src}
-      className="fixed inset-0 z-[100] h-[100dvh] w-full border-0 bg-[#1c1f24]"
+      className="fixed inset-0 z-[100] h-[100dvh] w-full border-0 bg-bg"
     />
   )
 }
