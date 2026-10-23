@@ -52,6 +52,16 @@ from backend.api.incident_routes import (
     api_get_incidents,
     api_mark_reviewed,
 )
+from backend.api.scanner_routes import (
+    api_add_canary,
+    api_allow,
+    api_get_settings,
+    api_ingest,
+    api_scan,
+    api_unallow,
+    api_update_settings,
+)
+from backend.scanner_gate import scanner_gate
 from backend.api.policy_routes import (
     api_get_policy,
     api_sync_extension_policy,
@@ -298,7 +308,7 @@ def create_app() -> web.Application:
     seed_enterprise_defaults()
 
     app = web.Application(
-        middlewares=[cors_middleware],
+        middlewares=[cors_middleware, scanner_gate],
         client_max_size=10 * 1024 * 1024 + 64 * 1024,
     )
     app.router.add_get("/health", api_health)
@@ -349,6 +359,15 @@ def create_app() -> web.Application:
     # Model Evaluation v1
     app.router.add_post("/api/v1/eval/evaluate", api_run_evaluation)
     app.router.add_get("/api/v1/eval/latest", api_get_evaluations)
+
+    # Layered scanner v1
+    app.router.add_post("/api/v1/scanner/scan", api_scan)
+    app.router.add_get("/api/v1/scanner/settings", api_get_settings)
+    app.router.add_patch("/api/v1/scanner/settings", api_update_settings)
+    app.router.add_post("/api/v1/scanner/allow", api_allow)
+    app.router.add_delete("/api/v1/scanner/allow/{fp}", api_unallow)
+    app.router.add_post("/api/v1/scanner/fingerprints/ingest", api_ingest)
+    app.router.add_post("/api/v1/scanner/canaries", api_add_canary)
 
     # DLP Pipeline Gateway
     app.router.add_post("/api/analyze", api_analyze_enterprise)

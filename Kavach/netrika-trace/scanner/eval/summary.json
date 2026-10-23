@@ -1,0 +1,1129 @@
+{
+ "n": 3940,
+ "n_pos": 2053,
+ "n_neg": 1887,
+ "overall_recall": 0.9863614223088164,
+ "overall_precision": 0.9931338891613536,
+ "false_alarm_rate": 0.007419183889772125,
+ "warn_rate_on_negatives": 0.002649708532061473,
+ "groups": {
+  "formats": {
+   "n": 438,
+   "caught": 438,
+   "recall": 1.0
+  },
+  "pii": {
+   "n": 132,
+   "caught": 132,
+   "recall": 1.0
+  },
+  "evasions": {
+   "n": 168,
+   "caught": 168,
+   "recall": 1.0
+  },
+  "bare-random": {
+   "n": 818,
+   "caught": 803,
+   "recall": 0.9816625916870416
+  },
+  "bare-human-password": {
+   "n": 82,
+   "caught": 69,
+   "recall": 0.8414634146341463
+  },
+  "context": {
+   "n": 200,
+   "caught": 200,
+   "recall": 1.0
+  },
+  "fingerprints": {
+   "n": 175,
+   "caught": 175,
+   "recall": 1.0
+  },
+  "adversarial": {
+   "n": 40,
+   "caught": 40,
+   "recall": 1.0
+  }
+ },
+ "categories": {
+  "adversarial:instruction": {
+   "kind": "pos",
+   "n": 40,
+   "recall": 1.0
+  },
+  "bare:human_password": {
+   "kind": "pos",
+   "n": 82,
+   "recall": 0.8414634146341463
+  },
+  "bare:random": {
+   "kind": "pos",
+   "n": 818,
+   "recall": 0.9816625916870416
+  },
+  "context:cli": {
+   "kind": "pos",
+   "n": 40,
+   "recall": 1.0
+  },
+  "context:labelled": {
+   "kind": "pos",
+   "n": 160,
+   "recall": 1.0
+  },
+  "evasion:base64": {
+   "kind": "pos",
+   "n": 14,
+   "recall": 1.0
+  },
+  "evasion:base64url": {
+   "kind": "pos",
+   "n": 14,
+   "recall": 1.0
+  },
+  "evasion:double": {
+   "kind": "pos",
+   "n": 14,
+   "recall": 1.0
+  },
+  "evasion:hex": {
+   "kind": "pos",
+   "n": 14,
+   "recall": 1.0
+  },
+  "evasion:homoglyph": {
+   "kind": "pos",
+   "n": 14,
+   "recall": 1.0
+  },
+  "evasion:html": {
+   "kind": "pos",
+   "n": 14,
+   "recall": 1.0
+  },
+  "evasion:lines": {
+   "kind": "pos",
+   "n": 14,
+   "recall": 1.0
+  },
+  "evasion:reversed": {
+   "kind": "pos",
+   "n": 14,
+   "recall": 1.0
+  },
+  "evasion:spaced": {
+   "kind": "pos",
+   "n": 14,
+   "recall": 1.0
+  },
+  "evasion:turns": {
+   "kind": "pos",
+   "n": 14,
+   "recall": 1.0
+  },
+  "evasion:url": {
+   "kind": "pos",
+   "n": 14,
+   "recall": 1.0
+  },
+  "evasion:zerowidth": {
+   "kind": "pos",
+   "n": 14,
+   "recall": 1.0
+  },
+  "fingerprint:canary": {
+   "kind": "pos",
+   "n": 25,
+   "recall": 1.0
+  },
+  "fingerprint:real-secret": {
+   "kind": "pos",
+   "n": 150,
+   "recall": 1.0
+  },
+  "format:age_key": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:alibaba_key": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:anthropic": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:atlassian": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:aws_access_key": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:aws_secret_key": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:azure_ad_secret": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:azure_conn": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:azure_sas": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:azure_storage_key": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:basic_auth": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:bearer": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:bitbucket_app": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:braintree": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:circleci": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:cloudflare_origin_ca": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:db_url": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:digitalocean": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:discord_bot": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:discord_webhook": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:docker_pat": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:eth_private_key": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:facebook": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:firebase_fcm": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:gcp_api_key": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:gcp_oauth_access": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:gcp_oauth_refresh": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:gcp_oauth_secret": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:gcp_service_account": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:github_fine_pat": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:github_pat": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:gitlab_pat": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:groq": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:hashicorp_vault": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:heroku_key": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:huggingface": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:jwt": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:linear": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:mailchimp": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:mailgun": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:mapbox_secret": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:newrelic": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:notion": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:npm_token": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:nuget": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:openai_legacy": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:openai_proj": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:pem_private_key": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:perplexity": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:planetscale": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:postman": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:pypi_token": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:razorpay": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:replicate": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:rubygems": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:sendgrid": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:sentry_dsn": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:shopify": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:slack_token": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:slack_webhook": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:sql_password": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:square_token": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:ssh_private_body": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:stripe_secret": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:stripe_webhook": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:teams_webhook": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:telegram_bot": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:tencent_key": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:terraform_cloud": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:twilio_api_key": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:twitter_bearer": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:url_creds": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "format:xai": {
+   "kind": "pos",
+   "n": 6,
+   "recall": 1.0
+  },
+  "neg:abbrev-identifier": {
+   "kind": "neg",
+   "n": 40,
+   "false_alarm_rate": 0.025
+  },
+  "neg:acronym": {
+   "kind": "neg",
+   "n": 22,
+   "false_alarm_rate": 0.0
+  },
+  "neg:code": {
+   "kind": "neg",
+   "n": 218,
+   "false_alarm_rate": 0.0
+  },
+  "neg:css": {
+   "kind": "neg",
+   "n": 18,
+   "false_alarm_rate": 0.0
+  },
+  "neg:css-unit": {
+   "kind": "neg",
+   "n": 17,
+   "false_alarm_rate": 0.0
+  },
+  "neg:dotted": {
+   "kind": "neg",
+   "n": 36,
+   "false_alarm_rate": 0.0
+  },
+  "neg:filename": {
+   "kind": "neg",
+   "n": 27,
+   "false_alarm_rate": 0.0
+  },
+  "neg:hash": {
+   "kind": "neg",
+   "n": 27,
+   "false_alarm_rate": 0.0
+  },
+  "neg:identifier": {
+   "kind": "neg",
+   "n": 32,
+   "false_alarm_rate": 0.0
+  },
+  "neg:markup": {
+   "kind": "neg",
+   "n": 13,
+   "false_alarm_rate": 0.0
+  },
+  "neg:out-of-dictionary-name": {
+   "kind": "neg",
+   "n": 128,
+   "false_alarm_rate": 0.0
+  },
+  "neg:path": {
+   "kind": "neg",
+   "n": 23,
+   "false_alarm_rate": 0.0
+  },
+  "neg:placeholder": {
+   "kind": "neg",
+   "n": 74,
+   "false_alarm_rate": 0.0
+  },
+  "neg:prose": {
+   "kind": "neg",
+   "n": 424,
+   "false_alarm_rate": 0.0
+  },
+  "neg:real-code": {
+   "kind": "neg",
+   "n": 487,
+   "false_alarm_rate": 0.024640657084188913
+  },
+  "neg:reference": {
+   "kind": "neg",
+   "n": 20,
+   "false_alarm_rate": 0.0
+  },
+  "neg:regex-class": {
+   "kind": "neg",
+   "n": 23,
+   "false_alarm_rate": 0.0
+  },
+  "neg:svg-path": {
+   "kind": "neg",
+   "n": 32,
+   "false_alarm_rate": 0.0
+  },
+  "neg:tailwind": {
+   "kind": "neg",
+   "n": 21,
+   "false_alarm_rate": 0.0
+  },
+  "neg:template": {
+   "kind": "neg",
+   "n": 30,
+   "false_alarm_rate": 0.0
+  },
+  "neg:url-or-path": {
+   "kind": "neg",
+   "n": 68,
+   "false_alarm_rate": 0.0
+  },
+  "neg:uuid": {
+   "kind": "neg",
+   "n": 20,
+   "false_alarm_rate": 0.05
+  },
+  "neg:version": {
+   "kind": "neg",
+   "n": 23,
+   "false_alarm_rate": 0.0
+  },
+  "neg:word": {
+   "kind": "neg",
+   "n": 64,
+   "false_alarm_rate": 0.0
+  },
+  "pii:aadhaar": {
+   "kind": "pos",
+   "n": 12,
+   "recall": 1.0
+  },
+  "pii:card": {
+   "kind": "pos",
+   "n": 12,
+   "recall": 1.0
+  },
+  "pii:email": {
+   "kind": "pos",
+   "n": 12,
+   "recall": 1.0
+  },
+  "pii:gstin": {
+   "kind": "pos",
+   "n": 12,
+   "recall": 1.0
+  },
+  "pii:iban": {
+   "kind": "pos",
+   "n": 12,
+   "recall": 1.0
+  },
+  "pii:ifsc": {
+   "kind": "pos",
+   "n": 12,
+   "recall": 1.0
+  },
+  "pii:ipv4_private": {
+   "kind": "pos",
+   "n": 12,
+   "recall": 1.0
+  },
+  "pii:pan": {
+   "kind": "pos",
+   "n": 12,
+   "recall": 1.0
+  },
+  "pii:passport_in": {
+   "kind": "pos",
+   "n": 12,
+   "recall": 1.0
+  },
+  "pii:phone_in": {
+   "kind": "pos",
+   "n": 12,
+   "recall": 1.0
+  },
+  "pii:ssn": {
+   "kind": "pos",
+   "n": 12,
+   "recall": 1.0
+  }
+ },
+ "layers": {
+  "0": {
+   "n": 168,
+   "recall": 1.0,
+   "caught_by_layer": {
+    "1": 138,
+    "3": 25,
+    "2": 5
+   }
+  },
+  "1": {
+   "n": 610,
+   "recall": 1.0,
+   "caught_by_layer": {
+    "1": 582,
+    "3": 21,
+    "2": 7
+   }
+  },
+  "2": {
+   "n": 900,
+   "recall": 0.9688888888888889,
+   "caught_by_layer": {
+    "2": 872
+   }
+  },
+  "3": {
+   "n": 200,
+   "recall": 1.0,
+   "caught_by_layer": {
+    "3": 190,
+    "2": 10
+   }
+  },
+  "4": {
+   "n": 175,
+   "recall": 1.0,
+   "caught_by_layer": {
+    "4": 170,
+    "2": 5
+   }
+  }
+ },
+ "false_alarms_by_layer": {
+  "2": 12,
+  "1": 1,
+  "3": 1
+ },
+ "false_alarms_by_category": {
+  "neg:abbrev-identifier": 1,
+  "neg:uuid": 1,
+  "neg:real-code": 12
+ },
+ "misses": [
+  {
+   "id": "s00819",
+   "category": "bare:random",
+   "action": "ALLOW",
+   "tags": [
+    "bare",
+    "rand_lower",
+    "isolated"
+   ]
+  },
+  {
+   "id": "s00821",
+   "category": "bare:human_password",
+   "action": "ALLOW",
+   "tags": [
+    "bare",
+    "human_password",
+    "isolated"
+   ]
+  },
+  {
+   "id": "s00825",
+   "category": "bare:random",
+   "action": "ALLOW",
+   "tags": [
+    "bare",
+    "rand_hex",
+    "in-prose"
+   ]
+  },
+  {
+   "id": "s00877",
+   "category": "bare:random",
+   "action": "WARN",
+   "tags": [
+    "bare",
+    "rand_hex",
+    "isolated"
+   ]
+  },
+  {
+   "id": "s00903",
+   "category": "bare:human_password",
+   "action": "ALLOW",
+   "tags": [
+    "bare",
+    "human_password",
+    "isolated"
+   ]
+  },
+  {
+   "id": "s00938",
+   "category": "bare:random",
+   "action": "ALLOW",
+   "tags": [
+    "bare",
+    "rand_lower",
+    "in-prose"
+   ]
+  },
+  {
+   "id": "s00970",
+   "category": "bare:human_password",
+   "action": "ALLOW",
+   "tags": [
+    "bare",
+    "human_password",
+    "isolated"
+   ]
+  },
+  {
+   "id": "s01010",
+   "category": "bare:random",
+   "action": "ALLOW",
+   "tags": [
+    "bare",
+    "rand_b64url",
+    "isolated"
+   ]
+  },
+  {
+   "id": "s01043",
+   "category": "bare:random",
+   "action": "ALLOW",
+   "tags": [
+    "bare",
+    "rand_lower",
+    "in-prose"
+   ]
+  },
+  {
+   "id": "s01097",
+   "category": "bare:random",
+   "action": "ALLOW",
+   "tags": [
+    "bare",
+    "rand_symbols",
+    "in-prose"
+   ]
+  },
+  {
+   "id": "s01182",
+   "category": "bare:random",
+   "action": "ALLOW",
+   "tags": [
+    "bare",
+    "rand_hex",
+    "in-prose"
+   ]
+  },
+  {
+   "id": "s01204",
+   "category": "bare:human_password",
+   "action": "ALLOW",
+   "tags": [
+    "bare",
+    "human_password",
+    "isolated"
+   ]
+  },
+  {
+   "id": "s01219",
+   "category": "bare:random",
+   "action": "ALLOW",
+   "tags": [
+    "bare",
+    "rand_symbols",
+    "in-prose"
+   ]
+  },
+  {
+   "id": "s01239",
+   "category": "bare:human_password",
+   "action": "ALLOW",
+   "tags": [
+    "bare",
+    "human_password",
+    "isolated"
+   ]
+  },
+  {
+   "id": "s01290",
+   "category": "bare:random",
+   "action": "ALLOW",
+   "tags": [
+    "bare",
+    "rand_hex",
+    "isolated"
+   ]
+  },
+  {
+   "id": "s01349",
+   "category": "bare:human_password",
+   "action": "ALLOW",
+   "tags": [
+    "bare",
+    "human_password",
+    "isolated"
+   ]
+  },
+  {
+   "id": "s01371",
+   "category": "bare:human_password",
+   "action": "ALLOW",
+   "tags": [
+    "bare",
+    "human_password",
+    "isolated"
+   ]
+  },
+  {
+   "id": "s01379",
+   "category": "bare:human_password",
+   "action": "ALLOW",
+   "tags": [
+    "bare",
+    "human_password",
+    "isolated"
+   ]
+  },
+  {
+   "id": "s01381",
+   "category": "bare:random",
+   "action": "ALLOW",
+   "tags": [
+    "bare",
+    "rand_symbols",
+    "isolated"
+   ]
+  },
+  {
+   "id": "s01382",
+   "category": "bare:human_password",
+   "action": "ALLOW",
+   "tags": [
+    "bare",
+    "human_password",
+    "isolated"
+   ]
+  },
+  {
+   "id": "s01445",
+   "category": "bare:human_password",
+   "action": "ALLOW",
+   "tags": [
+    "bare",
+    "human_password",
+    "isolated"
+   ]
+  },
+  {
+   "id": "s01451",
+   "category": "bare:random",
+   "action": "ALLOW",
+   "tags": [
+    "bare",
+    "rand_symbols",
+    "isolated"
+   ]
+  },
+  {
+   "id": "s01481",
+   "category": "bare:human_password",
+   "action": "ALLOW",
+   "tags": [
+    "bare",
+    "human_password",
+    "isolated"
+   ]
+  },
+  {
+   "id": "s01508",
+   "category": "bare:random",
+   "action": "WARN",
+   "tags": [
+    "bare",
+    "rand_hex",
+    "isolated"
+   ]
+  },
+  {
+   "id": "s01539",
+   "category": "bare:human_password",
+   "action": "ALLOW",
+   "tags": [
+    "bare",
+    "human_password",
+    "isolated"
+   ]
+  },
+  {
+   "id": "s01541",
+   "category": "bare:random",
+   "action": "ALLOW",
+   "tags": [
+    "bare",
+    "rand_symbols",
+    "in-prose"
+   ]
+  },
+  {
+   "id": "s01557",
+   "category": "bare:random",
+   "action": "WARN",
+   "tags": [
+    "bare",
+    "rand_hex",
+    "isolated"
+   ]
+  },
+  {
+   "id": "s01618",
+   "category": "bare:human_password",
+   "action": "ALLOW",
+   "tags": [
+    "bare",
+    "human_password",
+    "isolated"
+   ]
+  }
+ ],
+ "false_alarms": [
+  {
+   "id": "s01913",
+   "category": "neg:abbrev-identifier",
+   "action": "BLOCK",
+   "type": "suspicious_token",
+   "text": "FrescoBtnPakKoum"
+  },
+  {
+   "id": "s02371",
+   "category": "neg:uuid",
+   "action": "TOKENIZE",
+   "type": "aadhaar",
+   "text": "a90c5320-449f-42c4-943d-448348630783"
+  },
+  {
+   "id": "r0001",
+   "category": "neg:real-code",
+   "action": "BLOCK",
+   "type": "suspicious_token",
+   "text": "    \"ENV_VARIABLE\": re.compile(\n        r'^[A-Z][A-Z0-9_]{2,}=(?:[\"\\'][^\\s\"\\'][^"
+  },
+  {
+   "id": "r0080",
+   "category": "neg:real-code",
+   "action": "BLOCK",
+   "type": "context_secret",
+   "text": "\"\"\"Enterprise Authentication, JWT & Password Hashing Engine.\"\"\"\n\nimport base64\ni"
+  },
+  {
+   "id": "r0142",
+   "category": "neg:real-code",
+   "action": "BLOCK",
+   "type": "suspicious_token",
+   "text": "    key = Column(String(100), unique=True, nullable=False)\n    value = Column(Te"
+  },
+  {
+   "id": "r0155",
+   "category": "neg:real-code",
+   "action": "BLOCK",
+   "type": "suspicious_token",
+   "text": "function applyBlockPolicy(verdict) {\n    const policyEntities = filterPolicyEnti"
+  },
+  {
+   "id": "r0164",
+   "category": "neg:real-code",
+   "action": "BLOCK",
+   "type": "suspicious_token",
+   "text": "\n        const proceedBtnHtml = btnLabel\n            ? `<button id=\"ntk-proceed\""
+  },
+  {
+   "id": "r0176",
+   "category": "neg:real-code",
+   "action": "BLOCK",
+   "type": "suspicious_token",
+   "text": "// Netrika-Trace page hook v23 \u2014 runs in MAIN world at document_start (before Ch"
+  },
+  {
+   "id": "r0247",
+   "category": "neg:real-code",
+   "action": "BLOCK",
+   "type": "suspicious_token",
+   "text": "import { Link } from 'react-router-dom'\nimport { ArrowRight, CircleCheck, Monito"
+  },
+  {
+   "id": "r0357",
+   "category": "neg:real-code",
+   "action": "BLOCK",
+   "type": "suspicious_token",
+   "text": "  const endRef = useRef<HTMLDivElement>(null)\n  const fileRef = useRef<HTMLInput"
+  },
+  {
+   "id": "r0358",
+   "category": "neg:real-code",
+   "action": "BLOCK",
+   "type": "suspicious_token",
+   "text": "                  setMemoryOpen(true)\n                  void proveAlzheimers()\n "
+  },
+  {
+   "id": "r0364",
+   "category": "neg:real-code",
+   "action": "BLOCK",
+   "type": "suspicious_token",
+   "text": "          <Character who=\"kavi\" pose=\"wave\" size={104} interactive />\n          "
+  },
+  {
+   "id": "r0404",
+   "category": "neg:real-code",
+   "action": "BLOCK",
+   "type": "suspicious_token",
+   "text": "\"\"\"Custom Indian PII recognizer \u2014 with enhanced regex fallback for Python 3.14.\n"
+  },
+  {
+   "id": "r0408",
+   "category": "neg:real-code",
+   "action": "BLOCK",
+   "type": "suspicious_token",
+   "text": "        patterns = {\n            \"AADHAAR\": (r\"\\b[2-9]\\d{3}\\s?\\d{4}\\s?\\d{4}\\b\", "
+  }
+ ],
+ "latency_ms": {
+  "p50": 0.6929500013939105,
+  "p95": 24.178600004233886,
+  "p99": 34.761900002195034,
+  "max": 52.55279999983031
+ }
+}
