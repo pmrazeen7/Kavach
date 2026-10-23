@@ -4,8 +4,10 @@ import { AnimatePresence, motion } from 'framer-motion'
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
 import CommandPalette from '../ui/CommandPalette'
-import { ToastViewport } from '../ui/Toast'
+import EasterEggs from '../EasterEggs'
+import Onboarding, { onboardingSeen } from '../Onboarding'
 import { useWebSocket } from '../../hooks/useWebSocket'
+import { PALETTE_EVENT } from '../../lib/palette'
 
 function readCollapsed() {
   try {
@@ -23,6 +25,7 @@ export default function Layout() {
   const [collapsed, setCollapsed] = useState(readCollapsed)
   const [drawer, setDrawer] = useState(false)
   const [palette, setPalette] = useState(false)
+  const [tour, setTour] = useState(() => !onboardingSeen())
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -31,8 +34,13 @@ export default function Layout() {
         setPalette((p) => !p)
       }
     }
+    const onOpen = () => setPalette(true)
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    window.addEventListener(PALETTE_EVENT, onOpen)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      window.removeEventListener(PALETTE_EVENT, onOpen)
+    }
   }, [])
 
   useEffect(() => setDrawer(false), [location.pathname])
@@ -49,7 +57,7 @@ export default function Layout() {
 
   return (
     <div className="flex h-[100dvh] gap-3 bg-bg p-3 font-sans text-fg">
-      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[200] focus:rounded-lg focus:bg-accent focus:px-3 focus:py-2 focus:text-white">
+      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[200] focus:rounded-lg focus:bg-accent focus:px-3 focus:py-2 focus:text-accent-on">
         Skip to content
       </a>
 
@@ -60,7 +68,7 @@ export default function Layout() {
       <AnimatePresence>
         {drawer && (
           <motion.div className="fixed inset-0 z-[80] lg:hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm" onClick={() => setDrawer(false)} aria-hidden="true" />
+            <div className="absolute inset-0 bg-ink/40 backdrop-blur-sm" onClick={() => setDrawer(false)} aria-hidden="true" />
             <motion.div className="absolute inset-y-3 left-3" initial={{ x: -280 }} animate={{ x: 0 }} exit={{ x: -280 }} transition={{ type: 'spring', stiffness: 360, damping: 36 }}>
               <Sidebar collapsed={false} isDrawer onToggleCollapsed={() => setDrawer(false)} onNavigate={() => setDrawer(false)} />
             </motion.div>
@@ -86,8 +94,9 @@ export default function Layout() {
         </main>
       </div>
 
-      <CommandPalette open={palette} onClose={() => setPalette(false)} />
-      <ToastViewport />
+      <CommandPalette open={palette} onClose={() => setPalette(false)} onReplayTour={() => setTour(true)} />
+      <Onboarding open={tour} onClose={() => setTour(false)} />
+      <EasterEggs />
     </div>
   )
 }

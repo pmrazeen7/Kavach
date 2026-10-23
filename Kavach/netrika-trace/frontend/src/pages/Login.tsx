@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import { Lock, Mail, ArrowRight } from 'lucide-react'
 import { apiUrl } from '../lib/api'
 import { LogoMark } from '../components/ui/Logo'
-import Mascot from '../components/ui/Mascot'
+import Aurora from '../components/ui/Aurora'
+import Character from '../components/ui/Character'
 import Button from '../components/ui/Button'
 
 const inputCls =
@@ -46,16 +47,12 @@ export default function Login() {
 
   return (
     <div className="relative flex min-h-[100dvh] items-center justify-center overflow-hidden bg-bg p-4">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-50" style={{ filter: 'blur(80px)' }}>
-        <div className="absolute -left-20 -top-20 h-96 w-96 animate-drift1 rounded-full bg-indigo-300/60" />
-        <div className="absolute -bottom-24 -right-16 h-96 w-96 animate-drift2 rounded-full bg-pink-300/50" />
-        <div className="absolute bottom-10 left-1/3 h-72 w-72 animate-drift1 rounded-full bg-emerald-200/50" />
-      </div>
+      <Aurora tone="mix" strong />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative z-10 w-full max-w-md rounded-3xl border border-line bg-surface p-8 shadow-pop"
+        className="relative z-10 w-full max-w-md rounded-4xl border border-line bg-surface p-8 shadow-pop"
       >
         <div className="mb-6 flex flex-col items-center text-center">
           <LogoMark size={56} />
@@ -91,7 +88,7 @@ export default function Login() {
         </form>
 
         <div className="mt-6 flex justify-center opacity-90">
-          <Mascot pose="wave" size={72} />
+          <Character who="kavi" pose="wave" size={84} interactive />
         </div>
       </motion.div>
     </div>

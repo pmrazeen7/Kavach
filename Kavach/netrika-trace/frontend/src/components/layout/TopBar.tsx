@@ -111,7 +111,7 @@ export default function TopBar({ onOpenPalette, onOpenDrawer }: Props) {
             aria-label="Account menu"
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((o) => !o)}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 text-sm font-semibold text-white"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-sm font-semibold text-accent-on"
           >
             {initial}
           </button>

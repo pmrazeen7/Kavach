@@ -5,11 +5,11 @@ import { cn } from './cn'
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'dark'
 
 const styles: Record<Variant, string> = {
-  primary: 'bg-accent text-white hover:opacity-90',
+  primary: 'bg-accent text-accent-on hover:opacity-90',
   secondary: 'bg-surface text-fg border border-line hover:bg-subtle',
   ghost: 'text-muted hover:bg-subtle hover:text-fg',
-  danger: 'bg-danger text-white hover:opacity-90',
-  dark: 'bg-gradient-to-b from-gray-700 to-gray-900 text-white hover:opacity-90',
+  danger: 'bg-danger text-accent-on hover:opacity-90',
+  dark: 'bg-ink text-on-ink hover:opacity-90',
 }
 
 interface Props extends HTMLMotionProps<'button'> {

@@ -21,7 +21,7 @@ export interface Incident {
   code_detected: boolean
   payload_size_bytes: number
   simulation_html: string
-  reviewed: boolean
+  reviewed?: boolean
   reviewed_by?: string
   notes?: string
   entity_detections?: EntityDetection[]

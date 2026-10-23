@@ -11,7 +11,7 @@ export default function RiskGauge({ score, size = 90 }: RiskGaugeProps) {
   const [offset, setOffset] = useState(circumference)
   const targetOffset = circumference * (1 - score / 100)
 
-  const color = score >= 70 ? '#EF4444' : score >= 30 ? '#F97316' : '#10B981'
+  const color = score >= 70 ? 'rgb(var(--danger))' : score >= 30 ? 'rgb(var(--warn))' : 'rgb(var(--success))'
 
   useEffect(() => {
     const timer = setTimeout(() => setOffset(targetOffset), 100)

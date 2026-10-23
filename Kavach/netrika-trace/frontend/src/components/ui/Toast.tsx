@@ -1,7 +1,8 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { CheckCircle2, AlertTriangle, Info, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import { create } from 'zustand'
 import confetti from 'canvas-confetti'
+import Character, { type Pose } from './Character'
 
 type Kind = 'success' | 'error' | 'info'
 interface ToastItem { id: number; kind: Kind; title: string; description?: string }
@@ -28,16 +29,17 @@ export const toast = {
   info: (title: string, description?: string) => useToasts.getState().push({ kind: 'info', title, description }),
 }
 
-export function celebrate() {
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
-  void confetti({ particleCount: 90, spread: 70, origin: { y: 0.75 }, colors: ['#4F46E5', '#6EE7B7', '#FDBA74', '#F9A8D4'] })
+function confettiColors(): string[] {
+  const css = getComputedStyle(document.documentElement)
+  return ['accent', 'a-mint', 'a-peach', 'a-pink'].map((n) => `rgb(${css.getPropertyValue(`--${n}`).trim().split(' ').join(',')})`)
 }
 
-const icons = {
-  success: <CheckCircle2 className="h-5 w-5 text-success" />,
-  error: <AlertTriangle className="h-5 w-5 text-danger" />,
-  info: <Info className="h-5 w-5 text-accent" />,
+export function celebrate() {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  void confetti({ particleCount: 90, spread: 70, origin: { y: 0.75 }, colors: confettiColors() })
 }
+
+const poses: Record<Kind, Pose> = { success: 'celebrate', error: 'think', info: 'wave' }
 
 export function ToastViewport() {
   const { items, dismiss } = useToasts()
@@ -51,9 +53,9 @@ export function ToastViewport() {
             initial={{ opacity: 0, y: 16, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, x: 24 }}
-            className="pointer-events-auto flex items-start gap-3 rounded-2xl border border-line bg-surface p-3.5 shadow-pop"
+            className="pointer-events-auto flex items-center gap-3 rounded-2xl border border-line bg-surface p-3.5 shadow-pop"
           >
-            {icons[t.kind]}
+            <span className="-my-1 -ml-1 shrink-0"><Character who="kavi" pose={poses[t.kind]} size={44} follow={false} /></span>
             <div className="min-w-0 flex-1">
               <div className="text-sm font-medium text-fg">{t.title}</div>
               {t.description && <div className="mt-0.5 text-[13px] text-muted">{t.description}</div>}

@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import { CornerDownLeft, LogOut, Moon, Search as SearchIcon, Sun } from 'lucide-react'
-import { MAIN_NAV, WORKFLOW_NAV } from '../layout/nav'
+import { CornerDownLeft, LogOut, Moon, Search as SearchIcon, Sparkles, Sun } from 'lucide-react'
+import { ALL_NAV } from '../layout/nav'
 import { useTheme } from '../../lib/theme'
 import { cn } from './cn'
 
@@ -14,7 +14,7 @@ interface Command {
   run: () => void
 }
 
-export default function CommandPalette({ open, onClose }: { open: boolean; onClose: () => void }) {
+export default function CommandPalette({ open, onClose, onReplayTour }: { open: boolean; onClose: () => void; onReplayTour?: () => void }) {
   const navigate = useNavigate()
   const { theme, toggle } = useTheme()
   const [query, setQuery] = useState('')
@@ -23,7 +23,7 @@ export default function CommandPalette({ open, onClose }: { open: boolean; onClo
 
   const commands = useMemo<Command[]>(() => {
     const go = (to: string) => () => navigate(to)
-    const pages = [...MAIN_NAV, ...WORKFLOW_NAV].map<Command>((n) => ({
+    const pages = ALL_NAV.map<Command>((n) => ({
       id: n.to,
       label: n.label,
       hint: 'Go to page',
@@ -32,6 +32,7 @@ export default function CommandPalette({ open, onClose }: { open: boolean; onClo
     }))
     return [
       ...pages,
+      ...(onReplayTour ? [{ id: 'tour', label: 'Replay the welcome tour', hint: 'Help', icon: <Sparkles className="h-4 w-4" />, run: onReplayTour }] : []),
       { id: 'theme', label: theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode', hint: 'Appearance', icon: theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />, run: toggle },
       {
         id: 'logout',
@@ -45,14 +46,14 @@ export default function CommandPalette({ open, onClose }: { open: boolean; onClo
         },
       },
     ]
-  }, [navigate, theme, toggle])
+  }, [navigate, theme, toggle, onReplayTour])
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase()
     const list = q ? commands.filter((c) => c.label.toLowerCase().includes(q)) : commands
     // Free text falls through to the global search page.
     return q
-      ? [...list, { id: 'search', label: `Search incidents for "${query.trim()}"`, hint: 'Search', icon: <SearchIcon className="h-4 w-4" />, run: () => navigate(`/search?q=${encodeURIComponent(query.trim())}`) }]
+      ? [...list, { id: 'search', label: `Search incidents for "${query.trim()}"`, hint: 'Search', icon: <SearchIcon className="h-4 w-4" />, run: () => navigate(`/incidents?q=${encodeURIComponent(query.trim())}`) }]
       : list
   }, [commands, query, navigate])
 
@@ -83,7 +84,7 @@ export default function CommandPalette({ open, onClose }: { open: boolean; onClo
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-[95] flex items-start justify-center bg-gray-900/40 px-4 pt-[14vh] backdrop-blur-sm"
+          className="fixed inset-0 z-[95] flex items-start justify-center bg-ink/40 px-4 pt-[14vh] backdrop-blur-sm"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

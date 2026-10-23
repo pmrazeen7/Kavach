@@ -1,115 +1,56 @@
-import { Link } from 'react-router-dom'
-import { useEffect, useMemo, useState } from 'react'
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
+import { useMemo } from 'react'
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
+import Card from './ui/Card'
 
-const COLORS = ['#4F46E5', '#F59E0B', '#10B981', '#EC4899', '#94A3B8']
+const COLORS = [1, 2, 3, 4, 5].map((n) => `rgb(var(--chart-${n}))`)
 
-interface EntityDonutChartProps {
-  data: Record<string, number>
-}
-
-export default function EntityDonutChart({ data }: EntityDonutChartProps) {
-  const [animate, setAnimate] = useState(true)
-
-  useEffect(() => {
-    const timer = setTimeout(() => setAnimate(false), 1200)
-    return () => clearTimeout(timer)
-  }, [])
-
-  const { chartData, total, topShare } = useMemo(() => {
-    const entries = Object.entries(data)
-      .filter(([, v]) => v > 0)
-      .sort(([, a], [, b]) => b - a)
-      .slice(0, 4)
-    const otherSum = Object.entries(data)
-      .filter(([, v]) => v > 0)
-      .sort(([, a], [, b]) => b - a)
-      .slice(4)
-      .reduce((acc, [, v]) => acc + v, 0)
-
-    const rows = [
-      ...entries.map(([name, value]) => ({ name: name.replace(/_/g, ' '), value })),
-      ...(otherSum > 0 ? [{ name: 'Other', value: otherSum }] : []),
-    ]
-    const sum = rows.reduce((a, d) => a + d.value, 0)
-    const share = sum > 0 ? Math.round((rows[0]?.value || 0) / sum * 100) : 0
-
-    return { chartData: rows, total: sum, topShare: share }
+export default function EntityDonutChart({ data }: { data: Record<string, number> }) {
+  const { rows, total } = useMemo(() => {
+    const all = Object.entries(data).filter(([, v]) => v > 0).sort(([, a], [, b]) => b - a)
+    const top = all.slice(0, 4).map(([name, value]) => ({ name: name.replace(/_/g, ' '), value }))
+    const other = all.slice(4).reduce((a, [, v]) => a + v, 0)
+    const rows = other > 0 ? [...top, { name: 'Other', value: other }] : top
+    return { rows, total: rows.reduce((a, r) => a + r.value, 0) }
   }, [data])
 
   return (
-    <div className="rounded-2xl border border-line bg-surface shadow-card p-5 h-full flex flex-col" id="entity-donut">
-      <div className="flex items-start justify-between mb-2">
-        <div>
-          <div className="panel-title mb-1">Detection mix</div>
-          <div className="flex items-baseline gap-1.5 mt-2">
-            <span className="text-2xl font-bold text-text tabular-nums">
-              {total > 0 ? `${topShare}%` : '—'}
-            </span>
-            <span className="text-xs text-text-dim">top entity share</span>
-          </div>
-        </div>
-        <Link to="/compliance" className="text-xs font-medium text-accent hover:underline">
-          View more
-        </Link>
-      </div>
-
-      <div className="flex-1 flex items-center gap-4 min-h-[160px]">
-        <div className="w-[130px] h-[130px] shrink-0">
-          {chartData.length === 0 ? (
-            <div className="w-full h-full rounded-full border border-line flex items-center justify-center text-xs text-text-dim">
-              No data
-            </div>
+    <Card className="flex h-full flex-col p-5" id="entity-donut">
+      <h2 className="text-base font-semibold text-fg">Detection mix</h2>
+      <p className="text-xs text-muted">What the detectors found, all time</p>
+      <div className="mt-3 flex flex-1 items-center gap-5">
+        <div className="relative h-[140px] w-[140px] shrink-0">
+          {rows.length === 0 ? (
+            <div className="flex h-full w-full items-center justify-center rounded-full border border-line text-xs text-muted">No data</div>
           ) : (
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={chartData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={44}
-                  outerRadius={58}
-                  paddingAngle={3}
-                  dataKey="value"
-                  stroke="none"
-                  isAnimationActive={animate}
-                  animationDuration={animate ? 900 : 0}
-                >
-                  {chartData.map((_, i) => (
-                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  animationDuration={200}
-                  contentStyle={{
-                    background: 'rgb(var(--surface))',
-                    border: '1px solid rgb(var(--line))',
-                    borderRadius: 12,
-                    fontSize: 11,
-                    color: 'rgb(var(--fg))',
-                    boxShadow: '0 12px 32px rgb(16 24 40 / 0.12)',
-                  }}
-                  labelStyle={{ color: 'rgb(var(--muted))' }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+            <>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={rows} cx="50%" cy="50%" innerRadius={46} outerRadius={64} paddingAngle={3} dataKey="value" stroke="none" isAnimationActive animationDuration={900}>
+                    {rows.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{ background: 'rgb(var(--surface))', border: '1px solid rgb(var(--line))', borderRadius: 12, fontSize: 12, color: 'rgb(var(--fg))' }}
+                    labelStyle={{ color: 'rgb(var(--muted))' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-xl font-semibold tabular-nums text-fg">{total}</span>
+                <span className="text-[11px] text-muted">entities</span>
+              </div>
+            </>
           )}
         </div>
-        <div className="flex-1 space-y-2 min-w-0">
-          {chartData.slice(0, 3).map((row, i) => (
-            <div key={row.name} className="flex items-center gap-2 text-[11px]">
-              <span
-                className="w-2 h-2 rounded-full shrink-0"
-                style={{ backgroundColor: COLORS[i % COLORS.length] }}
-              />
-              <span className="text-text-dim truncate flex-1">{row.name}</span>
-              <span className="font-mono font-bold text-text tabular-nums">
-                {total > 0 ? Math.round((row.value / total) * 100) : 0}%
-              </span>
-            </div>
+        <ul className="min-w-0 flex-1 space-y-2">
+          {rows.map((r, i) => (
+            <li key={r.name} className="flex items-center gap-2 text-xs">
+              <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: COLORS[i % COLORS.length] }} />
+              <span className="flex-1 truncate text-muted">{r.name}</span>
+              <span className="font-medium tabular-nums text-fg">{total > 0 ? Math.round((r.value / total) * 100) : 0}%</span>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
-    </div>
+    </Card>
   )
 }

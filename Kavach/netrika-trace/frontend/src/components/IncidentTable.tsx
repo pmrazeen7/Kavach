@@ -111,7 +111,7 @@ export default function IncidentTable({
   const colSpan = selectable ? 9 : 8
 
   return (
-    <section className="relative overflow-hidden rounded-2xl border border-line bg-surface shadow-card" aria-label={title}>
+    <section className="relative overflow-hidden rounded-3xl border border-line bg-surface shadow-card" aria-label={title}>
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line p-4">
         <h2 className="text-base font-semibold text-fg">{title}</h2>
         <div className="flex flex-wrap items-center gap-2">
@@ -122,7 +122,7 @@ export default function IncidentTable({
         </div>
       </div>
 
-      <div className="max-h-[560px] overflow-auto">
+      <div className="hidden max-h-[560px] overflow-auto md:block">
         <table className="w-full min-w-[960px] text-sm">
           <thead className="sticky top-0 z-10 bg-subtle text-left text-xs font-medium text-muted">
             <tr>
@@ -176,7 +176,7 @@ export default function IncidentTable({
                   </td>
                   <td className="px-3 py-3">
                     <div className="flex items-center gap-2.5">
-                      <span aria-hidden="true" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-gray-800" style={{ background: hostColor(inc.target_host || '?') }}>
+                      <span aria-hidden="true" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-ink" style={{ background: hostColor(inc.target_host || '?') }}>
                         {(inc.target_host || '?').replace(/^www\./, '').charAt(0).toUpperCase()}
                       </span>
                       <div className="min-w-0">
@@ -196,7 +196,7 @@ export default function IncidentTable({
                   </td>
                   <td className="px-3 py-3 font-mono text-[13px] text-muted">{inc.user_ip}</td>
                   <td className="px-3 py-3"><Badge tone="neutral" className="font-mono text-[11px]">{inc.http_method || '—'}</Badge></td>
-                  <td className="px-3 py-3">{inc.reviewed ? <Badge tone="success">Reviewed</Badge> : <Badge tone="neutral">Pending</Badge>}</td>
+                  <td className="px-3 py-3">{inc.reviewed === undefined ? <span className="text-faint">—</span> : inc.reviewed ? <Badge tone="success">Reviewed</Badge> : <Badge tone="neutral">Pending</Badge>}</td>
                   <td className="px-3 py-3 pr-4 text-right" onClick={(e) => e.stopPropagation()}>
                     <IconButton
                       label="Download PDF report"
@@ -216,6 +216,34 @@ export default function IncidentTable({
           </tbody>
         </table>
       </div>
+
+      <ul className="divide-y divide-line md:hidden">
+        {loading ? (
+          Array.from({ length: 3 }).map((_, i) => <li key={i} className="p-4"><Skeleton className="h-16 w-full" /></li>)
+        ) : rows.length === 0 ? (
+          <li><EmptyState title={emptyTitle} description={emptyDescription} mascot="think" /></li>
+        ) : (
+          rows.map((inc) => (
+            <li key={inc.id} className={cn('flex items-start gap-3 p-4', selected.has(inc.id) && 'bg-accent-soft/40')}>
+              {selectable && (
+                <input type="checkbox" aria-label={`Select incident ${inc.id.slice(0, 8)}`} checked={selected.has(inc.id)} onChange={() => toggleOne(inc.id)} className="mt-1 h-4 w-4 rounded border-line accent-[rgb(var(--accent))]" />
+              )}
+              <button type="button" onClick={() => navigate(`/incidents/${inc.id}`)} className="min-w-0 flex-1 text-left">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="truncate font-medium text-fg">{inc.target_host || 'Unknown host'}</span>
+                  <DecisionBadge decision={inc.decision} />
+                </div>
+                <div className="mt-0.5 truncate text-xs text-muted">{inc.intent_label || `#${inc.id.slice(0, 8)}`}</div>
+                <div className="mt-2 flex items-center gap-3 text-xs text-muted">
+                  <span className="font-medium tabular-nums text-fg">Risk {inc.risk_score}</span>
+                  <span className="font-mono">{inc.user_ip}</span>
+                  <span>{inc.timestamp ? new Date(inc.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' }) : '—'}</span>
+                </div>
+              </button>
+            </li>
+          ))
+        )}
+      </ul>
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line p-4 text-sm text-muted">
         <span>
@@ -240,14 +268,14 @@ export default function IncidentTable({
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 80, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-            className="absolute inset-x-4 bottom-4 z-20 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-gray-900 px-4 py-3 text-sm text-white shadow-pop"
+            className="absolute inset-x-4 bottom-4 z-20 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-ink px-4 py-3 text-sm text-on-ink shadow-pop"
             role="region"
             aria-label="Bulk actions"
           >
             <span className="font-medium">{selected.size} selected</span>
             <div className="flex items-center gap-2">
-              <Button size="sm" variant="ghost" className="text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setSelected(new Set())}>Clear</Button>
-              <Button size="sm" className="border-0 bg-white/10 text-white hover:bg-white/20" onClick={() => exportCsv(incidents.filter((i) => selected.has(i.id)), 'selected-incidents.csv')}>
+              <Button size="sm" variant="ghost" className="text-on-ink/70 hover:bg-on-ink/10 hover:text-on-ink" onClick={() => setSelected(new Set())}>Clear</Button>
+              <Button size="sm" className="border-0 bg-on-ink/10 text-on-ink hover:bg-on-ink/20" onClick={() => exportCsv(incidents.filter((i) => selected.has(i.id)), 'selected-incidents.csv')}>
                 <Download className="h-3.5 w-3.5" /> Export selected
               </Button>
               {onMarkReviewed && (

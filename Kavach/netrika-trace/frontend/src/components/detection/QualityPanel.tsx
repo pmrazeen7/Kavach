@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Target, BarChart2, Activity, Zap } from 'lucide-react'
-import { apiFetch } from '../lib/api'
-import PageHeader from '../components/ui/PageHeader'
-import Card from '../components/ui/Card'
-import Button from '../components/ui/Button'
-import Skeleton from '../components/ui/Skeleton'
-import EmptyState from '../components/ui/EmptyState'
-import StatCard, { type Aurora } from '../components/ui/StatCard'
+import { apiFetch } from '../../lib/api'
+import Card from '../ui/Card'
+import Button from '../ui/Button'
+import Skeleton from '../ui/Skeleton'
+import EmptyState from '../ui/EmptyState'
+import StatCard from '../ui/StatCard'
+import type { AuroraTone } from '../ui/Aurora'
 
 interface EvaluationMetric {
   id: string
@@ -20,7 +20,7 @@ interface EvaluationMetric {
   timestamp: string | null
 }
 
-export default function Evaluation() {
+export default function QualityPanel() {
   const [evalData, setEvalData] = useState<EvaluationMetric[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -52,7 +52,7 @@ export default function Evaluation() {
   const sampleCount = cm ? cm.TP + cm.FP + cm.TN + cm.FN : 0
   const accuracy = cm && sampleCount > 0 ? (cm.TP + cm.TN) / sampleCount : null
 
-  const metrics: Array<{ label: string; value: number | null; icon: typeof Target; aurora: Aurora }> = current
+  const metrics: Array<{ label: string; value: number | null; icon: typeof Target; aurora: AuroraTone }> = current
     ? [
         { label: 'Accuracy (%)', value: accuracy, icon: BarChart2, aurora: 'blue' },
         { label: 'Precision (%)', value: current.precision, icon: Target, aurora: 'mint' },
@@ -63,8 +63,6 @@ export default function Evaluation() {
 
   return (
     <div className="space-y-5">
-      <PageHeader title="Model evaluation" subtitle="Metrics are shown only for persisted evaluation runs." />
-
       {loading ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3" aria-label="Loading evaluations">
           {[1, 2, 3].map((item) => <Skeleton key={item} className="h-36 rounded-2xl" />)}

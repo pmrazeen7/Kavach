@@ -2,8 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Design tokens (space-separated RGB so Tailwind alpha works) ─ */
+/*
+  Single source of truth for the theme. Values are space-separated RGB so
+  Tailwind's alpha modifiers work (bg-accent/20). Never hardcode colors
+  elsewhere: add a token here instead.
+*/
 :root {
+  /* surfaces + text */
   --bg: 246 247 251;
   --surface: 255 255 255;
   --subtle: 243 244 248;
@@ -11,9 +16,18 @@
   --fg: 17 24 39;
   --muted: 107 114 128;
   --faint: 156 163 175;
+  --ink: 17 24 39;
+  --on-ink: 255 255 255;
+  --paper: 255 255 255;
+
+  /* accent */
   --accent: 79 70 229;
+  --accent-deep: 49 46 129;
   --accent-soft: 224 231 255;
   --accent-fg: 67 56 202;
+  --on-accent: 255 255 255;
+
+  /* status */
   --success: 16 185 129;
   --success-soft: 209 250 229;
   --success-fg: 6 95 70;
@@ -23,6 +37,26 @@
   --danger: 239 68 68;
   --danger-soft: 254 226 226;
   --danger-fg: 185 28 28;
+
+  /* aurora + character palette (the pastel set) */
+  --a-blue: 147 197 253;
+  --a-violet: 196 181 253;
+  --a-pink: 249 168 212;
+  --a-mint: 110 231 183;
+  --a-peach: 253 186 116;
+  --a-sun: 253 230 138;
+  --aurora-opacity: 0.55;
+
+  /* chart series */
+  --chart-1: 79 70 229;
+  --chart-2: 245 158 11;
+  --chart-3: 16 185 129;
+  --chart-4: 236 72 153;
+  --chart-5: 148 163 184;
+
+  --shadow-card: 0 1px 2px rgb(16 24 40 / 0.04);
+  --shadow-pop: 0 12px 32px rgb(16 24 40 / 0.12), 0 2px 6px rgb(16 24 40 / 0.06);
+  --shadow-glow: 0 10px 28px rgb(79 70 229 / 0.18);
   color-scheme: light;
 }
 
@@ -34,9 +68,13 @@
   --fg: 243 244 246;
   --muted: 156 163 175;
   --faint: 107 114 128;
+
   --accent: 129 140 248;
+  --accent-deep: 30 27 75;
   --accent-soft: 49 46 129;
   --accent-fg: 199 210 254;
+  --on-accent: 17 24 39;
+
   --success: 52 211 153;
   --success-soft: 6 78 59;
   --success-fg: 167 243 208;
@@ -46,6 +84,10 @@
   --danger: 248 113 113;
   --danger-soft: 127 29 29;
   --danger-fg: 254 202 202;
+
+  --aurora-opacity: 0.28;
+  --shadow-card: none;
+  --shadow-pop: 0 16px 40px rgb(0 0 0 / 0.5);
   color-scheme: dark;
 }
 
@@ -74,36 +116,17 @@ body {
 .hide-scrollbar::-webkit-scrollbar { display: none; }
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* ── Shared utilities (kept for legacy markup) ───────────────── */
-.label-uppercase {
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 11px;
-  color: rgb(var(--muted));
-  font-weight: 600;
-}
-
-.panel-title {
-  font-size: 14px;
-  color: rgb(var(--fg));
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  text-transform: none;
-  letter-spacing: 0;
-}
-
-/* ── Animations ──────────────────────────────────────────────── */
+/* ── Motion primitives ─────────────────────────────────────── */
 @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0.3; } }
 .dot-blink { animation: blink 1.5s infinite; }
 
-@keyframes ticker-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-.ticker-animate { animation: ticker-scroll 60s linear infinite; will-change: transform; }
+@keyframes eye-blink { 0%, 92%, 100% { transform: scaleY(1); } 96% { transform: scaleY(0.08); } }
+.eye-blink { animation: eye-blink 4.6s infinite; transform-box: fill-box; transform-origin: center; }
 
-@keyframes flash-new { 0% { background: rgb(var(--danger) / 0.1); } 100% { background: transparent; } }
-.flash-new { animation: flash-new 600ms ease-out; }
+@keyframes breathe { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.025, 0.975); } }
+.breathe { animation: breathe 3.6s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
 
+@keyframes shimmer-x { 100% { transform: translateX(100%); } }
 .skeleton {
   position: relative;
   overflow: hidden;
@@ -118,7 +141,9 @@ body {
   background: linear-gradient(90deg, transparent, rgb(var(--surface) / 0.7), transparent);
   animation: shimmer-x 1.4s infinite;
 }
-@keyframes shimmer-x { 100% { transform: translateX(100%); } }
+
+@keyframes marquee { to { transform: translateX(-50%); } }
+.marquee-track { animation: marquee 32s linear infinite; width: max-content; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

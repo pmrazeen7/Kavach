@@ -1,14 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import PolicyToggle from '../components/PolicyToggle'
-import PageHeader from '../components/ui/PageHeader'
-import Card from '../components/ui/Card'
-import Skeleton from '../components/ui/Skeleton'
-import EmptyState from '../components/ui/EmptyState'
-import { toast } from '../components/ui/Toast'
-import type { PolicyConfig } from '../types/incident'
-import { apiFetch } from '../lib/api'
+import PolicyToggle from '../PolicyToggle'
+import Card from '../ui/Card'
+import Skeleton from '../ui/Skeleton'
+import EmptyState from '../ui/EmptyState'
+import { toast } from '../ui/Toast'
+import type { PolicyConfig } from '../../types/incident'
+import { apiFetch } from '../../lib/api'
 
-export default function Policy() {
+export default function RulesPanel() {
   const [config, setConfig] = useState<PolicyConfig | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -55,8 +54,6 @@ export default function Policy() {
 
   return (
     <div id="policy-page">
-      <PageHeader title="Policy configuration" subtitle="Tune detection thresholds and choose which detectors run on every request." />
-
       {error && !config ? (
         <Card><EmptyState kind="error" title="Unable to load policy" description={error} /></Card>
       ) : loading || !config ? (
