@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { TriangleAlert } from 'lucide-react'
 
 interface BreachSimulationViewerProps {
   text: string
@@ -39,12 +40,10 @@ export default function BreachSimulationViewer({ text, entities }: BreachSimulat
   if (!text) return null
 
   return (
-    <div className="bg-subtle backdrop-blur-xl border border-line border-l-4 border-l-red rounded-2xl p-6 shadow-sm relative overflow-hidden" id="breach-simulation">
-      <div className="flex items-center gap-2 mb-4 relative z-10">
-        <span className="text-red text-sm">⚠</span>
-        <span className="label-uppercase text-red font-bold tracking-widest text-[10px]">
-          BREACH SIMULATION — AI GENERATED
-        </span>
+    <div className="relative overflow-hidden rounded-2xl border border-line border-l-4 border-l-danger bg-surface p-6 shadow-card" id="breach-simulation">
+      <div className="relative z-10 mb-4 flex items-center gap-2 text-sm font-semibold text-danger-fg">
+        <TriangleAlert className="h-4 w-4" />
+        Breach simulation (AI generated)
       </div>
 
       {entities && Object.keys(entities).length > 0 && (
@@ -52,7 +51,7 @@ export default function BreachSimulationViewer({ text, entities }: BreachSimulat
           {Object.entries(entities).map(([type, count]) => (
             <span
               key={type}
-              className="px-2 py-1 bg-red/10 border border-red/20 rounded shadow-sm text-xs font-semibold text-red font-mono"
+              className="rounded-full bg-danger-soft px-2.5 py-1 font-mono text-xs font-medium text-danger-fg"
             >
               {type} ×{count}
             </span>
@@ -65,8 +64,8 @@ export default function BreachSimulationViewer({ text, entities }: BreachSimulat
         {isTyping && <span className="inline-block w-2 h-4 bg-red animate-pulse ml-0.5 align-text-bottom" />}
       </div>
 
-      <div className="text-right mt-6 text-[10px] text-text-dim font-bold tracking-wider relative z-10">
-        SIMULATED — NOT REAL DATA
+      <div className="relative z-10 mt-6 text-right text-xs text-muted">
+        Simulated, not real data
       </div>
     </div>
   )

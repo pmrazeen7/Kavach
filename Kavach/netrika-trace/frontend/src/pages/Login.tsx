@@ -1,8 +1,14 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { Shield, Lock, Mail, ArrowRight } from 'lucide-react'
+import { Lock, Mail, ArrowRight } from 'lucide-react'
 import { apiUrl } from '../lib/api'
+import { LogoMark } from '../components/ui/Logo'
+import Mascot from '../components/ui/Mascot'
+import Button from '../components/ui/Button'
+
+const inputCls =
+  'h-11 w-full rounded-xl border border-line bg-surface pl-10 pr-3 text-sm text-fg placeholder:text-faint transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -39,74 +45,54 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-grapho-surface p-4 relative overflow-hidden">
-      {/* Background Orbs */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-grapho-orange/20 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-orange-900/20 blur-[120px] pointer-events-none" />
+    <div className="relative flex min-h-[100dvh] items-center justify-center overflow-hidden bg-bg p-4">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-50" style={{ filter: 'blur(80px)' }}>
+        <div className="absolute -left-20 -top-20 h-96 w-96 animate-drift1 rounded-full bg-indigo-300/60" />
+        <div className="absolute -bottom-24 -right-16 h-96 w-96 animate-drift2 rounded-full bg-pink-300/50" />
+        <div className="absolute bottom-10 left-1/3 h-72 w-72 animate-drift1 rounded-full bg-emerald-200/50" />
+      </div>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md p-8 rounded-3xl bg-grapho-surface-2/80 border border-line backdrop-blur-2xl shadow-2xl relative z-10"
+        className="relative z-10 w-full max-w-md rounded-3xl border border-line bg-surface p-8 shadow-pop"
       >
-        <div className="flex flex-col items-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-grapho-orange to-orange-700 flex items-center justify-center shadow-lg shadow-orange-900/40 mb-4">
-            <Shield className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-2xl font-bold text-text tracking-tight">Netrika-Trace Enterprise</h1>
-          <p className="text-sm text-text-dim mt-2 text-center">
-            Sign in to access the SOC Dashboard
-          </p>
+        <div className="mb-6 flex flex-col items-center text-center">
+          <LogoMark size={56} />
+          <h1 className="mt-4 text-2xl font-semibold tracking-tight text-fg">Welcome back</h1>
+          <p className="mt-1 text-sm text-muted">Sign in to the Netrika Trace SOC dashboard</p>
         </div>
 
         {error && (
-          <div className="mb-6 p-3 rounded-xl bg-danger-soft border border-danger/30 text-danger-fg text-sm text-center font-medium">
+          <div role="alert" className="mb-5 rounded-xl bg-danger-soft p-3 text-center text-sm font-medium text-danger-fg">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-5">
-          <div className="space-y-1">
-            <label className="text-xs font-semibold text-text-dim uppercase tracking-wider pl-1">
-              Email Address
-            </label>
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div>
+            <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-fg">Email address</label>
             <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-dim" />
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-subtle border border-line text-text text-sm focus:outline-none focus:border-grapho-orange transition-all"
-                required
-              />
+              <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-faint" />
+              <input id="email" type="email" autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} required />
             </div>
           </div>
-
-          <div className="space-y-1">
-            <label className="text-xs font-semibold text-text-dim uppercase tracking-wider pl-1">
-              Password
-            </label>
+          <div>
+            <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-fg">Password</label>
             <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-dim" />
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-subtle border border-line text-text text-sm focus:outline-none focus:border-grapho-orange transition-all"
-                required
-              />
+              <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-faint" />
+              <input id="password" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} className={inputCls} required />
             </div>
           </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full mt-2 py-4 rounded-xl bg-grapho-orange hover:bg-orange-600 text-white font-bold tracking-wide transition-all shadow-lg shadow-orange-900/30 flex items-center justify-center gap-2 group"
-          >
-            {loading ? 'Authenticating...' : 'Sign In'}
-            {!loading && <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
-          </button>
+          <Button type="submit" variant="primary" disabled={loading} className="h-11 w-full">
+            {loading ? 'Authenticating…' : 'Sign in'}
+            {!loading && <ArrowRight className="h-4 w-4" />}
+          </Button>
         </form>
+
+        <div className="mt-6 flex justify-center opacity-90">
+          <Mascot pose="wave" size={72} />
+        </div>
       </motion.div>
     </div>
   )

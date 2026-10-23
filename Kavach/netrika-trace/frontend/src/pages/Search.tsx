@@ -1,8 +1,15 @@
 import { useCallback, useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Search as SearchIcon, ShieldAlert, CheckCircle, AlertTriangle } from 'lucide-react'
+import { Search as SearchIcon } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { apiFetch } from '../lib/api'
+import type { Decision } from '../types/incident'
+import PageHeader from '../components/ui/PageHeader'
+import Card from '../components/ui/Card'
+import Button from '../components/ui/Button'
+import Skeleton from '../components/ui/Skeleton'
+import EmptyState from '../components/ui/EmptyState'
+import { DecisionBadge } from '../components/ui/Badge'
 
 interface SearchIncident {
   id: string
@@ -14,9 +21,12 @@ interface SearchIncident {
   intent_label: string
 }
 
+const fieldCls =
+  'h-10 rounded-xl border border-line bg-surface px-3 text-sm text-fg transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20'
+
 export default function Search() {
-  const [query, setQuery] = useState('')
   const [searchParams] = useSearchParams()
+  const [query, setQuery] = useState(searchParams.get('q') || '')
   const [decision, setDecision] = useState(searchParams.get('decision') || '')
   const [results, setResults] = useState<SearchIncident[]>([])
   const [searching, setSearching] = useState(false)
@@ -38,9 +48,12 @@ export default function Search() {
     }
   }, [])
 
+  // Re-run when the decision filter or the ?q= from the command palette changes.
+  const urlQuery = searchParams.get('q') || ''
   useEffect(() => {
-    void loadResults('', decision)
-  }, [decision, loadResults])
+    setQuery(urlQuery)
+    void loadResults(urlQuery, decision)
+  }, [decision, urlQuery, loadResults])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -48,93 +61,65 @@ export default function Search() {
   }
 
   return (
-    <div className="p-8 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-text">Global Incident Search</h1>
-        <p className="text-sm text-text-dim mt-1">
-          Search persisted incidents by incident ID, destination, intent, and decision status.
-        </p>
-      </div>
+    <div className="space-y-5">
+      <PageHeader title="Global incident search" subtitle="Search persisted incidents by incident ID, destination, intent, and decision status." />
 
       <form onSubmit={handleSearch} className="flex flex-wrap gap-3">
-        <div className="flex-1 min-w-[280px] relative">
-          <SearchIcon className="w-5 h-5 text-text-dim absolute left-4 top-1/2 -translate-y-1/2" />
+        <div className="relative min-w-[260px] flex-1">
+          <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-faint" />
           <input
             type="text"
-            placeholder="Search by incident, host, IP, or intent..."
+            aria-label="Search incidents"
+            placeholder="Search by incident, host, IP, or intent…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 rounded-2xl bg-grapho-surface/80 border border-line text-text text-sm focus:outline-none focus:border-grapho-orange transition-all"
+            className={`${fieldCls} w-full pl-9`}
           />
         </div>
-
-        <select
-          value={decision}
-          onChange={(e) => setDecision(e.target.value)}
-          className="px-4 py-3 rounded-2xl bg-grapho-surface/80 border border-line text-text text-sm focus:outline-none focus:border-grapho-orange transition-all"
-        >
-          <option value="">All Decisions</option>
-          <option value="BLOCK">BLOCK</option>
-          <option value="WARN">WARN</option>
-          <option value="ALLOW">ALLOW</option>
+        <select aria-label="Decision filter" value={decision} onChange={(e) => setDecision(e.target.value)} className={fieldCls}>
+          <option value="">All decisions</option>
+          <option value="BLOCK">Blocked</option>
+          <option value="WARN">Warned</option>
+          <option value="ALLOW">Allowed</option>
         </select>
-
-        <button
-          type="submit"
-          className="px-6 py-3 rounded-2xl bg-grapho-orange hover:bg-orange-600 text-white font-semibold text-sm transition-all shadow-lg shadow-orange-900/30"
-        >
-          {searching ? 'Searching...' : 'Search'}
-        </button>
+        <Button type="submit" variant="primary" disabled={searching}>{searching ? 'Searching…' : 'Search'}</Button>
       </form>
 
       {error && (
-        <div role="alert" className="rounded-xl border border-danger/30 bg-danger-soft p-4 text-sm text-danger-fg">
-          <span>{error}</span>
-          <button type="button" onClick={() => void loadResults(query, decision)} className="ml-3 underline">
-            Retry
-          </button>
-        </div>
+        <Card>
+          <EmptyState kind="error" title="Search failed" description={error} action={<Button variant="primary" onClick={() => void loadResults(query, decision)}>Retry</Button>} />
+        </Card>
       )}
 
-      <div className="space-y-3">
-        {results.map((inc) => (
-          <motion.div
+      <div className="space-y-2.5">
+        {searching && results.length === 0 && Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-16 w-full rounded-2xl" />)}
+        {results.map((inc, i) => (
+          <motion.button
+            type="button"
             key={inc.id}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: Math.min(i, 10) * 0.03 }}
             onClick={() => navigate(`/incidents/${inc.id}`)}
-            className="p-4 rounded-xl bg-grapho-surface/60 border border-line hover:border-grapho-orange/40 transition-all cursor-pointer flex items-center justify-between gap-4"
+            className="flex w-full items-center justify-between gap-4 rounded-2xl border border-line bg-surface p-4 text-left shadow-card transition-colors hover:border-accent/50"
           >
-            <div className="flex items-center gap-3 min-w-0">
-              {inc.decision === 'BLOCK' ? (
-                <ShieldAlert className="w-5 h-5 text-rose-500 shrink-0" />
-              ) : inc.decision === 'WARN' ? (
-                <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0" />
-              ) : (
-                <CheckCircle className="w-5 h-5 text-emerald-500 shrink-0" />
-              )}
-              <div className="min-w-0">
-                <div className="text-sm font-semibold text-text truncate">{inc.intent_label || inc.id}</div>
-                <div className="text-xs text-text-dim flex gap-3">
-                  <span>Host: {inc.target_host}</span>
-                  <span>IP: {inc.user_ip}</span>
-                </div>
+            <div className="min-w-0">
+              <div className="truncate text-sm font-semibold text-fg">{inc.intent_label || inc.id}</div>
+              <div className="mt-0.5 flex flex-wrap gap-x-3 text-xs text-muted">
+                <span>Host: {inc.target_host}</span>
+                <span>IP: {inc.user_ip}</span>
               </div>
             </div>
-
-            <div className="flex items-center gap-4 shrink-0">
-              <span className="text-sm font-bold text-grapho-orange">{inc.risk_score}/100</span>
-              <span className={`text-xs px-2.5 py-1 rounded-full font-bold ${
-                inc.decision === 'BLOCK' ? 'bg-danger-soft text-danger-fg' :
-                inc.decision === 'WARN' ? 'bg-warn-soft text-warn-fg' : 'bg-success-soft text-success-fg'
-              }`}>
-                {inc.decision}
-              </span>
+            <div className="flex shrink-0 items-center gap-4">
+              <span className="text-sm font-semibold tabular-nums text-fg">{inc.risk_score}/100</span>
+              <DecisionBadge decision={inc.decision as Decision} />
             </div>
-          </motion.div>
+          </motion.button>
         ))}
         {!searching && !error && results.length === 0 && (
-          <p className="rounded-xl border border-line p-6 text-center text-sm text-text-dim">
-            No matching incidents. Submit a search or change the decision filter.
-          </p>
+          <Card>
+            <EmptyState kind="search" title="No matching incidents" description="Submit a search or change the decision filter." />
+          </Card>
         )}
       </div>
     </div>

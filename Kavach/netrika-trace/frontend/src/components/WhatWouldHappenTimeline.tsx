@@ -1,62 +1,30 @@
 import { motion } from 'framer-motion'
 
 const steps = [
-  {
-    number: 1,
-    title: 'Your Data Leaks',
-    description: 'Sensitive data transmitted to external AI service and stored on their servers',
-    color: 'red',
-    bgColor: 'bg-red/10',
-    textColor: 'text-red',
-  },
-  {
-    number: 2,
-    title: 'Attacker Exploits',
-    description: 'Threat actor harvests data via API breach, model extraction, or MITM attack',
-    color: 'amber',
-    bgColor: 'bg-amber/10',
-    textColor: 'text-amber',
-  },
-  {
-    number: 3,
-    title: 'Damage Occurs',
-    description: 'Identity theft, financial fraud, IP loss, DPDP Act penalties up to ₹250 Cr',
-    color: 'red',
-    bgColor: 'bg-red/10',
-    textColor: 'text-red',
-    pulse: true,
-  },
+  { number: 1, title: 'Your data leaks', description: 'Sensitive data is sent to an external AI service and stored on their servers.', tone: 'bg-danger-soft text-danger-fg' },
+  { number: 2, title: 'Attacker exploits', description: 'A threat actor harvests data via API breach, model extraction, or MITM attack.', tone: 'bg-warn-soft text-warn-fg' },
+  { number: 3, title: 'Damage occurs', description: 'Identity theft, financial fraud, IP loss, and DPDP Act penalties up to ₹250 Cr.', tone: 'bg-danger-soft text-danger-fg' },
 ]
 
 export default function WhatWouldHappenTimeline() {
   return (
-    <div id="timeline">
-      <div className="panel-title mb-4">WHAT WOULD HAVE HAPPENED</div>
-      <div className="flex gap-6">
+    <section id="timeline">
+      <h2 className="mb-3 text-base font-semibold text-fg">What would have happened</h2>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {steps.map((step, i) => (
           <motion.div
             key={step.number}
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.2, duration: 0.4 }}
-            className="flex-1 bg-subtle backdrop-blur-md border border-line p-6 text-center rounded-2xl shadow-sm relative overflow-hidden"
+            transition={{ delay: i * 0.12, duration: 0.35 }}
+            className="rounded-2xl border border-line bg-surface p-5 shadow-card"
           >
-            <div className={`absolute top-0 left-0 right-0 h-1 ${step.bgColor}`}></div>
-            <div
-              className={`w-10 h-10 rounded-full ${step.bgColor} ${step.textColor} inline-flex items-center justify-center font-sans font-bold text-base mb-4 ${step.pulse ? 'pulse-red shadow-sm' : 'shadow-sm'}`}
-            >
-              {step.number}
-            </div>
-            <div className={`text-xs font-bold tracking-wider uppercase mb-2 ${step.textColor}`}>
-              {step.title}
-            </div>
-            <div className="text-xs font-medium text-text-dim leading-relaxed">
-              {step.description}
-            </div>
+            <div className={`mb-3 inline-flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold ${step.tone}`}>{step.number}</div>
+            <div className="mb-1 text-sm font-semibold text-fg">{step.title}</div>
+            <div className="text-sm leading-relaxed text-muted">{step.description}</div>
           </motion.div>
         ))}
       </div>
-    </div>
+    </section>
   )
 }
-

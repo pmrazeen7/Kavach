@@ -1,25 +1,29 @@
-import { useParams, useNavigate } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { CheckCheck, ChevronRight, FileDown, ShieldAlert, ShieldCheck, TriangleAlert } from 'lucide-react'
 import { useIncidentDetail } from '../hooks/useIncidents'
 import RiskGauge from '../components/RiskGauge'
 import EntityTagCloud from '../components/EntityTagCloud'
 import BreachSimulationViewer from '../components/BreachSimulationViewer'
 import WhatWouldHappenTimeline from '../components/WhatWouldHappenTimeline'
+import Card from '../components/ui/Card'
+import Button from '../components/ui/Button'
+import Skeleton from '../components/ui/Skeleton'
+import EmptyState from '../components/ui/EmptyState'
+import { celebrate, toast } from '../components/ui/Toast'
 import type { Decision } from '../types/incident'
 import { apiDownload, apiFetch } from '../lib/api'
 import { queryClient } from '../lib/queryClient'
-import { useEffect, useState } from 'react'
 
-const bannerStyle: Record<Decision, { bg: string; text: string }> = {
-  BLOCK: { bg: 'bg-red', text: 'REQUEST BLOCKED — DATA LEAK PREVENTED' },
-  WARN: { bg: 'bg-amber', text: 'WARNING ISSUED — POTENTIAL DATA LEAK' },
-  ALLOW: { bg: 'bg-green', text: 'REQUEST ALLOWED — WITHIN SAFE PARAMETERS' },
+const bannerStyle: Record<Decision, { cls: string; text: string; icon: typeof ShieldAlert }> = {
+  BLOCK: { cls: 'bg-danger-soft text-danger-fg', text: 'Request blocked. Data leak prevented.', icon: ShieldAlert },
+  WARN: { cls: 'bg-warn-soft text-warn-fg', text: 'Warning issued. Potential data leak.', icon: TriangleAlert },
+  ALLOW: { cls: 'bg-success-soft text-success-fg', text: 'Request allowed. Within safe parameters.', icon: ShieldCheck },
 }
 
 export default function IncidentDetail() {
   const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
   const { data: incident, isLoading, isError, error } = useIncidentDetail(id || '')
-  const [actionError, setActionError] = useState('')
   const [notes, setNotes] = useState('')
   const [savingReview, setSavingReview] = useState(false)
 
@@ -29,25 +33,24 @@ export default function IncidentDetail() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-text-dim label-uppercase">Loading incident data...</div>
+      <div className="space-y-4" role="status" aria-label="Loading incident">
+        <Skeleton className="h-6 w-48" />
+        <Skeleton className="h-44 w-full rounded-2xl" />
+        <Skeleton className="h-16 w-full rounded-2xl" />
       </div>
     )
   }
 
   if (isError || !incident) {
     return (
-      <div className="text-center py-12">
-        <div role={isError ? 'alert' : undefined} className="text-text-dim text-sm">
-          {isError ? (error instanceof Error ? error.message : 'Unable to load incident') : 'Incident not found'}
-        </div>
-        <button
-          onClick={() => navigate('/dashboard')}
-          className="mt-4 px-4 py-2 border border-border text-text-dim text-xs hover:bg-bg3 transition"
-        >
-          ← Back to War Room
-        </button>
-      </div>
+      <Card>
+        <EmptyState
+          kind={isError ? 'error' : 'search'}
+          title={isError ? 'Unable to load incident' : 'Incident not found'}
+          description={isError && error instanceof Error ? error.message : undefined}
+          action={<Link to="/incidents"><Button variant="primary">Back to incidents</Button></Link>}
+        />
+      </Card>
     )
   }
 
@@ -57,55 +60,62 @@ export default function IncidentDetail() {
   } catch { /* ignore */ }
 
   const banner = bannerStyle[incident.decision]
+  const BannerIcon = banner.icon
+
+  const saveReview = async () => {
+    try {
+      setSavingReview(true)
+      await apiFetch(`/api/v1/incidents/${incident.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notes }),
+      })
+      await queryClient.invalidateQueries({ queryKey: ['incident', incident.id] })
+      await queryClient.invalidateQueries({ queryKey: ['incidents'] })
+      toast.success('Incident marked reviewed')
+      celebrate()
+    } catch (err) {
+      toast.error('Unable to mark incident reviewed', err instanceof Error ? err.message : undefined)
+    } finally {
+      setSavingReview(false)
+    }
+  }
 
   return (
-    <div className="space-y-6" id="incident-detail-page">
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs text-text-dim">
-        <button onClick={() => navigate('/dashboard')} className="hover:text-text transition">
-          War Room
-        </button>
-        <span>›</span>
-        <span className="text-text font-mono">Incident #{(incident.id || '').slice(0, 8)}</span>
-      </div>
+    <div className="space-y-5" id="incident-detail-page">
+      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-muted">
+        <Link to="/incidents" className="hover:text-fg">Incidents</Link>
+        <ChevronRight className="h-3.5 w-3.5" />
+        <span className="font-mono text-fg">#{(incident.id || '').slice(0, 8)}</span>
+      </nav>
 
-      {/* Hero Row: Gauge + Metadata */}
-      <div className="flex items-start gap-8">
-        <RiskGauge score={incident.risk_score} size={160} />
-        <div className="flex-1 grid grid-cols-3 gap-4">
-          <MetaItem label="TIMESTAMP" value={incident.timestamp ? new Date(incident.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '—'} />
-          <MetaItem label="SOURCE IP" value={incident.user_ip} mono />
-          <MetaItem label="TARGET ENDPOINT" value={incident.target_host} mono />
-          <MetaItem label="HTTP METHOD" value={incident.http_method} />
-          <MetaItem label="PAYLOAD SIZE" value={`${(incident.payload_size_bytes || 0).toLocaleString()} bytes`} />
-          <MetaItem label="ENTITIES" value={`${Object.keys(entities).length} types`} />
+      <Card className="flex flex-wrap items-start gap-8 p-6">
+        <RiskGauge score={incident.risk_score} size={150} />
+        <div className="grid min-w-[260px] flex-1 grid-cols-1 gap-5 sm:grid-cols-3">
+          <MetaItem label="Timestamp" value={incident.timestamp ? new Date(incident.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '—'} />
+          <MetaItem label="Source IP" value={incident.user_ip} mono />
+          <MetaItem label="Target endpoint" value={incident.target_host} mono />
+          <MetaItem label="HTTP method" value={incident.http_method} />
+          <MetaItem label="Payload size" value={`${(incident.payload_size_bytes || 0).toLocaleString()} bytes`} />
+          <MetaItem label="Entities" value={`${Object.keys(entities).length} types`} />
         </div>
+      </Card>
+
+      <div className={`flex items-center justify-center gap-2 rounded-2xl px-6 py-3 text-center font-semibold ${banner.cls}`}>
+        <BannerIcon className="h-5 w-5" /> {banner.text}
       </div>
 
-      {/* Decision Banner */}
-      <div className={`${banner.bg} rounded py-3 px-6 text-center`}>
-        <span className="font-sans font-bold text-lg text-black tracking-wider">
-          {banner.text}
-        </span>
-      </div>
-
-      {/* Entity Tags */}
-      <div>
-        <div className="panel-title mb-3">DETECTED ENTITY TYPES</div>
+      <section>
+        <h2 className="mb-3 text-base font-semibold text-fg">Detected entity types</h2>
         <EntityTagCloud entities={entities} />
-      </div>
+      </section>
 
-      {/* Breach Simulation */}
-      {incident.simulation_html && (
-        <BreachSimulationViewer text={incident.simulation_html} entities={entities} />
-      )}
+      {incident.simulation_html && <BreachSimulationViewer text={incident.simulation_html} entities={entities} />}
 
-      {/* Timeline */}
       {incident.decision !== 'ALLOW' && <WhatWouldHappenTimeline />}
 
-      {/* Actions */}
-      <div className="space-y-2">
-        <label htmlFor="incident-review-notes" className="panel-title block mb-2">REVIEW NOTES</label>
+      <Card className="p-5">
+        <label htmlFor="incident-review-notes" className="mb-2 block text-base font-semibold text-fg">Review notes</label>
         <textarea
           id="incident-review-notes"
           value={notes}
@@ -113,64 +123,34 @@ export default function IncidentDetail() {
           maxLength={4000}
           rows={4}
           placeholder="Add investigation notes (up to 4000 characters)"
-          className="w-full rounded-lg border border-border bg-bg3 p-3 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-grapho-orange"
+          className="w-full rounded-xl border border-line bg-surface p-3 text-sm text-fg placeholder:text-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
         />
-        <div className="text-right text-xs text-text-dim">{notes.length}/4000</div>
-      </div>
-      <div className="flex items-center gap-4 pt-4 border-t border-border">
-        <button
-          type="button"
-          onClick={() => {
-            setActionError('')
-            void apiDownload(
-              `/api/v1/incidents/${incident.id}/pdf`,
-              `incident_${incident.id.slice(0, 8)}.pdf`
-            ).catch((err: unknown) => setActionError(err instanceof Error ? err.message : 'PDF export failed'))
-          }}
-          className="px-5 py-2 border border-red text-red text-xs tracking-wider uppercase hover:bg-red hover:text-black transition font-mono"
-        >
-          Download PDF
-        </button>
-        <button
-          disabled={savingReview || (incident.reviewed && notes === (incident.notes || ''))}
-          onClick={async () => {
-            try {
-              setSavingReview(true)
-              setActionError('')
-              await apiFetch(`/api/v1/incidents/${incident.id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ notes }),
-              })
-              await queryClient.invalidateQueries({ queryKey: ['incident', incident.id] })
-              await queryClient.invalidateQueries({ queryKey: ['incidents'] })
-            } catch (err) {
-              setActionError(err instanceof Error ? err.message : 'Unable to mark incident reviewed')
-            } finally {
-              setSavingReview(false)
+        <div className="mt-1 text-right text-xs text-muted">{notes.length}/4000</div>
+
+        <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-line pt-4">
+          <Button
+            onClick={() =>
+              void apiDownload(`/api/v1/incidents/${incident.id}/pdf`, `incident_${incident.id.slice(0, 8)}.pdf`).catch((err: unknown) =>
+                toast.error('PDF export failed', err instanceof Error ? err.message : undefined),
+              )
             }
-          }}
-          className="px-5 py-2 border border-green text-green text-xs tracking-wider uppercase hover:bg-green hover:text-black transition font-mono"
-        >
-          {savingReview ? 'Saving…' : incident.reviewed ? 'Update Review' : 'Save Notes & Mark Reviewed'}
-        </button>
-        <button
-          onClick={() => navigate('/dashboard')}
-          className="px-5 py-2 border border-border text-text-dim text-xs tracking-wider uppercase hover:bg-bg3 transition font-mono"
-        >
-          ← Back to War Room
-        </button>
-      </div>
-      {actionError && <p role="alert" className="text-sm text-danger-fg">{actionError}</p>}
+          >
+            <FileDown className="h-4 w-4" /> Download PDF
+          </Button>
+          <Button variant="primary" disabled={savingReview || (incident.reviewed && notes === (incident.notes || ''))} onClick={() => void saveReview()}>
+            <CheckCheck className="h-4 w-4" /> {savingReview ? 'Saving…' : incident.reviewed ? 'Update review' : 'Save notes & mark reviewed'}
+          </Button>
+        </div>
+      </Card>
     </div>
   )
 }
 
 function MetaItem({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
-    <div>
-      <div className="label-uppercase mb-1">{label}</div>
-      <div className={`text-sm text-text ${mono ? 'font-mono' : ''}`}>{value}</div>
+    <div className="min-w-0">
+      <div className="mb-1 text-xs font-medium text-muted">{label}</div>
+      <div className={`truncate text-sm text-fg ${mono ? 'font-mono' : 'font-medium'}`}>{value}</div>
     </div>
   )
 }
