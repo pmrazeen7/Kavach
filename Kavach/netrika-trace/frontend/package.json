@@ -10,10 +10,14 @@
     "og": "node scripts/make-og.mjs",
     "test": "vitest run",
     "preview": "vite preview",
-    "build:extension": "vite build --config vite.extension.config.ts"
+    "build:extension": "vite build --config vite.extension.config.ts",
+    "ocr:assets": "node scripts/copy-ocr-assets.mjs",
+    "predev": "node scripts/copy-ocr-assets.mjs",
+    "prebuild": "node scripts/copy-ocr-assets.mjs"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.22.0",
+    "@tesseract.js-data/eng": "^1.0.0",
     "canvas-confetti": "^1.9.3",
     "framer-motion": "^11.0.0",
     "lucide-react": "^1.14.0",
@@ -21,6 +25,7 @@
     "react-dom": "^18.3.0",
     "react-router-dom": "^6.22.0",
     "recharts": "^2.12.0",
+    "tesseract.js": "^5.1.1",
     "zustand": "^4.5.0"
   },
   "devDependencies": {

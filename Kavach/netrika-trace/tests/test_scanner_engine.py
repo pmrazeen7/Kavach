@@ -273,3 +273,13 @@ def test_files_txt_zip_docx_and_unscannable(tmp_path):
         extract_text(b"\x89PNG", "scan.png")
     with pytest.raises(Unscannable):
         extract_text(b"x" * (11 * 1024 * 1024), "big.txt")
+
+
+def test_adversarial_inputs_do_not_cause_catastrophic_backtracking(scanner):
+    import time
+
+    probes = ["x" * 5000 + "!", "0-" * 3000, ("a" * 30 + " ") * 200, "%41" * 3000, "A" * 4000 + "=", "1 " * 3000, "<" * 2000, "\n".join("a" * 20 for _ in range(500))]
+    t0 = time.perf_counter()
+    for p in probes:
+        scanner.scan(p)
+    assert time.perf_counter() - t0 < 10

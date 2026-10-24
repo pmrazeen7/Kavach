@@ -122,7 +122,7 @@ def _run_scanner(payload_text: str, history: list) -> object | None:
         return service.scan_text(payload_text, history=history, deep=False)
     except Exception as e:
         logger.error(f"[FORENSIC] Layered scanner failed: {e}")
-        return None
+        return None  # the caller fails closed
 
 
 def forensic_node(state: dict) -> dict:
@@ -248,6 +248,10 @@ def forensic_node(state: dict) -> dict:
     scan = _run_scanner(payload, state.get("scan_history") or [])
     scanner_action = "ALLOW"
     scanner_summary: dict = {}
+    if scan is None:
+        # Fail closed: if the scanner cannot run, nothing is waved through on its account.
+        scanner_action = "BLOCK"
+        scanner_summary = {"error": "scanner_unavailable"}
     if scan is not None:
         from scanner import service
 

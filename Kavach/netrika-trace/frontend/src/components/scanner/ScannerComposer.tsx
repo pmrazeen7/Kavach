@@ -7,6 +7,7 @@ import { toast } from '../ui/Toast'
 import { Sentinel, Vault, type SentinelPose } from './Characters'
 import FindingsDrawer from './FindingsDrawer'
 import { scanLocal } from '../../scanner/client'
+import { OcrUnavailable, recognizeImage } from '../../scanner/ocr'
 import { redact, tokenize, type PlaceholderMap } from '../../scanner/rewrite'
 import { type ScanStatus, useComposerScan } from '../../scanner/useComposerScan'
 import type { Finding, ScannerSettings } from '../../scanner/types'
@@ -152,6 +153,7 @@ export default function ScannerComposer({ value, onChange, history, settings, bu
   const [shake, setShake] = useState(0)
   const [announce, setAnnounce] = useState('')
   const [sending, setSending] = useState(false)
+  const [ocr, setOcr] = useState<{ name: string; progress: number } | null>(null)
 
   const { status, findings, result } = scan
   const blocked = status === 'blocked'
@@ -272,6 +274,24 @@ export default function ScannerComposer({ value, onChange, history, settings, bu
     setDrawer(false)
   }
 
+  /** Images are read locally with OCR; the recognised text is then scanned like anything typed. */
+  const handleFiles = async (files: FileList) => {
+    const file = files[0]
+    if (!file) return
+    if (!file.type.startsWith('image/')) return onFiles(files)
+    setOcr({ name: file.name, progress: 0 })
+    try {
+      const text = await recognizeImage(file, (p) => setOcr({ name: file.name, progress: p }))
+      if (!text) return void toast.info('No readable text found in the image')
+      onChange(`${value}${value && !value.endsWith('\n') ? '\n' : ''}[Text read from ${file.name}]\n${text}`)
+      toast.success('Image read on this device', 'The text was added to your message and scanned like anything you type.')
+    } catch (err) {
+      toast.error(err instanceof OcrUnavailable ? 'Image reading is not set up' : 'Could not read the image', err instanceof Error ? err.message : undefined)
+    } finally {
+      setOcr(null)
+    }
+  }
+
   const onPaste = async (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
     const t = e.clipboardData.getData('text')
     if (!t) return
@@ -307,7 +327,7 @@ export default function ScannerComposer({ value, onChange, history, settings, bu
     <div className="border-t border-line p-3">
       <div className="sr-only" role="status" aria-live="polite">{announce}</div>
 
-      {uploadName && <UploadBelt name={uploadName} />}
+      {ocr ? <UploadBelt name={ocr.name} label="Reading text from" progress={ocr.progress} /> : uploadName ? <UploadBelt name={uploadName} /> : null}
 
       <div className="mb-2 flex items-center justify-between gap-3">
         <button
@@ -341,7 +361,7 @@ export default function ScannerComposer({ value, onChange, history, settings, bu
         <button type="button" onClick={() => fileRef.current?.click()} disabled={busy} aria-label="Upload document (PDF, DOCX, TXT)" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-line bg-surface text-muted transition-colors hover:bg-subtle hover:text-fg disabled:opacity-50">
           <Paperclip className="h-[18px] w-[18px]" />
         </button>
-        <input ref={fileRef} type="file" accept=".pdf,.docx,.txt,.csv,.md,.json,.zip,.png,.jpg,.jpeg" className="hidden" onChange={(e) => { if (e.target.files?.length) onFiles(e.target.files); e.target.value = '' }} />
+        <input ref={fileRef} type="file" accept=".pdf,.docx,.txt,.csv,.md,.json,.zip,.png,.jpg,.jpeg" className="hidden" onChange={(e) => { if (e.target.files?.length) void handleFiles(e.target.files); e.target.value = '' }} />
 
         <div
           className={cn(
@@ -420,13 +440,13 @@ export default function ScannerComposer({ value, onChange, history, settings, bu
 }
 
 /** Conveyor belt: Sentinel inspects the file while the upload is scanned. */
-export function UploadBelt({ name }: { name: string }) {
+export function UploadBelt({ name, label = 'Inspecting', progress }: { name: string; label?: string; progress?: number }) {
   const reduce = useReducedMotion()
   return (
     <div className="mb-3 flex items-center gap-3 overflow-hidden rounded-2xl border border-accent/30 bg-accent-soft/50 px-3 py-2" role="status" aria-label={`Scanning ${name}`}>
       <Sentinel pose="scan" size={48} />
       <div className="min-w-0 flex-1">
-        <div className="truncate text-xs font-medium text-fg">Inspecting {name}</div>
+        <div className="truncate text-xs font-medium text-fg">{label} {name}{progress !== undefined && progress > 0 ? ` (${Math.round(progress * 100)}%)` : ''}</div>
         <div className="relative mt-2 h-2 overflow-hidden rounded-full bg-surface">
           <motion.span
             className="absolute inset-y-0 w-10 rounded-full bg-accent"

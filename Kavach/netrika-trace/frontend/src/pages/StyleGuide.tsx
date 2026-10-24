@@ -15,6 +15,7 @@ import StatCard from '../components/ui/StatCard'
 import Tabs from '../components/ui/Tabs'
 import { celebrate, toast } from '../components/ui/Toast'
 import { useTheme } from '../lib/theme'
+import { Lens, Sentinel, Vault, type LensPose, type SentinelPose, type VaultPose } from '../components/scanner/Characters'
 import { Link } from 'react-router-dom'
 
 const SWATCHES: Array<{ group: string; tokens: Array<[string, string]> }> = [
@@ -28,6 +29,9 @@ const SWATCHES: Array<{ group: string; tokens: Array<[string, string]> }> = [
 
 const POSES: Pose[] = ['idle', 'wave', 'jump', 'think', 'celebrate', 'sleep']
 const TONES: AuroraTone[] = ['blue', 'red', 'peach', 'mint']
+const SENTINEL: SentinelPose[] = ['idle', 'scan', 'suspect', 'alert', 'blocked', 'safe']
+const VAULT: VaultPose[] = ['idle', 'swallow', 'happy']
+const LENS: LensPose[] = ['idle', 'explain']
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -141,6 +145,28 @@ export default function StyleGuide() {
               </Card>
             ))}
           </div>
+        </Section>
+
+        <Section title="The scanner crew">
+          <Card className="space-y-5 p-4">
+            {([['Sentinel', 'the guard robot', SENTINEL, (p: string) => <Sentinel pose={p as SentinelPose} size={96} />], ['Vault', 'swallows redacted secrets', VAULT, (p: string) => <Vault pose={p as VaultPose} size={96} />], ['Lens', 'explains why something was flagged', LENS, (p: string) => <Lens pose={p as LensPose} size={96} />]] as const).map(([name, role, poses, render]) => (
+              <div key={name}>
+                <div className="mb-2 flex items-baseline gap-2"><span className="font-semibold">{name}</span><span className="text-sm text-muted">{role}</span></div>
+                <div className="flex flex-wrap gap-4">
+                  {poses.map((p) => (
+                    <div key={p} className="flex flex-col items-center">
+                      {render(p)}
+                      <span className="text-xs text-muted">{p}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+            <div className="flex flex-wrap gap-2 border-t border-line pt-4">
+              <Badge tone="accent">Scanning…</Badge><Badge tone="success">Safe to send</Badge><Badge tone="warn">2 risks found</Badge><Badge tone="danger">Blocked</Badge><Badge>Protected</Badge>
+              <span className="text-xs text-muted">Status chips: indigo scanning, mint safe, peach suspicious, pink-red blocked. Each also carries an icon and words, never color alone.</span>
+            </div>
+          </Card>
         </Section>
 
         <Section title="Brand">
