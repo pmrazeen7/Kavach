@@ -182,3 +182,38 @@ body {
   border: 2px solid var(--slider-color);
   box-shadow: var(--shadow-pop);
 }
+
+/* Kavach logo: animation lives here (not inside the inlined SVG) so many instances share one rule set.
+   Motion runs only when data-animated="true"; the logo component sets that for at most two instances
+   and pauses it while the tab is hidden. */
+.kv-logo .kv-sweep, .kv-logo .kv-orbit, .kv-logo .kv-glow, .kv-logo .kv-node, .kv-logo .kv-b1, .kv-logo .kv-b2, .kv-logo .kv-b3 { animation: none; }
+.kv-logo[data-animated='true'] .kv-sweep { animation: kv-sweep 3.2s cubic-bezier(.65, 0, .35, 1) infinite; }
+.kv-logo[data-animated='true'] .kv-orbit { transform-origin: 128px 128px; animation: kv-spin 14s linear infinite; }
+.kv-logo[data-animated='true'] .kv-glow { animation: kv-glow 3.2s ease-in-out infinite; }
+.kv-logo[data-animated='true'] .kv-node { transform-origin: 162px 80px; animation: kv-node 3.2s ease-in-out infinite; }
+.kv-logo[data-animated='true'] .kv-b1 { animation: kv-d1 9s ease-in-out infinite alternate; }
+.kv-logo[data-animated='true'] .kv-b2 { animation: kv-d2 11s ease-in-out infinite alternate; }
+.kv-logo[data-animated='true'] .kv-b3 { animation: kv-d3 13s ease-in-out infinite alternate; }
+.kv-logo[data-paused='true'] * { animation-play-state: paused !important; }
+@keyframes kv-sweep { 0% { transform: translateY(-130px); } 60%, 100% { transform: translateY(135px); } }
+@keyframes kv-spin { to { transform: rotate(360deg); } }
+@keyframes kv-glow { 0%, 100% { opacity: .35; } 50% { opacity: .8; } }
+@keyframes kv-node { 0%, 100% { transform: scale(1); } 45% { transform: scale(1.5); } }
+@keyframes kv-d1 { to { transform: translate(50px, 40px); } }
+@keyframes kv-d2 { to { transform: translate(-60px, 30px); } }
+@keyframes kv-d3 { to { transform: translate(20px, -50px); } }
+/* scanner state tints: a brief overlay on the shield, never a recolor of the artwork */
+.kv-tint { opacity: 0; transform-box: fill-box; transform-origin: center; }
+.kv-tint-blocked { animation: kv-blocked 1.6s ease-out 1 both; }
+.kv-tint-safe { animation: kv-safe 1.4s ease-out 1 both; }
+@keyframes kv-blocked { 0% { opacity: 0; } 15% { opacity: .75; } 100% { opacity: 0; } }
+@keyframes kv-safe { 0% { opacity: 0; transform: scale(.96); } 35% { opacity: .55; transform: scale(1.02); } 100% { opacity: 0; transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) {
+  .kv-logo *, .kv-logo { animation: none !important; }
+  .kv-tint-blocked { opacity: .45; }
+}
+
+/* hero: Sentinel's scan line pulses on the logo's 3.2s sweep cycle */
+.kv-hero-beam { opacity: 0; animation: kv-hero-beam 3.2s cubic-bezier(.65, 0, .35, 1) infinite; }
+@keyframes kv-hero-beam { 0% { opacity: 0; } 8% { opacity: .9; } 60% { opacity: .9; } 70%, 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .kv-hero-beam { animation: none; opacity: .5; } }

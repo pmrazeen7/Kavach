@@ -55,9 +55,9 @@ export default function Login() {
         className="relative z-10 w-full max-w-md rounded-4xl border border-line bg-surface p-8 shadow-pop"
       >
         <div className="mb-6 flex flex-col items-center text-center">
-          <LogoMark size={56} />
+          <LogoMark size={64} animated decorative />
           <h1 className="mt-4 text-2xl font-semibold tracking-tight text-fg">Welcome back</h1>
-          <p className="mt-1 text-sm text-muted">Sign in to the Netrika Trace SOC dashboard</p>
+          <p className="mt-1 text-sm text-muted">Sign in to the Kavach SOC dashboard</p>
         </div>
 
         {error && (

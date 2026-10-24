@@ -8,7 +8,7 @@ import Character, { CAST, type CharacterId, type Pose } from '../components/ui/C
 import Drawer from '../components/ui/Drawer'
 import EmptyState from '../components/ui/EmptyState'
 import IconButton from '../components/ui/IconButton'
-import { LogoMark, Wordmark } from '../components/ui/Logo'
+import { Logo, LogoMark, Wordmark } from '../components/ui/Logo'
 import PageHeader from '../components/ui/PageHeader'
 import Skeleton from '../components/ui/Skeleton'
 import StatCard from '../components/ui/StatCard'
@@ -171,8 +171,12 @@ export default function StyleGuide() {
 
         <Section title="Brand">
           <div className="flex flex-wrap items-center gap-6">
-            <LogoMark size={24} /><LogoMark size={64} /><Wordmark />
+            <Logo variant="full" size={64} animated label="Kavach lockup" />
+            <Logo variant="full" size={64} theme="dark" className="rounded-2xl bg-ink p-3" label="Kavach lockup on dark" />
+            <LogoMark size={24} /><LogoMark size={64} animated /><Wordmark />
+            <LogoMark size={40} tint="blocked" tintKey="b" /><LogoMark size={40} tint="safe" tintKey="s" />
           </div>
+          <p className="mt-3 text-xs text-muted">Animated below 32px is never allowed; at most two animated logos run at once. See docs/BRAND.md.</p>
         </Section>
 
         <Section title="Feedback">

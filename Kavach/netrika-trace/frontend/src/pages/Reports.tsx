@@ -17,19 +17,19 @@ const DPDP_SECTIONS = [
     id: 'section_8',
     title: 'Section 8: Obligations of Data Fiduciary',
     text: 'Every Data Fiduciary shall implement appropriate technical and organisational measures to ensure compliance and protect personal data by taking reasonable security safeguards.',
-    relevance: 'Netrika-Trace detects and prevents unauthorized transmission of personal data to external AI services.',
+    relevance: 'Kavach detects and prevents unauthorized transmission of personal data to external AI services.',
   },
   {
     id: 'section_9',
     title: 'Section 9: Processing by Significant Data Fiduciary',
     text: 'Significant Data Fiduciaries must appoint a DPO, conduct data audits, and perform periodic Data Protection Impact Assessments.',
-    relevance: 'The audit log maintained by Netrika-Trace serves as evidence for data audits required under Section 9.',
+    relevance: 'The audit log maintained by Kavach serves as evidence for data audits required under Section 9.',
   },
   {
     id: 'section_15',
     title: 'Section 15: Personal Data Breach Notification',
     text: 'In the event of a breach, the Data Fiduciary shall notify the Board and affected Data Principals.',
-    relevance: 'Netrika-Trace incident records facilitate timely breach notification with complete detection details.',
+    relevance: 'Kavach incident records facilitate timely breach notification with complete detection details.',
   },
 ]
 

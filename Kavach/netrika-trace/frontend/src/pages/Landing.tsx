@@ -26,7 +26,7 @@ export default function Landing() {
 
   useEffect(() => {
     const prev = document.title
-    document.title = 'Netrika Trace | Guardian of your AI border'
+    document.title = 'Kavach | Stop leaks before they leave'
     return () => {
       document.title = prev
     }

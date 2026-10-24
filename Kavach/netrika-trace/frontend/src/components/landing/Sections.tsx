@@ -1,13 +1,13 @@
 import { useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { motion, useInView, useReducedMotion, useScroll, useTransform } from 'framer-motion'
+import { AnimatePresence, motion, useInView, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import { Check, Moon, Sun } from 'lucide-react'
 import { useTheme } from '../../lib/theme'
 import Aurora from '../ui/Aurora'
 import Button from '../ui/Button'
 import Character, { CAST, type CharacterId } from '../ui/Character'
 import CountUp from '../ui/CountUp'
-import { LogoMark } from '../ui/Logo'
+import { Logo, LogoMark } from '../ui/Logo'
 import { celebrate } from '../ui/Toast'
 import { cn } from '../ui/cn'
 import Magnetic from './Magnetic'
@@ -46,11 +46,23 @@ export function Navbar() {
   const { scrollY } = useScroll()
   const height = useTransform(scrollY, [0, 120], [76, 58])
   const border = useTransform(scrollY, [0, 80], ['rgb(var(--line) / 0)', 'rgb(var(--line) / 1)'])
+  const [condensed, setCondensed] = useState(false)
+  useMotionValueEvent(scrollY, 'change', (y) => setCondensed(y > 90))
   return (
     <motion.header style={{ height, borderBottomColor: border }} className="sticky top-0 z-50 border-b bg-bg/70 backdrop-blur-xl">
       <div className="mx-auto flex h-full max-w-6xl items-center justify-between gap-4 px-6">
-        <a href="#top" className="flex items-center gap-2.5 font-bold tracking-tight text-fg" aria-label="Netrika Trace home">
-          <LogoMark size={30} /> Netrika Trace
+        <a href="#top" className="flex h-11 items-center" aria-label="Kavach home">
+          <AnimatePresence mode="wait" initial={false}>
+            {condensed ? (
+              <motion.span key="mark" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.15 }}>
+                <LogoMark size={36} animated decorative />
+              </motion.span>
+            ) : (
+              <motion.span key="full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
+                <Logo variant="full" size={44} animated decorative />
+              </motion.span>
+            )}
+          </AnimatePresence>
         </a>
         <nav aria-label="Sections" className="hidden gap-1 md:flex">
           {[['#cast', 'Meet the crew'], ['#pipeline', 'Pipeline'], ['#demo', 'Live demo'], ['#deploy', 'Deploy']].map(([href, label]) => (
@@ -275,7 +287,10 @@ export function Footer() {
   return (
     <footer className="border-t border-line py-8 text-sm text-muted">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6">
-        <span>&copy; 2026 Netrika Inc. All rights reserved. Kavach-Trace&trade;</span>
+        <div className="flex flex-wrap items-center gap-4">
+          <Logo variant="full" size={36} theme="auto" label="Kavach" />
+          <span>&copy; 2026 Netrika Inc. All rights reserved. Kavach&trade;</span>
+        </div>
         <nav aria-label="Footer" className="flex gap-5">
           <a href="#top" className="hover:text-fg">Privacy Policy</a>
           <a href="#top" className="hover:text-fg">Terms of Service</a>

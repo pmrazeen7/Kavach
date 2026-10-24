@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint src",
-    "og": "node scripts/make-og.mjs",
+    "brand": "node scripts/make-brand.mjs",
     "test": "vitest run",
     "preview": "vite preview",
     "build:extension": "vite build --config vite.extension.config.ts",

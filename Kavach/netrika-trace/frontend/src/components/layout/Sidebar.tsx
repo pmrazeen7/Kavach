@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useIsFetching } from '@tanstack/react-query'
 import { NavLink } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { PanelLeftClose, PanelLeftOpen, Puzzle, ShieldCheck } from 'lucide-react'
@@ -55,6 +56,8 @@ export default function Sidebar({ collapsed, onToggleCollapsed, onNavigate, isDr
   const { data: me } = useMe()
   const { data: devices, isSuccess: devicesLoaded } = useDevices()
   const [setupOpen, setSetupOpen] = useState(false)
+  const [hovered, setHovered] = useState(false)
+  const loading = useIsFetching() > 0
   const total = data?.stats.total ?? 0
   const badge = total > 99 ? '99+' : total > 0 ? String(total) : null
   const user = getUser()
@@ -64,6 +67,8 @@ export default function Sidebar({ collapsed, onToggleCollapsed, onNavigate, isDr
   return (
     <aside
       aria-label="Primary"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       className={cn(
         'flex h-full shrink-0 flex-col gap-4 overflow-y-auto rounded-3xl border border-line bg-surface p-3 shadow-card hide-scrollbar transition-[width] duration-300 ease-smooth',
         compact ? 'w-[76px]' : 'w-[260px]',
@@ -71,11 +76,11 @@ export default function Sidebar({ collapsed, onToggleCollapsed, onNavigate, isDr
     >
       <div className={cn('flex items-center gap-2', compact && 'flex-col')}>
         <div className={cn('flex min-w-0 flex-1 items-center gap-3 rounded-2xl border border-line bg-subtle/60 p-2', compact && 'flex-none border-0 bg-transparent p-1')}>
-          <LogoMark size={36} />
+          <LogoMark size={36} animated={hovered || loading} decorative />
           {!compact && (
             <span className="min-w-0 flex-1">
               <span className="block text-[11px] leading-tight text-muted">{me?.user.role || user.role || 'Workspace'}</span>
-              <span className="block truncate text-sm font-semibold leading-tight text-fg">{me?.organization.name || 'Netrika Trace'}</span>
+              <span className="block truncate text-sm font-semibold leading-tight text-fg">{me?.organization.name || 'Kavach'}</span>
             </span>
           )}
         </div>
@@ -127,7 +132,7 @@ export default function Sidebar({ collapsed, onToggleCollapsed, onNavigate, isDr
         <ol className="list-decimal space-y-3 pl-5 text-sm text-muted">
           <li>Open <span className="font-medium text-fg">chrome://extensions</span> and enable Developer mode.</li>
           <li>Choose <span className="font-medium text-fg">Load unpacked</span> and select the project&apos;s <code className="rounded bg-subtle px-1">extension</code> folder.</li>
-          <li>Pin Netrika Trace and sign in from the popup.</li>
+          <li>Pin Kavach and sign in from the popup.</li>
         </ol>
         <div className="mt-5 flex items-center gap-2 rounded-xl bg-success-soft px-3 py-2 text-sm text-success-fg">
           <ShieldCheck className="h-4 w-4" /> Prompts are scanned before they leave the browser.

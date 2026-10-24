@@ -2,7 +2,8 @@ import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from 'framer-motion'
 import { ArrowRight, Code2, FileText, Fingerprint, KeyRound, Lock, ShieldCheck } from 'lucide-react'
-import Character from '../ui/Character'
+import { Lens, Sentinel, Vault } from '../scanner/Characters'
+import { LogoMark } from '../ui/Logo'
 import Button from '../ui/Button'
 import Magnetic from './Magnetic'
 
@@ -89,13 +90,28 @@ export default function Hero() {
         </motion.ul>
       </div>
 
-      <div className="relative mx-auto aspect-square w-full max-w-[480px]" aria-label="Kavi the guardian surrounded by orbiting security icons">
+      <div className="relative mx-auto aspect-square w-full max-w-[480px]" aria-label="The Kavach shield, guarded by Sentinel, Vault and Lens, surrounded by orbiting security icons">
         <motion.div className="absolute inset-0" style={{ x: farX, y: farY }}>
           <Orbit radius={210} duration={50} icons={ORBIT} />
           <Orbit radius={140} duration={34} icons={ORBIT.slice(0, 4)} reverse />
         </motion.div>
-        <motion.div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" style={{ x: nearX, y: nearY }}>
-          <Character who="kavi" pose="wave" size={200} interactive />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <motion.div style={{ x: nearX, y: nearY }}>
+          <div className="relative">
+            <LogoMark size={230} animated label="Kavach" />
+            {/* the beam repeats on the logo's own 3.2s sweep cycle so Sentinel and the shield scan together */}
+            <span aria-hidden="true" className="kv-hero-beam pointer-events-none absolute left-[-18%] top-[40%] h-[2px] w-[34%] rounded-full bg-gradient-to-r from-transparent via-success to-success" />
+          </div>
+          </motion.div>
+        </div>
+        <motion.div aria-hidden="true" className="absolute left-[-2%] top-[46%]" style={{ x: nearX }}>
+          <Sentinel pose="scan" size={92} />
+        </motion.div>
+        <motion.div aria-hidden="true" className="absolute right-[2%] top-[8%]" style={{ x: farX }}>
+          <Lens pose="idle" size={78} />
+        </motion.div>
+        <motion.div aria-hidden="true" className="absolute bottom-[6%] right-[6%]" style={{ y: nearY }}>
+          <Vault pose="idle" size={84} />
         </motion.div>
 
         <motion.div className="absolute -left-2 top-[14%] animate-float rounded-2xl border border-line bg-surface px-4 py-3 shadow-pop" style={{ x: nearX }}>

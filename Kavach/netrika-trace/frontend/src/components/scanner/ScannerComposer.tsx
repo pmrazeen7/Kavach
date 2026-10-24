@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { CheckCircle2, Eye, EyeOff, Loader2, Paperclip, Send, ShieldAlert, ShieldCheck, TriangleAlert } from 'lucide-react'
 import Button from '../ui/Button'
+import { LogoMark } from '../ui/Logo'
 import { cn } from '../ui/cn'
 import { toast } from '../ui/Toast'
 import { Sentinel, Vault, type SentinelPose } from './Characters'
@@ -337,7 +338,11 @@ export default function ScannerComposer({ value, onChange, history, settings, bu
           aria-label={`Scan status: ${chipText}. ${findings.length ? 'Open findings.' : ''}`}
           className={cn('relative inline-flex h-8 items-center gap-1.5 overflow-hidden rounded-full border px-3 text-xs font-semibold transition-colors', chip.tone, findings.length > 0 && 'cursor-pointer hover:brightness-95')}
         >
-          <ChipIcon className={cn('h-3.5 w-3.5', status === 'scanning' && !reduce && 'animate-spin')} aria-hidden="true" />
+          {status === 'idle' || status === 'safe' || status === 'blocked' ? (
+            <LogoMark size={18} decorative tint={status === 'blocked' ? 'blocked' : status === 'safe' ? 'safe' : null} tintKey={`${status}-${findings.length}`} />
+          ) : (
+            <ChipIcon className={cn('h-3.5 w-3.5', status === 'scanning' && !reduce && 'animate-spin')} aria-hidden="true" />
+          )}
           {chipText}
           {status === 'scanning' && !reduce && (
             <motion.span aria-hidden="true" className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-surface/60 to-transparent" animate={{ x: ['-100%', '300%'] }} transition={{ duration: 1.1, repeat: Infinity, ease: 'linear' }} />
