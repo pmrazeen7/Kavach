@@ -340,84 +340,180 @@ function postScanResult(requestId, allowed) {
     }
 }
 
-function showScanning(name) {
+/* ── Overlay UI ───────────────────────────────────────────────────
+ * Same visual language as the Netrika Trace dashboard: soft cool background, white rounded card,
+ * indigo accent, drifting pastel aurora, and the Sentinel guard robot. Rendered in a shadow root so
+ * the host page's CSS cannot restyle it. Palette for states: indigo = scanning, peach = warning,
+ * pink-red = blocked. */
+
+var NTK_CSS =
+    ':host{all:initial}' +
+    '*{box-sizing:border-box}' +
+    '.wrap{--bg:rgba(246,247,251,.72);--surface:#fff;--line:#E5E7EB;--fg:#111827;--muted:#6B7280;--subtle:#F3F4F8;--accent:#4F46E5;--accent-soft:#E0E7FF;--accent-fg:#4338CA;' +
+    '--danger:#EF4444;--danger-soft:#FEE2E2;--danger-fg:#B91C1C;--warn:#F97316;--warn-soft:#FFEDD5;--warn-fg:#7C2D12;--ok-soft:#D1FAE5;--ok-fg:#065F46;' +
+    'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--bg);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);' +
+    'font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--fg);animation:fade .25s ease-out}' +
+    '@media (prefers-color-scheme:dark){.wrap{--bg:rgba(8,10,17,.72);--surface:#12141C;--line:#262A36;--fg:#F3F4F6;--muted:#9CA3AF;--subtle:#1B1E28;--accent:#818CF8;--accent-soft:#312E81;--accent-fg:#C7D2FE;' +
+    '--danger:#F87171;--danger-soft:#7F1D1D;--danger-fg:#FECACA;--warn:#FB923C;--warn-soft:#7C2D12;--warn-fg:#FED7AA;--ok-soft:#064E3B;--ok-fg:#A7F3D0}}' +
+    '.card{position:relative;overflow:hidden;width:min(520px,100%);background:var(--surface);border:1px solid var(--line);border-radius:28px;' +
+    'box-shadow:0 24px 60px rgba(16,24,40,.22),0 4px 12px rgba(16,24,40,.08);padding:28px;text-align:center;animation:rise .35s cubic-bezier(.22,1,.36,1)}' +
+    '.aurora{position:absolute;inset:0;pointer-events:none;opacity:.55}' +
+    '@media (prefers-color-scheme:dark){.aurora{opacity:.28}}' +
+    '.aurora i{position:absolute;display:block;border-radius:50%}' +
+    '.aurora i:nth-child(1){width:70%;height:90%;left:-20%;top:-45%;background:radial-gradient(closest-side,rgba(147,197,253,.95),rgba(147,197,253,0));animation:d1 14s ease-in-out infinite}' +
+    '.aurora i:nth-child(2){width:65%;height:90%;right:-20%;top:-30%;background:radial-gradient(closest-side,rgba(249,168,212,.95),rgba(249,168,212,0));animation:d2 18s ease-in-out infinite}' +
+    '.aurora i:nth-child(3){width:60%;height:80%;left:25%;bottom:-55%;background:radial-gradient(closest-side,rgba(110,231,183,.9),rgba(110,231,183,0));animation:d1 20s ease-in-out infinite}' +
+    '.in{position:relative;max-height:calc(100vh - 104px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--line) transparent}' +
+    '.chip{display:flex;width:fit-content;margin:0 auto;align-items:center;gap:6px;border-radius:999px;padding:5px 12px;font-size:12.5px;font-weight:600;border:1px solid transparent}' +
+    '.chip.scan{background:var(--accent-soft);color:var(--accent-fg);border-color:rgba(79,70,229,.25)}' +
+    '.chip.block{background:var(--danger-soft);color:var(--danger-fg);border-color:rgba(239,68,68,.3)}' +
+    '.chip.warn{background:var(--warn-soft);color:var(--warn-fg);border-color:rgba(249,115,22,.3)}' +
+    '.chip i{width:7px;height:7px;border-radius:50%;background:currentColor;display:block}' +
+    '.chip.scan i{animation:pulse 1.2s ease-in-out infinite}' +
+    'h1{margin:10px 0 6px;font-size:23px;line-height:1.2;font-weight:800;letter-spacing:-.02em}' +
+    '.sub{margin:0 auto;max-width:400px;font-size:14px;color:var(--muted);line-height:1.5}' +
+    '.file{display:inline-flex;max-width:100%;align-items:center;gap:8px;margin-top:14px;background:var(--subtle);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-size:13px;font-weight:500}' +
+    '.file span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
+    '.bar{position:relative;height:6px;border-radius:999px;background:var(--subtle);overflow:hidden;margin:18px auto 0;max-width:340px}' +
+    '.bar i{position:absolute;inset:0 auto 0 0;width:38%;border-radius:999px;background:linear-gradient(90deg,var(--accent),#EC4899);animation:slide 1.3s ease-in-out infinite}' +
+    '.step{height:20px;margin-top:12px;font-size:13px;color:var(--muted)}' +
+    '.step b{font-weight:600;color:var(--fg)}' +
+    '.note{margin:16px 0 0;font-size:12px;color:var(--muted)}' +
+    '.panel{margin:18px 0 0;text-align:left;background:var(--subtle);border:1px solid var(--line);border-radius:18px;padding:14px 16px}' +
+    '.panel h2{margin:0 0 8px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}' +
+    '.panel ul{margin:0;padding:0;list-style:none;display:grid;gap:8px}' +
+    '.panel li{display:flex;gap:10px;font-size:14px;line-height:1.45}' +
+    '.panel li svg{flex:none;margin-top:2px}' +
+    '.row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:22px}' +
+    'button{font:600 14px Inter,ui-sans-serif,system-ui,sans-serif;cursor:pointer;border-radius:12px;padding:11px 20px;border:1px solid var(--line);background:var(--surface);color:var(--fg);transition:transform .15s,background .15s}' +
+    'button:hover{background:var(--subtle)}button:active{transform:scale(.97)}' +
+    'button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}' +
+    'button.primary{background:var(--accent);border-color:transparent;color:#fff}' +
+    'button.primary:hover{background:var(--accent);filter:brightness(1.08)}' +
+    '.robot{display:block;margin:0 auto}' +
+    '@keyframes fade{from{opacity:0}to{opacity:1}}' +
+    '@keyframes rise{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}' +
+    '@keyframes d1{50%{transform:translate(8%,6%) scale(1.12)}}@keyframes d2{50%{transform:translate(-8%,-4%) scale(.94)}}' +
+    '@keyframes pulse{50%{opacity:.35}}@keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(280%)}}' +
+    '@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}' +
+    '@keyframes beam{0%,100%{transform:translateX(0)}50%{transform:translateX(46px)}}' +
+    '@keyframes blink{0%,92%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}' +
+    '@keyframes stamp{0%{opacity:0;transform:scale(2) rotate(-16deg)}60%{opacity:1;transform:scale(.94) rotate(-8deg)}100%{opacity:1;transform:scale(1) rotate(-8deg)}}' +
+    '@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}' +
+    '.bob{animation:bob 3s ease-in-out infinite}.beam{animation:beam 1.1s ease-in-out infinite}' +
+    '.blink{animation:blink 4.6s infinite;transform-box:fill-box;transform-origin:center}' +
+    '.stamp{transform-origin:60px 60px;animation:stamp .5s cubic-bezier(.22,1,.36,1) both}' +
+    '.shake{animation:shake .4s ease-in-out 2}' +
+    '@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.stamp{opacity:1;transform:rotate(-8deg)}}';
+
+/** Sentinel, the guard robot (same character as the dashboard): pose is 'scan' | 'suspect' | 'blocked'. */
+function ntkSentinel(pose) {
+    var eye = pose === 'blocked' ? '#EF4444' : pose === 'suspect' ? '#FDBA74' : '#C4B5FD';
+    var alarmed = pose === 'blocked' || pose === 'suspect';
+    var INK = '#312E81';
+    var face;
+    if (pose === 'scan') {
+        face = '<ellipse cx="46" cy="49" rx="5.5" ry="5.5" fill="' + eye + '"/><ellipse cx="74" cy="49" rx="5.5" ry="5.5" fill="' + eye + '"/>' +
+            '<rect class="beam" x="34" y="37" width="5" height="24" rx="2.5" fill="#4F46E5" opacity=".9"/>';
+    } else {
+        face = '<g class="blink"><ellipse cx="46" cy="49" rx="6.5" ry="7.5" fill="' + eye + '"/><ellipse cx="74" cy="49" rx="6.5" ry="7.5" fill="' + eye + '"/></g>';
+    }
+    var arm = pose === 'blocked'
+        ? '<path d="M86 86c8-2 12-8 12-14" stroke="' + INK + '" stroke-width="5.5" stroke-linecap="round" fill="none"/>' +
+          '<rect x="88" y="52" width="22" height="20" rx="5" fill="#EF4444" stroke="' + INK + '" stroke-width="2.5"/>' +
+          '<rect x="95" y="44" width="8" height="10" rx="3" fill="#FDE68A" stroke="' + INK + '" stroke-width="2.5"/>'
+        : pose === 'suspect'
+            ? '<path d="M86 84c10-4 14-16 10-28" stroke="' + INK + '" stroke-width="5.5" stroke-linecap="round" fill="none"/><path d="M96 56 100 40" stroke="' + INK + '" stroke-width="4.5" stroke-linecap="round"/>'
+            : '<path d="M86 86c8 2 10 10 8 16" stroke="' + INK + '" stroke-width="5.5" stroke-linecap="round" fill="none"/>';
+    return '<svg class="robot ' + (pose === 'blocked' ? 'shake' : 'bob') + '" width="132" height="132" viewBox="0 0 120 120" role="img" aria-label="Sentinel the guard robot" style="overflow:visible">' +
+        '<ellipse cx="60" cy="113" rx="26" ry="4" fill="rgba(107,114,128,.25)"/>' +
+        '<path d="M60 24V12" stroke="' + INK + '" stroke-width="3.5" stroke-linecap="round"/>' +
+        '<circle cx="60" cy="9" r="5.5" fill="' + (alarmed ? '#EF4444' : '#FDE68A') + '" stroke="' + INK + '" stroke-width="3"/>' +
+        '<rect x="34" y="76" width="52" height="30" rx="14" fill="#93C5FD" stroke="' + INK + '" stroke-width="3"/>' +
+        '<circle cx="60" cy="91" r="5" fill="' + eye + '" stroke="' + INK + '" stroke-width="2"/>' +
+        '<path d="M34 86c-8 2-10 10-8 16" stroke="' + INK + '" stroke-width="5.5" stroke-linecap="round" fill="none"/>' + arm +
+        '<rect x="26" y="24" width="68" height="52" rx="22" fill="#93C5FD" stroke="' + INK + '" stroke-width="3"/>' +
+        '<rect x="33" y="37" width="54" height="24" rx="12" fill="' + INK + '"/>' + face +
+        (alarmed ? '<ellipse cx="60" cy="68" rx="4" ry="3.5" fill="' + INK + '"/>' : '<path d="M54 68h12" stroke="' + INK + '" stroke-width="3" stroke-linecap="round"/>') +
+        '<circle cx="30" cy="62" r="3.5" fill="#F9A8D4" opacity=".7"/><circle cx="90" cy="62" r="3.5" fill="#F9A8D4" opacity=".7"/>' +
+        '</svg>';
+}
+
+function ntkOverlay(innerHtml) {
     removeOverlays();
+    var host = document.createElement('div');
+    host.id = 'netrika-dlp-overlay';
+    host.setAttribute('style', 'position:fixed;inset:0;z-index:2147483647;');
+    var root = host.attachShadow({ mode: 'open' });
+    root.innerHTML =
+        '<style>' + NTK_CSS + '</style>' +
+        '<div class="wrap"><div class="card" role="dialog" aria-modal="true" aria-live="polite">' +
+        '<div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div><div class="in">' + innerHtml + '</div></div></div>';
+    getMountRoot().appendChild(host);
+    return root;
+}
+
+var NTK_STEPS = ['Reading the file', 'Looking for secrets and random keys', 'Checking Aadhaar, PAN, cards and bank IDs', 'Comparing with your registered secrets'];
+
+function showScanning(name) {
     _scanOverlaySince = Date.now();
-    const el = document.createElement('div');
-    el.id = 'netrika-dlp-overlay';
-    el.setAttribute('style',
-        'position:fixed;top:0;left:0;width:100vw;height:100vh;' +
-        'background:rgba(10,15,30,0.96);z-index:2147483647;' +
-        'display:flex;flex-direction:column;align-items:center;justify-content:center;' +
-        'font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#fff;'
+    var root = ntkOverlay(
+        '<span class="chip scan"><i></i>Scanning</span>' +
+        ntkSentinel('scan') +
+        '<h1>Netrika is checking your upload</h1>' +
+        '<p class="sub">Nothing is sent to the AI service until the check is done.</p>' +
+        '<div class="file" title="' + escapeHtml(name) + '"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span>' + escapeHtml(name) + '</span></div>' +
+        '<div class="bar" aria-hidden="true"><i></i></div>' +
+        '<div class="step" id="ntk-step"></div>' +
+        '<p class="note">Scanned on this device first. Raw values are never logged.</p>'
     );
-    el.innerHTML =
-        '<div style="width:72px;height:72px;border-radius:50%;border:5px solid rgba(255,255,255,0.1);' +
-        'border-top-color:#38bdf8;animation:ntk-spin 0.8s linear infinite;margin-bottom:28px"></div>' +
-        '<h2 style="font-size:24px;font-weight:700;margin:0 0 10px">🛡️ Netrika DLP Scanning…</h2>' +
-        '<p style="font-size:15px;opacity:0.7;margin:0;max-width:400px;text-align:center">' +
-        escapeHtml(name) + '</p>' +
-        '<p style="font-size:13px;opacity:0.5;margin:12px 0 0">Checking for Aadhaar, PAN, UPI, IFSC, API keys…</p>' +
-        '<style>@keyframes ntk-spin{to{transform:rotate(360deg)}}</style>';
-    getMountRoot().appendChild(el);
+    var stepEl = root.getElementById('ntk-step');
+    var i = 0;
+    var tick = function () {
+        if (!stepEl.isConnected) return clearInterval(timer);
+        stepEl.innerHTML = '<b>' + NTK_STEPS[i % NTK_STEPS.length] + '</b>…';
+        i++;
+    };
+    var timer = setInterval(tick, 1300);
+    tick();
 }
 
 function showInterventionDialog({ mode, subject, verdict }) {
-    return new Promise(resolve => {
-        removeOverlays();
-        const isBlock = mode === 'BLOCK';
-        const details = buildVerdictDetails(verdict);
-        const accent = isBlock ? '#dc2626' : '#d97706';
-        const bg = isBlock ? 'rgba(127,20,20,0.97)' : 'rgba(130,60,10,0.97)';
-        const icon = isBlock ? '🛡️' : '⚠️';
-        const title = isBlock ? 'POLICY VIOLATION — UPLOAD BLOCKED' : 'SENSITIVE DATA WARNING';
-        const btnLabel = isBlock ? null : 'Proceed anyway';
-
-        const el = document.createElement('div');
-        el.id = 'netrika-dlp-overlay';
-        el.setAttribute('style',
-            'position:fixed;top:0;left:0;width:100vw;height:100vh;' +
-            `background:${bg};z-index:2147483647;` +
-            'display:flex;flex-direction:column;align-items:center;justify-content:center;' +
-            'font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#fff;' +
-            'padding:40px;box-sizing:border-box;overflow-y:auto;'
-        );
-
-        const detailsHtml = details.length
-            ? '<ul style="margin:14px 0 0;padding-left:20px;text-align:left;max-width:600px;line-height:1.8;font-size:15px">' +
-              details.map(l => `<li style="margin-bottom:6px">${escapeHtml(l)}</li>`).join('') +
-              '</ul>'
+    return new Promise(function (resolve) {
+        var isBlock = mode === 'BLOCK';
+        var details = buildVerdictDetails(verdict);
+        var tone = isBlock ? 'block' : 'warn';
+        var tick = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="' + (isBlock ? '#EF4444' : '#F97316') + '" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.4 8 8 9 4.6-1 8-4 8-9V6z"/><path d="M12 9v4M12 16h.01"/></svg>';
+        var list = details.length
+            ? '<div class="panel"><h2>Why</h2><ul>' + details.map(function (l) { return '<li>' + tick + '<span>' + escapeHtml(l) + '</span></li>'; }).join('') + '</ul></div>'
             : '';
-
-        const proceedBtnHtml = btnLabel
-            ? `<button id="ntk-proceed" style="padding:14px 32px;background:#fff;color:${accent};border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">${escapeHtml(btnLabel)}</button>`
-            : '';
-
-        el.innerHTML =
-            `<div style="font-size:72px;line-height:1;margin-bottom:20px">${icon}</div>` +
-            `<h1 style="font-size:24px;font-weight:800;margin:0 0 14px;text-align:center;letter-spacing:.05em">${title}</h1>` +
-            `<p style="font-size:16px;max-width:600px;text-align:center;margin:0;opacity:.95">${escapeHtml(subject)}</p>` +
-            '<div style="width:100%;max-width:600px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.18);border-radius:14px;padding:20px 24px;margin-top:22px">' +
-            '<div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.7">Reason</div>' +
-            detailsHtml +
+        var root = ntkOverlay(
+            '<span class="chip ' + tone + '"><i></i>' + (isBlock ? 'Blocked by policy' : 'Needs your decision') + '</span>' +
+            '<div style="position:relative;width:132px;margin:2px auto 0">' + ntkSentinel(isBlock ? 'blocked' : 'suspect') +
+            (isBlock ? '<svg class="stamp" style="position:absolute;left:50%;top:50%;margin:-22px 0 0 -62px" width="124" height="44" viewBox="0 0 124 44" aria-hidden="true"><rect x="2" y="2" width="120" height="40" rx="10" fill="rgba(255,255,255,.85)" stroke="#EF4444" stroke-width="3.5"/><text x="62" y="29" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="20" font-weight="800" letter-spacing="3" fill="#EF4444">BLOCKED</text></svg>' : '') +
             '</div>' +
-            '<p style="font-size:13px;max-width:600px;text-align:center;opacity:.75;margin:18px 0 0">' +
-            (isBlock
-                ? 'This upload has been blocked. The incident has been logged to your Netrika DLP dashboard.'
-                : 'This incident has been logged to your Netrika DLP dashboard. Cancel to protect your organisation.') +
-            '</p>' +
-            '<div style="display:flex;gap:16px;margin-top:30px;flex-wrap:wrap;justify-content:center">' +
-            '<button id="ntk-cancel" style="padding:14px 32px;background:transparent;color:#fff;border:2px solid rgba(255,255,255,0.75);border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">' +
-            (isBlock ? '✕ Close' : '✕ Cancel upload') + '</button>' +
-            proceedBtnHtml +
-            '</div>';
-
-        getMountRoot().appendChild(el);
-        const finish = ok => { removeOverlays(); resolve(ok); };
-        document.getElementById('ntk-cancel').onclick = () => finish(false);
-        const proceedBtn = document.getElementById('ntk-proceed');
-        if (proceedBtn) proceedBtn.onclick = () => finish(true);
-        if (isBlock) setTimeout(() => finish(false), 15000);
+            '<h1>' + (isBlock ? 'This upload was stopped' : 'Sensitive data found') + '</h1>' +
+            '<p class="sub">' + escapeHtml(subject) + '</p>' +
+            list +
+            '<p class="note">' + (isBlock
+                ? 'The incident was logged to your Netrika dashboard. The file was not sent.'
+                : 'This will be logged to your Netrika dashboard. Cancelling keeps the data inside your organisation.') + '</p>' +
+            '<div class="row"><button type="button" id="ntk-cancel" class="' + (isBlock ? 'primary' : '') + '">' + (isBlock ? 'Close' : 'Cancel upload') + '</button>' +
+            (isBlock ? '' : '<button type="button" id="ntk-proceed" class="primary">Proceed anyway</button>') + '</div>'
+        );
+        var finish = function (ok) {
+            document.removeEventListener('keydown', onKey, true);
+            removeOverlays();
+            resolve(ok);
+        };
+        var onKey = function (e) { if (e.key === 'Escape') finish(false); };
+        document.addEventListener('keydown', onKey, true);
+        var cancel = root.getElementById('ntk-cancel');
+        cancel.onclick = function () { finish(false); };
+        var proceed = root.getElementById('ntk-proceed');
+        if (proceed) proceed.onclick = function () { finish(true); };
+        cancel.focus();
+        if (isBlock) setTimeout(function () { finish(false); }, 20000);
     });
 }
 
