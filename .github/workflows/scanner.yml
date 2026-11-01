@@ -30,10 +30,16 @@ jobs:
         run: pytest tests/test_scanner_engine.py tests/test_scanner_gate.py tests/test_scanner_safety.py tests/test_enterprise_api.py -q
       - name: Evaluation gate (recall, false-alarm rate, latency)
         run: python -m scanner.eval.run --check
-      - name: Parity data is current
+      - name: Generate the corpus and parity data (not committed: synthetic secrets trip secret scanners)
         run: |
+          python -m scanner.eval.corpus
           python -m scanner.eval.parity
-          git diff --exit-code scanner/eval/parity.json scanner/eval/corpus.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: scanner-eval-data
+          path: |
+            Kavach/netrika-trace/scanner/eval/corpus.json
+            Kavach/netrika-trace/scanner/eval/parity.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -42,6 +48,7 @@ jobs:
 
   browser:
     name: Browser engine parity, types and lint
+    needs: engine
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -53,6 +60,10 @@ jobs:
           node-version: 20
           cache: npm
           cache-dependency-path: Kavach/netrika-trace/frontend/package-lock.json
+      - uses: actions/download-artifact@v4
+        with:
+          name: scanner-eval-data
+          path: Kavach/netrika-trace/scanner/eval
       - run: npm ci
       - run: npx tsc --noEmit
       - run: npm run lint

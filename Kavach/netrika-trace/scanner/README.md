@@ -88,7 +88,7 @@ python -m scanner.rules.build        # formats_src.py -> formats.json
 python -m scanner.train_lexicon      # lexicon.json from local text (no downloads)
 python -m scanner.train_model        # model.json
 python -m scanner.eval.run --check   # report + CI gate (writes scanner/eval/REPORT.md)
-python -m scanner.eval.parity        # refresh parity.json, then: cd frontend && npm test
+python -m scanner.eval.corpus && python -m scanner.eval.parity   # generate corpus.json and parity.json (git-ignored), then: cd frontend && npm test
 ```
 
 If you change a feature or a rule, change it in **both** `statistical.py`/`engine.py` and
