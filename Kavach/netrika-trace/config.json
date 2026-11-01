@@ -1,0 +1,32 @@
+{
+  "block_threshold": 70,
+  "warn_threshold": 40,
+  "enable_code_detection": true,
+  "enable_secrets_scanner": true,
+  "enable_breach_simulation": true,
+  "enable_email_alerts": true,
+  "admin_email": "admin@company.com",
+  "pii_weight": 1.0,
+  "entity_weight": 0.0,
+  "semantic_weight": 0.0,
+  "max_payload_preview_chars": 200,
+  "max_payload_display_chars": 500,
+  "code_detection_score_boost": 20,
+  "ai_endpoints": [
+    "api.openai.com",
+    "chat.openai.com",
+    "api.anthropic.com",
+    "generativelanguage.googleapis.com",
+    "bard.google.com",
+    "api.perplexity.ai",
+    "api.cohere.com",
+    "api.mistral.ai",
+    "huggingface.co",
+    "replicate.com",
+    "claude.ai",
+    "gemini.google.com",
+    "copilot.microsoft.com",
+    "api.groq.com",
+    "together.ai"
+  ]
+}

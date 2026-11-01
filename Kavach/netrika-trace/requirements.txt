@@ -1,0 +1,61 @@
+# Core
+langgraph>=0.2.0
+langchain-core>=0.3.0
+
+# Proxy
+mitmproxy>=10.0.0
+
+# NLP & PII Detection
+spacy>=3.7.0
+presidio-analyzer>=2.2.0
+presidio-anonymizer>=2.2.0
+sentence-transformers>=2.2.0
+transformers>=4.35.0
+torch>=2.1.0
+
+# Code Detection
+Pygments>=2.17.0
+
+# Local LLM
+ollama>=0.3.0
+
+# Gemini API
+google-generativeai>=0.8.0
+
+# Document extraction
+PyPDF2>=3.0.0
+python-docx>=1.0.0
+
+# Database
+sqlalchemy>=2.0.0
+aiosqlite>=0.19.0
+
+# Redis
+redis>=5.0.0
+
+# Dashboard
+streamlit>=1.35.0
+plotly>=5.18.0
+pandas>=2.1.0
+
+# Reports
+reportlab>=4.0.0
+
+# Web Server
+aiohttp>=3.9.0
+jinja2>=3.1.0
+
+# Utilities
+python-dotenv>=1.0.0
+pydantic>=2.5.0
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.23.0
+
+# Enterprise Upgrade Dependencies
+celery>=5.3.0
+psycopg[binary]>=3.2.1
+PyJWT>=2.8.0
+passlib>=1.7.4
+bcrypt>=4.1.0
