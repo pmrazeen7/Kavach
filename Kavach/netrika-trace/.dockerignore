@@ -1,0 +1,17 @@
+.git
+.env
+.venv
+venv
+__pycache__
+*.py[cod]
+.pytest_cache
+data
+*.db
+*.db-*
+*.sqlite3
+frontend
+extension
+extension1.zip
+tests
+docs
+*.pptx

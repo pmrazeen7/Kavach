@@ -1,0 +1,869 @@
+{
+ "version": 1,
+ "rules": [
+  {
+   "id": "aws_access_key",
+   "name": "AWS access key ID",
+   "cat": "secret",
+   "pattern": "\\b(?:AKIA|ASIA|AGPA|AIDA|AROA|ANPA|ANVA|AIPA)[A-Z0-9]{16}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.98,
+   "allow": false
+  },
+  {
+   "id": "aws_secret_key",
+   "name": "AWS secret access key",
+   "cat": "secret",
+   "pattern": "(?:aws|secret|sk)[A-Za-z0-9_\\-. ]{0,24}[\\\"'=:\\s]{1,6}([A-Za-z0-9/+=]{40})\\b",
+   "flags": "i",
+   "group": 1,
+   "conf": 0.9,
+   "allow": false,
+   "min_ent": 4.0
+  },
+  {
+   "id": "gcp_api_key",
+   "name": "Google API key",
+   "cat": "secret",
+   "pattern": "\\bAIza[0-9A-Za-z_\\-]{35}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.97,
+   "allow": false
+  },
+  {
+   "id": "gcp_oauth_secret",
+   "name": "Google OAuth client secret",
+   "cat": "secret",
+   "pattern": "\\bGOCSPX-[A-Za-z0-9_\\-]{28}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.98,
+   "allow": false
+  },
+  {
+   "id": "gcp_oauth_access",
+   "name": "Google OAuth access token",
+   "cat": "secret",
+   "pattern": "\\bya29\\.[0-9A-Za-z_\\-]{20,}",
+   "flags": "",
+   "group": 0,
+   "conf": 0.95,
+   "allow": false
+  },
+  {
+   "id": "gcp_oauth_refresh",
+   "name": "Google OAuth refresh token",
+   "cat": "secret",
+   "pattern": "\\b1//[0-9A-Za-z_\\-]{40,}",
+   "flags": "",
+   "group": 0,
+   "conf": 0.9,
+   "allow": false
+  },
+  {
+   "id": "gcp_service_account",
+   "name": "GCP service-account key file",
+   "cat": "key_material",
+   "pattern": "\\\\?\\\"type\\\\?\\\"\\s*:\\s*\\\\?\\\"service_account\\\\?\\\"",
+   "flags": "",
+   "group": 0,
+   "conf": 0.9,
+   "allow": false
+  },
+  {
+   "id": "azure_storage_key",
+   "name": "Azure storage account key",
+   "cat": "secret",
+   "pattern": "AccountKey=([A-Za-z0-9+/=]{86,88})",
+   "flags": "",
+   "group": 1,
+   "conf": 0.98,
+   "allow": false
+  },
+  {
+   "id": "azure_ad_secret",
+   "name": "Azure AD client secret",
+   "cat": "secret",
+   "pattern": "\\b[A-Za-z0-9_~.\\-]{3}8Q~[A-Za-z0-9_~.\\-]{34}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.95,
+   "allow": false
+  },
+  {
+   "id": "azure_sas",
+   "name": "Azure SAS signature",
+   "cat": "secret",
+   "pattern": "[?&]sig=([A-Za-z0-9%]{43,})",
+   "flags": "",
+   "group": 1,
+   "conf": 0.85,
+   "allow": false
+  },
+  {
+   "id": "azure_conn",
+   "name": "Azure connection string",
+   "cat": "secret",
+   "pattern": "DefaultEndpointsProtocol=https?;AccountName=[^;\\s]+;AccountKey=[^;\\s]+",
+   "flags": "",
+   "group": 0,
+   "conf": 0.98,
+   "allow": false
+  },
+  {
+   "id": "alibaba_key",
+   "name": "Alibaba Cloud access key",
+   "cat": "secret",
+   "pattern": "\\bLTAI[A-Za-z0-9]{12,20}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.9,
+   "allow": false
+  },
+  {
+   "id": "tencent_key",
+   "name": "Tencent Cloud secret ID",
+   "cat": "secret",
+   "pattern": "\\bAKID[A-Za-z0-9]{32}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.92,
+   "allow": false
+  },
+  {
+   "id": "digitalocean",
+   "name": "DigitalOcean token",
+   "cat": "secret",
+   "pattern": "\\bdo[opr]_v1_[a-f0-9]{64}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.98,
+   "allow": false
+  },
+  {
+   "id": "cloudflare_origin_ca",
+   "name": "Cloudflare origin CA key",
+   "cat": "secret",
+   "pattern": "\\bv1\\.0-[a-f0-9]{24}-[a-f0-9]{146}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.95,
+   "allow": false
+  },
+  {
+   "id": "heroku_key",
+   "name": "Heroku API key",
+   "cat": "secret",
+   "pattern": "\\bHRKU-[A-Za-z0-9_\\-]{60}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.97,
+   "allow": false
+  },
+  {
+   "id": "firebase_fcm",
+   "name": "Firebase server key",
+   "cat": "secret",
+   "pattern": "\\bAAAA[A-Za-z0-9_\\-]{7}:[A-Za-z0-9_\\-]{140}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.97,
+   "allow": false
+  },
+  {
+   "id": "github_pat",
+   "name": "GitHub personal access token",
+   "cat": "secret",
+   "pattern": "\\bgh[pousr]_[A-Za-z0-9]{36,255}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.99,
+   "allow": false
+  },
+  {
+   "id": "github_fine_pat",
+   "name": "GitHub fine-grained token",
+   "cat": "secret",
+   "pattern": "\\bgithub_pat_[A-Za-z0-9_]{22,}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.99,
+   "allow": false
+  },
+  {
+   "id": "gitlab_pat",
+   "name": "GitLab token",
+   "cat": "secret",
+   "pattern": "\\bgl(?:pat|rt|ptt|dt|ft|imt|agent|oas)-[A-Za-z0-9_\\-]{20,}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.98,
+   "allow": false
+  },
+  {
+   "id": "bitbucket_app",
+   "name": "Bitbucket app password",
+   "cat": "secret",
+   "pattern": "\\bATBB[A-Za-z0-9_=.\\-]{32,}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.9,
+   "allow": false
+  },
+  {
+   "id": "npm_token",
+   "name": "npm access token",
+   "cat": "secret",
+   "pattern": "\\bnpm_[A-Za-z0-9]{36}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.99,
+   "allow": false
+  },
+  {
+   "id": "pypi_token",
+   "name": "PyPI upload token",
+   "cat": "secret",
+   "pattern": "\\bpypi-AgEIcHlwaS5vcmc[A-Za-z0-9_\\-]{50,}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.99,
+   "allow": false
+  },
+  {
+   "id": "docker_pat",
+   "name": "Docker Hub token",
+   "cat": "secret",
+   "pattern": "\\bdckr_pat_[A-Za-z0-9_\\-]{27,}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.99,
+   "allow": false
+  },
+  {
+   "id": "rubygems",
+   "name": "RubyGems API key",
+   "cat": "secret",
+   "pattern": "\\brubygems_[a-f0-9]{48}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.98,
+   "allow": false
+  },
+  {
+   "id": "nuget",
+   "name": "NuGet API key",
+   "cat": "secret",
+   "pattern": "\\boy2[a-z0-9]{43}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.9,
+   "allow": false
+  },
+  {
+   "id": "circleci",
+   "name": "CircleCI token",
+   "cat": "secret",
+   "pattern": "\\bCCIPAT_[A-Za-z0-9]{22}_[a-f0-9]{40}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.97,
+   "allow": false
+  },
+  {
+   "id": "hashicorp_vault",
+   "name": "HashiCorp Vault token",
+   "cat": "secret",
+   "pattern": "\\bhv[sbr]\\.[A-Za-z0-9_\\-]{24,}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.96,
+   "allow": false
+  },
+  {
+   "id": "terraform_cloud",
+   "name": "Terraform Cloud token",
+   "cat": "secret",
+   "pattern": "\\b[A-Za-z0-9]{14}\\.atlasv1\\.[A-Za-z0-9_\\-]{60,}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.98,
+   "allow": false
+  },
+  {
+   "id": "stripe_secret",
+   "name": "Stripe secret key",
+   "cat": "secret",
+   "pattern": "\\b(?:sk|rk)_(?:live|test)_[A-Za-z0-9]{24,99}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.99,
+   "allow": false
+  },
+  {
+   "id": "stripe_webhook",
+   "name": "Stripe webhook secret",
+   "cat": "secret",
+   "pattern": "\\bwhsec_[A-Za-z0-9]{32,}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.97,
+   "allow": false
+  },
+  {
+   "id": "square_token",
+   "name": "Square access token",
+   "cat": "secret",
+   "pattern": "\\b(?:sq0atp-[A-Za-z0-9_\\-]{22}|EAAA[A-Za-z0-9_\\-]{60})\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.95,
+   "allow": false
+  },
+  {
+   "id": "braintree",
+   "name": "Braintree access token",
+   "cat": "secret",
+   "pattern": "\\baccess_token\\$(?:production|sandbox)\\$[a-z0-9]{16}\\$[a-f0-9]{32}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.98,
+   "allow": false
+  },
+  {
+   "id": "razorpay",
+   "name": "Razorpay key",
+   "cat": "secret",
+   "pattern": "\\brzp_(?:live|test)_[A-Za-z0-9]{14,}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.97,
+   "allow": false
+  },
+  {
+   "id": "shopify",
+   "name": "Shopify token",
+   "cat": "secret",
+   "pattern": "\\bshp(?:at|ss|ca|pa)_[a-fA-F0-9]{32}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.99,
+   "allow": false
+  },
+  {
+   "id": "slack_token",
+   "name": "Slack token",
+   "cat": "secret",
+   "pattern": "\\bxox[baprso]-[A-Za-z0-9-]{10,}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.98,
+   "allow": false
+  },
+  {
+   "id": "slack_webhook",
+   "name": "Slack webhook URL",
+   "cat": "secret",
+   "pattern": "https://hooks\\.slack\\.com/(?:services|workflows)/[A-Za-z0-9/_\\-]{20,}",
+   "flags": "",
+   "group": 0,
+   "conf": 0.98,
+   "allow": false
+  },
+  {
+   "id": "discord_webhook",
+   "name": "Discord webhook URL",
+   "cat": "secret",
+   "pattern": "https://(?:discord|discordapp)\\.com/api/webhooks/\\d+/[A-Za-z0-9_\\-]{30,}",
+   "flags": "",
+   "group": 0,
+   "conf": 0.98,
+   "allow": false
+  },
+  {
+   "id": "discord_bot",
+   "name": "Discord bot token",
+   "cat": "secret",
+   "pattern": "\\b[MNO][A-Za-z0-9_\\-]{23,25}\\.[A-Za-z0-9_\\-]{6}\\.[A-Za-z0-9_\\-]{27,38}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.9,
+   "allow": false
+  },
+  {
+   "id": "teams_webhook",
+   "name": "Microsoft Teams webhook",
+   "cat": "secret",
+   "pattern": "https://[a-z0-9\\-]+\\.webhook\\.office\\.com/webhookb2/[A-Za-z0-9@\\-/]+",
+   "flags": "",
+   "group": 0,
+   "conf": 0.97,
+   "allow": false
+  },
+  {
+   "id": "telegram_bot",
+   "name": "Telegram bot token",
+   "cat": "secret",
+   "pattern": "\\b\\d{8,10}:AA[A-Za-z0-9_\\-]{33}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.97,
+   "allow": false
+  },
+  {
+   "id": "twilio_api_key",
+   "name": "Twilio API key",
+   "cat": "secret",
+   "pattern": "\\bSK[0-9a-fA-F]{32}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.9,
+   "allow": false
+  },
+  {
+   "id": "sendgrid",
+   "name": "SendGrid API key",
+   "cat": "secret",
+   "pattern": "\\bSG\\.[A-Za-z0-9_\\-]{22}\\.[A-Za-z0-9_\\-]{43}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.99,
+   "allow": false
+  },
+  {
+   "id": "mailgun",
+   "name": "Mailgun API key",
+   "cat": "secret",
+   "pattern": "\\bkey-[0-9a-f]{32}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.9,
+   "allow": false
+  },
+  {
+   "id": "mailchimp",
+   "name": "Mailchimp API key",
+   "cat": "secret",
+   "pattern": "\\b[0-9a-f]{32}-us\\d{1,2}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.95,
+   "allow": false
+  },
+  {
+   "id": "anthropic",
+   "name": "Anthropic API key",
+   "cat": "secret",
+   "pattern": "\\bsk-ant-(?:api|admin)\\d{2}-[A-Za-z0-9_\\-]{40,}",
+   "flags": "",
+   "group": 0,
+   "conf": 0.99,
+   "allow": false
+  },
+  {
+   "id": "openai_proj",
+   "name": "OpenAI API key",
+   "cat": "secret",
+   "pattern": "\\bsk-(?:proj|svcacct|admin)-[A-Za-z0-9_\\-]{20,}",
+   "flags": "",
+   "group": 0,
+   "conf": 0.99,
+   "allow": false
+  },
+  {
+   "id": "openai_legacy",
+   "name": "OpenAI API key (legacy)",
+   "cat": "secret",
+   "pattern": "\\bsk-[A-Za-z0-9]{32,64}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.9,
+   "allow": false,
+   "min_ent": 3.8
+  },
+  {
+   "id": "huggingface",
+   "name": "Hugging Face token",
+   "cat": "secret",
+   "pattern": "\\bhf_[A-Za-z0-9]{34}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.98,
+   "allow": false
+  },
+  {
+   "id": "groq",
+   "name": "Groq API key",
+   "cat": "secret",
+   "pattern": "\\bgsk_[A-Za-z0-9]{52}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.99,
+   "allow": false
+  },
+  {
+   "id": "replicate",
+   "name": "Replicate API token",
+   "cat": "secret",
+   "pattern": "\\br8_[A-Za-z0-9]{37}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.98,
+   "allow": false
+  },
+  {
+   "id": "perplexity",
+   "name": "Perplexity API key",
+   "cat": "secret",
+   "pattern": "\\bpplx-[A-Za-z0-9]{48}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.99,
+   "allow": false
+  },
+  {
+   "id": "xai",
+   "name": "xAI API key",
+   "cat": "secret",
+   "pattern": "\\bxai-[A-Za-z0-9]{80}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.98,
+   "allow": false
+  },
+  {
+   "id": "newrelic",
+   "name": "New Relic key",
+   "cat": "secret",
+   "pattern": "\\bNRAK-[A-Z0-9]{27}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.98,
+   "allow": false
+  },
+  {
+   "id": "sentry_dsn",
+   "name": "Sentry DSN",
+   "cat": "secret",
+   "pattern": "https://[a-f0-9]{32}@[a-z0-9.\\-]+/\\d+",
+   "flags": "",
+   "group": 0,
+   "conf": 0.9,
+   "allow": false
+  },
+  {
+   "id": "linear",
+   "name": "Linear API key",
+   "cat": "secret",
+   "pattern": "\\blin_api_[A-Za-z0-9]{40}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.99,
+   "allow": false
+  },
+  {
+   "id": "notion",
+   "name": "Notion token",
+   "cat": "secret",
+   "pattern": "\\b(?:secret_[A-Za-z0-9]{43}|ntn_[A-Za-z0-9]{40,})\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.97,
+   "allow": false
+  },
+  {
+   "id": "postman",
+   "name": "Postman API key",
+   "cat": "secret",
+   "pattern": "\\bPMAK-[a-f0-9]{24}-[a-f0-9]{34}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.99,
+   "allow": false
+  },
+  {
+   "id": "atlassian",
+   "name": "Atlassian API token",
+   "cat": "secret",
+   "pattern": "\\bATATT3[A-Za-z0-9_\\-=]{150,}",
+   "flags": "",
+   "group": 0,
+   "conf": 0.98,
+   "allow": false
+  },
+  {
+   "id": "mapbox_secret",
+   "name": "Mapbox secret token",
+   "cat": "secret",
+   "pattern": "\\bsk\\.eyJ[A-Za-z0-9_\\-]{20,}\\.[A-Za-z0-9_\\-]{20,}",
+   "flags": "",
+   "group": 0,
+   "conf": 0.97,
+   "allow": false
+  },
+  {
+   "id": "facebook",
+   "name": "Facebook access token",
+   "cat": "secret",
+   "pattern": "\\bEAA[A-Za-z0-9]{80,}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.85,
+   "allow": false
+  },
+  {
+   "id": "twitter_bearer",
+   "name": "Twitter/X bearer token",
+   "cat": "secret",
+   "pattern": "\\bAAAAAAAAAAAAAAAAAAAAA[A-Za-z0-9%]{30,}",
+   "flags": "",
+   "group": 0,
+   "conf": 0.95,
+   "allow": false
+  },
+  {
+   "id": "age_key",
+   "name": "age secret key",
+   "cat": "key_material",
+   "pattern": "\\bAGE-SECRET-KEY-1[QPZRY9X8GF2TVDW0S3JN54KHCE6MUA7L]{58}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.99,
+   "allow": false
+  },
+  {
+   "id": "planetscale",
+   "name": "PlanetScale token",
+   "cat": "secret",
+   "pattern": "\\bpscale_(?:tkn|pw|oauth)_[A-Za-z0-9_\\-.]{32,}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.98,
+   "allow": false
+  },
+  {
+   "id": "jwt",
+   "name": "JSON Web Token",
+   "cat": "secret",
+   "pattern": "\\beyJ[A-Za-z0-9_\\-]{8,}\\.eyJ[A-Za-z0-9_\\-]{8,}\\.[A-Za-z0-9_\\-]*",
+   "flags": "",
+   "group": 0,
+   "conf": 0.9,
+   "allow": false,
+   "validator": "jwt"
+  },
+  {
+   "id": "pem_private_key",
+   "name": "Private key (PEM)",
+   "cat": "key_material",
+   "pattern": "-----BEGIN (?:RSA |EC |DSA |OPENSSH |PGP |ENCRYPTED )?PRIVATE KEY(?: BLOCK)?-----",
+   "flags": "",
+   "group": 0,
+   "conf": 0.99,
+   "allow": false
+  },
+  {
+   "id": "ssh_private_body",
+   "name": "OpenSSH private key body",
+   "cat": "key_material",
+   "pattern": "\\bb3BlbnNzaC1rZXktdjEA[A-Za-z0-9+/=]{40,}",
+   "flags": "",
+   "group": 0,
+   "conf": 0.97,
+   "allow": false
+  },
+  {
+   "id": "db_url",
+   "name": "Database connection string",
+   "cat": "credential_url",
+   "pattern": "\\b(?:postgres(?:ql)?|mysql|mariadb|mongodb(?:\\+srv)?|redis|rediss|amqps?|mssql|sqlserver)://[^\\s:@/]+:[^\\s@/]+@[^\\s/]+[^\\s]*",
+   "flags": "",
+   "group": 0,
+   "conf": 0.98,
+   "allow": false
+  },
+  {
+   "id": "url_creds",
+   "name": "URL with embedded credentials",
+   "cat": "credential_url",
+   "pattern": "\\b[a-z][a-z0-9+.\\-]*://[^\\s:@/]+:([^\\s@/]{3,})@[^\\s/]+",
+   "flags": "i",
+   "group": 1,
+   "conf": 0.93,
+   "allow": false
+  },
+  {
+   "id": "basic_auth",
+   "name": "HTTP Basic credentials",
+   "cat": "secret",
+   "pattern": "authorization:\\s*basic\\s+([A-Za-z0-9+/=]{8,})",
+   "flags": "i",
+   "group": 1,
+   "conf": 0.95,
+   "allow": false
+  },
+  {
+   "id": "bearer",
+   "name": "Bearer token",
+   "cat": "secret",
+   "pattern": "\\bbearer\\s+([A-Za-z0-9_\\-.~+/]{16,}=*)",
+   "flags": "i",
+   "group": 1,
+   "conf": 0.85,
+   "allow": false,
+   "min_ent": 3.0
+  },
+  {
+   "id": "sql_password",
+   "name": "Password in connection string",
+   "cat": "secret",
+   "pattern": "\\b(?:pwd|password)=([^;\\s]{4,})(?:;|\\s|$)",
+   "flags": "i",
+   "group": 1,
+   "conf": 0.85,
+   "allow": false
+  },
+  {
+   "id": "eth_private_key",
+   "name": "Ethereum/crypto private key",
+   "cat": "key_material",
+   "pattern": "\\b0x[a-fA-F0-9]{64}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.7,
+   "allow": true,
+   "min_ent": 3.0
+  },
+  {
+   "id": "aadhaar",
+   "name": "Aadhaar number",
+   "cat": "pii",
+   "pattern": "(?<![\\d])[2-9]\\d{3}[ \\-]?\\d{4}[ \\-]?\\d{4}(?![\\d])",
+   "flags": "",
+   "group": 0,
+   "conf": 0.95,
+   "allow": true,
+   "validator": "verhoeff"
+  },
+  {
+   "id": "pan",
+   "name": "PAN (India)",
+   "cat": "pii",
+   "pattern": "\\b[A-Z]{5}[0-9]{4}[A-Z]\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.92,
+   "allow": true,
+   "validator": "pan"
+  },
+  {
+   "id": "gstin",
+   "name": "GSTIN",
+   "cat": "financial",
+   "pattern": "\\b\\d{2}[A-Z]{5}\\d{4}[A-Z][1-9A-Z]Z[0-9A-Z]\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.95,
+   "allow": true,
+   "validator": "gstin"
+  },
+  {
+   "id": "ifsc",
+   "name": "IFSC code",
+   "cat": "financial",
+   "pattern": "\\b[A-Z]{4}0[A-Z0-9]{6}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.7,
+   "allow": true,
+   "validator": "ifsc"
+  },
+  {
+   "id": "card",
+   "name": "Payment card number",
+   "cat": "financial",
+   "pattern": "(?<![\\d.\\-])(?:\\d{4}[ \\-]\\d{4}[ \\-]\\d{4}[ \\-]\\d{1,7}|\\d{4}[ \\-]\\d{6}[ \\-]\\d{5}|\\d{13,19})(?![\\d.\\-]?\\d)",
+   "flags": "",
+   "group": 0,
+   "conf": 0.95,
+   "allow": true,
+   "validator": "luhn"
+  },
+  {
+   "id": "iban",
+   "name": "IBAN",
+   "cat": "financial",
+   "pattern": "\\b[A-Z]{2}\\d{2}[ ]?(?:[A-Z0-9]{4}[ ]?){2,7}[A-Z0-9]{1,4}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.93,
+   "allow": true,
+   "validator": "iban"
+  },
+  {
+   "id": "ssn",
+   "name": "US Social Security number",
+   "cat": "pii",
+   "pattern": "(?<![\\d])\\d{3}-\\d{2}-\\d{4}(?![\\d])",
+   "flags": "",
+   "group": 0,
+   "conf": 0.9,
+   "allow": true,
+   "validator": "ssn"
+  },
+  {
+   "id": "passport_in",
+   "name": "Indian passport number",
+   "cat": "pii",
+   "pattern": "\\b[A-PR-WY][1-9]\\d{6}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.55,
+   "allow": true,
+   "validator": "passport_in"
+  },
+  {
+   "id": "phone_in",
+   "name": "Indian mobile number",
+   "cat": "pii",
+   "pattern": "(?<![\\d])(?:\\+91[\\- ]?|0)?[6-9]\\d{9}(?![\\d])",
+   "flags": "",
+   "group": 0,
+   "conf": 0.75,
+   "allow": true
+  },
+  {
+   "id": "phone_intl",
+   "name": "International phone number",
+   "cat": "pii",
+   "pattern": "(?<![\\d])\\+(?!91)[1-9]\\d{0,2}[ \\-]?\\(?\\d{2,4}\\)?[ \\-]?\\d{3,4}[ \\-]?\\d{3,4}(?![\\d])",
+   "flags": "",
+   "group": 0,
+   "conf": 0.6,
+   "allow": true
+  },
+  {
+   "id": "email",
+   "name": "Email address",
+   "cat": "pii",
+   "pattern": "\\b[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,}\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.85,
+   "allow": true
+  },
+  {
+   "id": "ipv4_private",
+   "name": "Internal IP address",
+   "cat": "business",
+   "pattern": "\\b(?:10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|192\\.168\\.\\d{1,3}\\.\\d{1,3}|172\\.(?:1[6-9]|2\\d|3[01])\\.\\d{1,3}\\.\\d{1,3})\\b",
+   "flags": "",
+   "group": 0,
+   "conf": 0.6,
+   "allow": true,
+   "validator": "ipv4"
+  }
+ ]
+}

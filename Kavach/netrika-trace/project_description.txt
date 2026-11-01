@@ -1,0 +1,182 @@
+================================================================================
+          NETRIKA-TRACE — AUTONOMOUS AGENTIC SHADOW-AI GATEWAY
+               COMPLETE PROJECT ARCHITECTURE & TECH STACK
+================================================================================
+
+1. EXECUTIVE OVERVIEW & SYSTEM MISSION
+--------------------------------------
+Netrika-Trace is an enterprise-grade, autonomous Data Loss Prevention (DLP) 
+and AI traffic governance platform designed to protect corporate networks from 
+unauthorized data leakage to external Generative AI tools (e.g., OpenAI ChatGPT, 
+Google Gemini, Anthropic Claude, Perplexity AI, Microsoft Copilot).
+
+Operating as a dual-layer interception system (Network Gateway Proxy + Chrome 
+Browser Extension), Netrika-Trace inspects AI-bound prompts, code snippets, 
+and file uploads in real time. It executes a multi-agent analytical pipeline 
+built on LangGraph to detect Personally Identifiable Information (PII), Indian 
+regulatory data (Aadhaar, PAN, UPI, IFSC), Named Entities (NER), proprietary 
+source code, AWS/API keys, and semantic threat vectors.
+
+When sensitive data is detected, the system applies policy thresholds to ALLOW, 
+WARN, or BLOCK the request. Crucially, it incorporates a local LLM breach 
+simulator (Phi-3:mini via Ollama) to generate context-aware educational 
+simulations using sanitized metadata, training employees at the exact point of 
+violation without sending raw data to external clouds. The system is designed to 
+be fully compliant with India's Digital Personal Data Protection (DPDP) Act 2023.
+
+
+2. CORE PROBLEMS SOLVED
+-----------------------
+A. "Shadow-AI" Data Leakage
+   Employees frequently paste confidential source code, customer records, database 
+   passwords, and internal financial metrics into public AI tools. Traditional 
+   firewalls can only block entire AI domains (hurting productivity), while legacy 
+   DLPs lack the semantic awareness to parse complex prompt payloads or multi-file 
+   document uploads. Netrika-Trace provides granular, payload-level inspection.
+
+B. Statutory Compliance (DPDP Act 2023 / GDPR / HIPAA)
+   - DPDP Section 8 (Data Fiduciary Obligations): Prevents unauthorized transfer of 
+     customer PII outside corporate perimeters.
+   - DPDP Section 9 (Audit Trails): Logs encrypted incident metadata for external 
+     data security audits.
+   - DPDP Section 15 (Breach Reporting): Maintains accurate logs of intercepted leaks.
+
+C. Contextual Point-of-Intervention Training
+   Instead of passive annual security compliance videos, Netrika-Trace delivers 
+   instant real-time breach stories at the moment of violation, showing employees 
+   how an attacker could exploit their specific data leak.
+
+
+3. DUAL-LAYER INTERCEPTION ARCHITECTURE
+---------------------------------------
+A. Network-Level Proxy (mitmproxy Transparent Gateway)
+   - Sits on port 8080 handling HTTP/HTTPS traffic.
+   - Uses a custom addon script (proxy/addon.py) to inspect request headers and 
+     match target AI hostnames against a configurable registry.
+   - Extracts nested prompt content from JSON payloads (e.g., messages[].content).
+   - Serves red-screen intervention pages on BLOCK or injects warning banners on WARN.
+
+B. Client-Side Browser Extension (Chrome Manifest V3)
+   - Patches global fetch() and XMLHttpRequest (XHR) APIs.
+   - Intercepts file inputs (HTMLInputElement change events) and drag-and-drop 
+     file uploads before they leave the browser.
+   - Sends payloads to the local Netrika analyzer server (port 8888) over an 
+     independent fetch channel to bypass host application CSP constraints.
+   - Utilizes a fast-path scanning endpoint (/api/analyze/file/fast) for sub-second 
+     document verification.
+
+
+4. MULTI-AGENT ANALYTICAL PIPELINE (LANGGRAPH)
+----------------------------------------------
+The core decision engine runs as a 5-node StateGraph in LangGraph:
+
+   [ Sniffer Node ] ──> [ Forensic Node ] ──> [ Decision Node ]
+                                                    │
+                                           ┌────────┴────────┐
+                                    (WARN / BLOCK)        (ALLOW)
+                                           │                 │
+                                           ▼                 ▼
+                                 [ Intervention Node ]  [ Logger Node ]
+                                           │                 │
+                                           ▼                 ▼
+                                     [ Logger Node ]        END
+                                           │
+                                           ▼
+                                          END
+
+A. Sniffer Node (agents/sniffer_node.py)
+   - Assigns a unique UUID incident ID.
+   - Computes SHA-256 hash of the payload for deduplication.
+   - Normalizes text and generates a 200-character sanitized preview.
+
+B. Forensic Node (agents/forensic_node.py)
+   Runs multi-vector threat assessments concurrently via Python ThreadPoolExecutor:
+   1. Presidio PII Detection (Microsoft Presidio + Regex): Detects credit cards, 
+      emails, phones, SSNs, IBANs, and custom Indian PII (Aadhaar, PAN, UPI ID, IFSC).
+   2. SpaCy NER (en_core_web_sm): Extracts Organizations (ORG), Persons (PERSON), 
+      Locations (GPE), and Financial figures (MONEY).
+   3. Code & Secrets Scanner (Regex + Pygments): Detects Python, JS, Java, C/C++, 
+      SQL, Docker, Shell scripts, AWS keys, JWT tokens, private keys, and DB connection strings.
+   4. Semantic Similarity Scorer (Sentence-Transformers): Uses all-MiniLM-L6-v2 
+      embeddings to compare prompts against dangerous vs safe template sets.
+   5. Weighted Risk Calculation: Computes composite risk score (0-100) using 
+      configurable weights + risk boosters (+40 for code, +30 for secrets).
+
+C. Decision Node (agents/decision_node.py)
+   - Evaluates risk score against policy thresholds (default: BLOCK >= 67, WARN >= 30).
+   - Routes request to intervention_node (if WARN/BLOCK) or logger_node (if ALLOW).
+   - Fast-path for browser extension and document uploads skips Ollama generation.
+
+D. Intervention Node (agents/intervention_node.py)
+   - Sanitizes findings into generic type summaries (e.g., "1x Aadhaar card, 1x AWS Key").
+   - Calls local Phi-3:mini via Ollama to generate a realistic 3-paragraph breach scenario.
+   - Builds glassmorphic red-screen blocked page via Jinja2 templates.
+
+E. Logger Node (agents/logger_node.py)
+   - Persists incident metadata and entity detections to SQLite via SQLAlchemy.
+   - Publishes real-time event to Redis pub/sub for SOC dashboard updates.
+   - Dispatches SMTP email alerts to security admins on critical violations.
+
+
+5. COMPLETE FRAMEWORKS, LIBRARIES & TOOLS STACK
+------------------------------------------------
+
+A. BACKEND ENGINE & API
+   - Python 3.11+ / 3.14 (Core Runtime Environment)
+   - aiohttp 3.9+ (Asynchronous web server running on port 8888 for API & WebSocket)
+   - asyncio (Asynchronous execution framework)
+   - python-dotenv (Environment configuration loader)
+
+B. MULTI-AGENT ORCHESTRATION & NLP
+   - LangGraph 0.2+ (Agent state machine orchestration)
+   - LangChain Core 0.3+ (Foundation abstractions for agents)
+   - Microsoft Presidio Analyzer & Anonymizer 2.2+ (PII detection engine)
+   - SpaCy 3.7+ (Named Entity Recognition — en_core_web_sm NLP model)
+   - Sentence-Transformers 2.2+ (all-MiniLM-L6-v2 vector embedding model)
+   - Pygments 2.17+ (Code lexer & language detection)
+   - PyPDF2 3.0+ (PDF document text extraction)
+   - python-docx 1.0+ (Microsoft Word text extraction)
+
+C. LOCAL AI & SIMULATION
+   - Ollama 0.3+ (Local LLM runner)
+   - Phi-3:mini (3.8B parameter local LLM for offline breach simulation)
+   - Google Gemini API (Free tier LLM integration for digital Alzheimer's chat demo)
+
+D. PROXY & CLIENT INTERCEPTION
+   - mitmproxy 10.0+ (Python-based interactive TLS-intercepting proxy on port 8080)
+   - Chrome Manifest V3 Extensions API (Fetch/XHR patcher & file upload interceptor)
+   - JavaScript / HTML5 / CSS3 (Extension overlay & injected script)
+
+E. FRONTEND & DASHBOARDS
+   - SOC UI Dashboard (React 18 + Vite 5 + TypeScript + TailwindCSS + Framer Motion)
+   - Admin Panel (Streamlit 1.35+ on port 8501 for policy sliders & analytics)
+   - Recharts & Plotly 5.18+ (Data visualization charts for threat statistics)
+   - Lucide React (Modern icon library)
+
+F. DATABASE & PERSISTENCE
+   - SQLite 3 (Audit log storage at data/netrika.db)
+   - SQLAlchemy 2.0+ (Python ORM for database models & CRUD operations)
+   - aiosqlite 0.19+ (Async SQLite interface)
+   - Redis 7+ (In-memory Pub/Sub channel for real-time WebSocket broadcasting)
+
+G. REPORTING & UTILITIES
+   - ReportLab 4.0+ (PDF builder for DPDP Act compliance reports)
+   - Jinja2 3.1+ (HTML templating engine for intervention pages)
+   - pytest 7.4+ & pytest-asyncio (Testing suite)
+
+
+6. PRIVACY BY DESIGN GUARANTEES
+-------------------------------
+- No Raw Secret Storage: PII values (Aadhaar, PAN, Card Numbers) are redacted to generic types before DB write.
+- 200-Character Previews: Only the first 200 characters of prompt text are saved for context preview.
+- Sanitized LLM Inference: The local Phi-3 model receives only generic category descriptors, never raw prompts.
+- Fully Offline DLP: All scans, NER lookups, regex checks, and breach simulations run locally without external cloud dependencies.
+
+
+7. SYSTEM PORTS & RUNNING URLs
+------------------------------
+- React SOC Dashboard UI:    http://localhost:3000
+- Streamlit Admin Panel:     http://localhost:8501
+- Intervention API Server:   http://localhost:8888
+- mitmproxy Gateway Port:    127.0.0.1:8080
+================================================================================

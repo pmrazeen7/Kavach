@@ -1,0 +1,15 @@
+I need to debug an issue with our AWS infrastructure. Here are the relevant credentials:
+
+AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+AWS_REGION=ap-south-1
+
+Our MongoDB connection string is: mongodb://admin:M0ng0P@ss!@cluster0.abc123.mongodb.net/production
+
+The API gateway JWT is: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFkbWluIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+
+Slack webhook: https://hooks.slack.com/services/EXAMPLE
+
+GitHub token: ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghij
+
+The production server admin password is: Pr0duct10n$ecret!2024

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            width: 300px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #0f172a;
+            color: #f8fafc;
+        }
+        .container {
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 10px;
+        }
+        .logo {
+            font-weight: bold;
+            font-size: 18px;
+            color: #38bdf8;
+        }
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        .indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #94a3b8;
+        }
+        .indicator.online { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+        .indicator.offline { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: #38bdf8;
+            color: #0f172a;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn:hover { background: #7dd3fc; }
+        
+        .footer {
+            margin-top: 20px;
+            font-size: 11px;
+            color: #64748b;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span class="logo">Netrika-Trace</span>
+        </div>
+        
+        <div class="status">
+            <div id="status-indicator" class="indicator"></div>
+            <span id="status-text">Checking backend...</span>
+        </div>
+        
+        <button id="open-dashboard" class="btn">Open War Room</button>
+        
+        <div class="footer">
+            Protecting your data from Shadow AI.
+        </div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>

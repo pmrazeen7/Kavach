@@ -1,0 +1,106 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: netrika-postgres
+    environment:
+      POSTGRES_USER: netrika
+      POSTGRES_PASSWORD: netrika_password
+      POSTGRES_DB: netrika_enterprise
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U netrika -d netrika_enterprise"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: netrika-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: netrika-backend
+    command: python backend/main.py
+    ports:
+      - "8888:8888"
+    environment:
+      - DATABASE_URL=postgresql://netrika:netrika_password@postgres:5432/netrika_enterprise
+      - REDIS_URL=redis://redis:6379/0
+      - JWT_SECRET=netrika-enterprise-super-secret-key-2026
+      - OLLAMA_HOST=http://host.docker.internal:11434
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
+  proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: netrika-proxy
+    command: python proxy/run_proxy.py
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_URL=postgresql+psycopg://netrika:netrika_password@postgres:5432/netrika_enterprise
+      - REDIS_URL=redis://redis:6379/0
+      - PROXY_PORT=8080
+    volumes:
+      - mitmproxy-ca:/root/.mitmproxy
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: netrika-worker
+    command: celery -A workers.celery_app worker --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql://netrika:netrika_password@postgres:5432/netrika_enterprise
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: netrika-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+    driver: local
+  mitmproxy-ca:
+    driver: local

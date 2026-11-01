@@ -1,0 +1,98 @@
+openapi: 3.0.3
+info:
+  title: Netrika-Trace Enterprise API
+  description: Enterprise REST API for SOC Dashboards, Analytics, and Multi-Tenant Policy Sync.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8888/api/v1
+    description: Enterprise Backend Server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []
+
+paths:
+  /auth/login:
+    post:
+      summary: Authenticate SOC user
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  refresh_token:
+                    type: string
+                  user:
+                    type: object
+
+  /auth/register-device:
+    post:
+      summary: Register browser extension endpoint
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                device_uuid:
+                  type: string
+                org_id:
+                  type: string
+      responses:
+        '200':
+          description: Device registered successfully
+
+  /policies:
+    get:
+      summary: Get active enterprise policy
+      responses:
+        '200':
+          description: Policy configuration object
+    patch:
+      summary: Update enterprise policy
+      responses:
+        '200':
+          description: Policy updated and synced via WS
+
+  /incidents:
+    get:
+      summary: Search and filter incidents
+      parameters:
+        - in: query
+          name: q
+          schema:
+            type: string
+        - in: query
+          name: decision
+          schema:
+            type: string
+            enum: [ALLOW, WARN, BLOCK]
+      responses:
+        '200':
+          description: List of incidents

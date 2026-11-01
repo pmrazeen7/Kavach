@@ -1,0 +1,7 @@
+This is a test document with sensitive data.
+My Aadhaar number is 2345 6789 0123.
+My PAN card is ABCDE1234F.
+My UPI ID is john.doe@oksbi
+My bank IFSC is HDFC0001234
+API Key: AKIAIOSFODNN7EXAMPLE
+DB: postgres://admin:secret123@prod-server/mydb

@@ -1,0 +1,219 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Single source of truth for the theme. Values are space-separated RGB so
+  Tailwind's alpha modifiers work (bg-accent/20). Never hardcode colors
+  elsewhere: add a token here instead.
+*/
+:root {
+  /* surfaces + text */
+  --bg: 246 247 251;
+  --surface: 255 255 255;
+  --subtle: 243 244 248;
+  --line: 229 231 235;
+  --fg: 17 24 39;
+  --muted: 107 114 128;
+  --faint: 156 163 175;
+  --ink: 17 24 39;
+  --on-ink: 255 255 255;
+  --paper: 255 255 255;
+
+  /* accent */
+  --accent: 79 70 229;
+  --accent-deep: 49 46 129;
+  --accent-soft: 224 231 255;
+  --accent-fg: 67 56 202;
+  --on-accent: 255 255 255;
+
+  /* status */
+  --success: 16 185 129;
+  --success-soft: 209 250 229;
+  --success-fg: 6 95 70;
+  --warn: 249 115 22;
+  --warn-soft: 255 237 213;
+  --warn-fg: 124 45 18;
+  --danger: 239 68 68;
+  --danger-soft: 254 226 226;
+  --danger-fg: 185 28 28;
+
+  /* aurora + character palette (the pastel set) */
+  --a-blue: 147 197 253;
+  --a-violet: 196 181 253;
+  --a-pink: 249 168 212;
+  --a-mint: 110 231 183;
+  --a-peach: 253 186 116;
+  --a-sun: 253 230 138;
+  --aurora-opacity: 0.55;
+
+  /* chart series */
+  --chart-1: 79 70 229;
+  --chart-2: 245 158 11;
+  --chart-3: 16 185 129;
+  --chart-4: 236 72 153;
+  --chart-5: 148 163 184;
+
+  --shadow-card: 0 1px 2px rgb(16 24 40 / 0.04);
+  --shadow-pop: 0 12px 32px rgb(16 24 40 / 0.12), 0 2px 6px rgb(16 24 40 / 0.06);
+  --shadow-glow: 0 10px 28px rgb(79 70 229 / 0.18);
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  --bg: 11 13 20;
+  --surface: 18 20 28;
+  --subtle: 27 30 40;
+  --line: 38 42 54;
+  --fg: 243 244 246;
+  --muted: 156 163 175;
+  --faint: 107 114 128;
+
+  --accent: 129 140 248;
+  --accent-deep: 30 27 75;
+  --accent-soft: 49 46 129;
+  --accent-fg: 199 210 254;
+  --on-accent: 17 24 39;
+
+  --success: 52 211 153;
+  --success-soft: 6 78 59;
+  --success-fg: 167 243 208;
+  --warn: 251 146 60;
+  --warn-soft: 124 45 18;
+  --warn-fg: 254 215 170;
+  --danger: 248 113 113;
+  --danger-soft: 127 29 29;
+  --danger-fg: 254 202 202;
+
+  --aurora-opacity: 0.28;
+  --shadow-card: none;
+  --shadow-pop: 0 16px 40px rgb(0 0 0 / 0.5);
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background: rgb(var(--bg));
+  color: rgb(var(--fg));
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection { background: rgb(var(--accent) / 0.25); }
+
+*:focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgb(var(--line)); border-radius: 100px; }
+::-webkit-scrollbar-thumb:hover { background: rgb(var(--faint)); }
+
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Motion primitives ─────────────────────────────────────── */
+@keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0.3; } }
+.dot-blink { animation: blink 1.5s infinite; }
+
+@keyframes eye-blink { 0%, 92%, 100% { transform: scaleY(1); } 96% { transform: scaleY(0.08); } }
+.eye-blink { animation: eye-blink 4.6s infinite; transform-box: fill-box; transform-origin: center; }
+
+@keyframes breathe { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.025, 0.975); } }
+.breathe { animation: breathe 3.6s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
+
+@keyframes shimmer-x { 100% { transform: translateX(100%); } }
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: rgb(var(--subtle));
+  border-radius: 10px;
+}
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgb(var(--surface) / 0.7), transparent);
+  animation: shimmer-x 1.4s infinite;
+}
+
+@keyframes marquee { to { transform: translateX(-50%); } }
+.marquee-track { animation: marquee 32s linear infinite; width: max-content; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Range slider (see components/ui/Slider.tsx) ───────────── */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  border-radius: 999px;
+  outline-offset: 6px;
+  cursor: pointer;
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgb(var(--surface));
+  border: 2px solid var(--slider-color);
+  box-shadow: var(--shadow-pop);
+  transition: transform 0.15s;
+}
+.slider:active::-webkit-slider-thumb { transform: scale(1.12); }
+.slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgb(var(--surface));
+  border: 2px solid var(--slider-color);
+  box-shadow: var(--shadow-pop);
+}
+
+/* Kavach logo: animation lives here (not inside the inlined SVG) so many instances share one rule set.
+   Motion runs only when data-animated="true"; the logo component sets that for at most two instances
+   and pauses it while the tab is hidden. */
+.kv-logo .kv-sweep, .kv-logo .kv-orbit, .kv-logo .kv-glow, .kv-logo .kv-node, .kv-logo .kv-b1, .kv-logo .kv-b2, .kv-logo .kv-b3 { animation: none; }
+.kv-logo[data-animated='true'] .kv-sweep { animation: kv-sweep 3.2s cubic-bezier(.65, 0, .35, 1) infinite; }
+.kv-logo[data-animated='true'] .kv-orbit { transform-origin: 128px 128px; animation: kv-spin 14s linear infinite; }
+.kv-logo[data-animated='true'] .kv-glow { animation: kv-glow 3.2s ease-in-out infinite; }
+.kv-logo[data-animated='true'] .kv-node { transform-origin: 162px 80px; animation: kv-node 3.2s ease-in-out infinite; }
+.kv-logo[data-animated='true'] .kv-b1 { animation: kv-d1 9s ease-in-out infinite alternate; }
+.kv-logo[data-animated='true'] .kv-b2 { animation: kv-d2 11s ease-in-out infinite alternate; }
+.kv-logo[data-animated='true'] .kv-b3 { animation: kv-d3 13s ease-in-out infinite alternate; }
+.kv-logo[data-paused='true'] * { animation-play-state: paused !important; }
+@keyframes kv-sweep { 0% { transform: translateY(-130px); } 60%, 100% { transform: translateY(135px); } }
+@keyframes kv-spin { to { transform: rotate(360deg); } }
+@keyframes kv-glow { 0%, 100% { opacity: .35; } 50% { opacity: .8; } }
+@keyframes kv-node { 0%, 100% { transform: scale(1); } 45% { transform: scale(1.5); } }
+@keyframes kv-d1 { to { transform: translate(50px, 40px); } }
+@keyframes kv-d2 { to { transform: translate(-60px, 30px); } }
+@keyframes kv-d3 { to { transform: translate(20px, -50px); } }
+/* scanner state tints: a brief overlay on the shield, never a recolor of the artwork */
+.kv-tint { opacity: 0; transform-box: fill-box; transform-origin: center; }
+.kv-tint-blocked { animation: kv-blocked 1.6s ease-out 1 both; }
+.kv-tint-safe { animation: kv-safe 1.4s ease-out 1 both; }
+@keyframes kv-blocked { 0% { opacity: 0; } 15% { opacity: .75; } 100% { opacity: 0; } }
+@keyframes kv-safe { 0% { opacity: 0; transform: scale(.96); } 35% { opacity: .55; transform: scale(1.02); } 100% { opacity: 0; transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) {
+  .kv-logo *, .kv-logo { animation: none !important; }
+  .kv-tint-blocked { opacity: .45; }
+}
+
+/* hero: Sentinel's scan line pulses on the logo's 3.2s sweep cycle */
+.kv-hero-beam { opacity: 0; animation: kv-hero-beam 3.2s cubic-bezier(.65, 0, .35, 1) infinite; }
+@keyframes kv-hero-beam { 0% { opacity: 0; } 8% { opacity: .9; } 60% { opacity: .9; } 70%, 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .kv-hero-beam { animation: none; opacity: .5; } }

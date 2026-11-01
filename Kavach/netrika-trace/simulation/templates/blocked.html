@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACCESS BLOCKED — Netrika-Trace</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap');
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #0a0a0a;
+            color: #c8d8e8;
+            font-family: 'Courier New', Courier, monospace;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Red radial gradient */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 50%; left: 50%;
+            width: 150vmax; height: 150vmax;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(ellipse at center,
+                rgba(255, 45, 85, 0.08) 0%,
+                rgba(255, 45, 85, 0.03) 30%,
+                transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Scan lines */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent 0px,
+                transparent 2px,
+                rgba(0, 0, 0, 0.03) 2px,
+                rgba(0, 0, 0, 0.03) 4px
+            );
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .card {
+            max-width: 680px;
+            width: 100%;
+            background: #0b1017;
+            border: 1px solid #1a2535;
+            border-top: 4px solid #ff2d55;
+            padding: 48px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .header h1 {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 42px;
+            color: #ff2d55;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 13px;
+            color: #4a6278;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Risk Gauge */
+        .gauge-section {
+            text-align: center;
+            margin: 32px 0;
+        }
+
+        .gauge-container {
+            position: relative;
+            display: inline-block;
+            width: 120px;
+            height: 120px;
+        }
+
+        .gauge-svg {
+            transform: rotate(-90deg);
+        }
+
+        .gauge-bg {
+            fill: none;
+            stroke: #1a2535;
+            stroke-width: 6;
+        }
+
+        .gauge-fill {
+            fill: none;
+            stroke: {{ gauge_color }};
+            stroke-width: 6;
+            stroke-linecap: round;
+            stroke-dasharray: {{ circumference }};
+            stroke-dashoffset: {{ offset }};
+            transition: stroke-dashoffset 1.5s ease-in-out;
+            filter: drop-shadow(0 0 6px {{ gauge_color }}40);
+        }
+
+        .gauge-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .gauge-score {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 36px;
+            color: {{ gauge_color }};
+            line-height: 1;
+        }
+
+        .gauge-label {
+            font-size: 9px;
+            color: #4a6278;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        /* Entity Tags */
+        .entities-section {
+            margin: 28px 0;
+        }
+
+        .section-label {
+            font-size: 9px;
+            color: #4a6278;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .entity-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .entity-tag {
+            display: inline-block;
+            background: rgba(255, 45, 85, 0.12);
+            color: #ff2d55;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 11px;
+            letter-spacing: 1px;
+            border: 1px solid rgba(255, 45, 85, 0.2);
+        }
+
+        .entity-count {
+            color: #4a6278;
+            margin-left: 4px;
+        }
+
+        /* Breach Simulation */
+        .simulation-section {
+            margin: 32px 0;
+            padding: 24px;
+            border-left: 3px solid #ff2d55;
+            background: #111820;
+        }
+
+        .simulation-header {
+            font-size: 10px;
+            color: #ff2d55;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .simulation-body {
+            font-size: 13px;
+            line-height: 1.8;
+            color: #c8d8e8;
+        }
+
+        .simulation-body .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: #ff2d55;
+            animation: blink 0.8s infinite;
+            vertical-align: text-bottom;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
+        .watermark {
+            text-align: right;
+            font-size: 9px;
+            color: #4a627830;
+            letter-spacing: 1px;
+            margin-top: 12px;
+        }
+
+        /* Timeline */
+        .timeline-section {
+            margin: 32px 0;
+        }
+
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .timeline-step {
+            flex: 1;
+            text-align: center;
+            padding: 20px 12px;
+            background: #111820;
+            border: 1px solid #1a2535;
+            position: relative;
+        }
+
+        .timeline-step .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .step-1 .step-number { background: rgba(255, 45, 85, 0.2); color: #ff2d55; }
+        .step-2 .step-number { background: rgba(255, 176, 32, 0.2); color: #ffb020; }
+        .step-3 .step-number {
+            background: rgba(255, 45, 85, 0.2);
+            color: #ff2d55;
+            animation: pulse-number 2s infinite;
+        }
+
+        @keyframes pulse-number {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 45, 85, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(255, 45, 85, 0); }
+        }
+
+        .step-title {
+            font-size: 11px;
+            font-weight: bold;
+            color: #c8d8e8;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .step-desc {
+            font-size: 11px;
+            color: #4a6278;
+            line-height: 1.5;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid #1a2535;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-logo {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            color: #4a6278;
+            letter-spacing: 1px;
+        }
+
+        .footer-logo .dot { color: #ff2d55; }
+
+        .footer-meta {
+            font-size: 10px;
+            color: #4a6278;
+            text-align: right;
+        }
+
+        .review-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 28px;
+            background: transparent;
+            border: 1px solid #ff2d55;
+            color: #ff2d55;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .review-btn:hover {
+            background: #ff2d55;
+            color: #0a0a0a;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <!-- Header -->
+        <div class="header">
+            <h1>⚠ ACCESS BLOCKED</h1>
+            <p>Data leak attempt intercepted by Netrika-Trace</p>
+        </div>
+
+        <!-- Risk Gauge -->
+        <div class="gauge-section">
+            <div class="gauge-container">
+                <svg class="gauge-svg" width="120" height="120" viewBox="0 0 100 100">
+                    <circle class="gauge-bg" cx="50" cy="50" r="40"/>
+                    <circle class="gauge-fill" cx="50" cy="50" r="40"/>
+                </svg>
+                <div class="gauge-text">
+                    <div class="gauge-score">{{ risk_score }}</div>
+                    <div class="gauge-label">RISK</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Entity Types -->
+        <div class="entities-section">
+            <div class="section-label">Detected Entity Types</div>
+            <div class="entity-tags">
+                {% for etype, count in entity_types.items() %}
+                <span class="entity-tag">
+                    {{ etype }}<span class="entity-count">×{{ count }}</span>
+                </span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Breach Simulation -->
+        {% if simulation_text %}
+        <div class="simulation-section">
+            <div class="simulation-header">
+                ⚠ BREACH SIMULATION — AI GENERATED
+            </div>
+            <div class="simulation-body" id="simulation-text"></div>
+            <div class="watermark">SIMULATED — NOT REAL DATA</div>
+        </div>
+        {% endif %}
+
+        <!-- What Would Have Happened Timeline -->
+        <div class="timeline-section">
+            <div class="section-label">What Would Have Happened</div>
+            <div class="timeline">
+                <div class="timeline-step step-1">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Your Data Leaks</div>
+                    <div class="step-desc">Sensitive data transmitted to external AI service and stored on their servers</div>
+                </div>
+                <div class="timeline-step step-2">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Attacker Exploits</div>
+                    <div class="step-desc">Threat actor harvests data via API breach, model extraction, or MITM attack</div>
+                </div>
+                <div class="timeline-step step-3">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Damage Occurs</div>
+                    <div class="step-desc">Identity theft, financial fraud, IP loss, DPDP Act penalties up to ₹250 Cr</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review Button -->
+        <div style="text-align: center;">
+            <a class="review-btn" href="mailto:admin@company.com?subject=Incident Review Request: {{ incident_id }}&body=I would like to request a review of incident {{ incident_id }}.">
+                Request Review
+            </a>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-logo">NETRIKA<span class="dot">·</span>TRACE</div>
+            <div class="footer-meta">
+                Incident: {{ incident_id }}<br>
+                <span id="timestamp"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Timestamp
+        document.getElementById('timestamp').textContent = new Date().toLocaleString('en-IN', {timeZone: 'Asia/Kolkata'}) + ' IST';
+
+        // Typewriter effect for simulation text
+        const simulationText = {{ simulation_text|tojson }};
+        const container = document.getElementById('simulation-text');
+        if (container && simulationText) {
+            let i = 0;
+            const cursor = document.createElement('span');
+            cursor.className = 'cursor';
+            container.appendChild(cursor);
+
+            function typeWriter() {
+                if (i < simulationText.length) {
+                    container.insertBefore(
+                        document.createTextNode(simulationText.charAt(i)),
+                        cursor
+                    );
+                    i++;
+                    setTimeout(typeWriter, 20);
+                } else {
+                    setTimeout(() => cursor.remove(), 2000);
+                }
+            }
+            typeWriter();
+        }
+    </script>
+</body>
+</html>

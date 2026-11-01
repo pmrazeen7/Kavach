@@ -1,0 +1,71 @@
+name: scanner
+
+on:
+  push:
+    paths: ["Kavach/netrika-trace/**"]
+  pull_request:
+    paths: ["Kavach/netrika-trace/**"]
+
+jobs:
+  engine:
+    name: Python engine, server gate and evaluation gate
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Kavach/netrika-trace
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: Kavach/netrika-trace/requirements.txt
+      - run: pip install -r requirements.txt pytest pytest-asyncio
+      - run: python -m spacy download en_core_web_sm
+      - name: Rule pack and model are up to date
+        run: |
+          python -m scanner.rules.build
+          git diff --exit-code scanner/rules/formats.json
+      - name: Unit and server tests
+        run: pytest tests/test_scanner_engine.py tests/test_scanner_gate.py tests/test_scanner_safety.py tests/test_enterprise_api.py -q
+      - name: Evaluation gate (recall, false-alarm rate, latency)
+        run: python -m scanner.eval.run --check
+      - name: Generate the corpus and parity data (not committed: synthetic secrets trip secret scanners)
+        run: |
+          python -m scanner.eval.corpus
+          python -m scanner.eval.parity
+      - uses: actions/upload-artifact@v4
+        with:
+          name: scanner-eval-data
+          path: |
+            Kavach/netrika-trace/scanner/eval/corpus.json
+            Kavach/netrika-trace/scanner/eval/parity.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: scanner-eval-report
+          path: Kavach/netrika-trace/scanner/eval/REPORT.md
+
+  browser:
+    name: Browser engine parity, types and lint
+    needs: engine
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Kavach/netrika-trace/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: Kavach/netrika-trace/frontend/package-lock.json
+      - uses: actions/download-artifact@v4
+        with:
+          name: scanner-eval-data
+          path: Kavach/netrika-trace/scanner/eval
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build:extension
